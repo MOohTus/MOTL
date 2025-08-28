@@ -11,7 +11,9 @@ Zeta_calculation(view, likelihoods, E_ZWSq, E_ZE_W)
 
 \item{likelihoods}{list of data types}
 
-\item{E_ZWSq}{}
+\item{E_ZWSq}{ASK_DAVID}
+
+\item{E_ZE_W}{ASK_DAVID}
 }
 \value{
 Zeta matrix for the current data view

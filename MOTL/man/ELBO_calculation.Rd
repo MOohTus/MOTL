@@ -25,13 +25,18 @@ ELBO_calculation(
 
 \item{TauLn}{list of log(Tau) matrices}
 
-\item{E_ZE_W}{}
+\item{E_ZWSq}{ASK_DAVID}
+
+\item{E_ZE_W}{ASK_DAVID}
 
 \item{Zeta}{list of Zeta matrices}
 
 \item{YTrg}{list of data}
 
 \item{YGauss}{list of pseudo Y value matrices}
+}
+\value{
+ASK_DAVID
 }
 \description{
 likelihoods

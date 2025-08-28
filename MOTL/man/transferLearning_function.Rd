@@ -41,7 +41,9 @@ transferLearning_function(
 
 \item{DropFactorTH}{factor with lowest max variance, that is less than this, is dropped}
 
-\item{ConvergenceTH}{}
+\item{ConvergenceIts}{ASK_DAVID}
+
+\item{ConvergenceTH}{ASK_DAVID}
 
 \item{CenterTrg}{Center Trg with own means or use estimated intercepts}
 

@@ -16,7 +16,7 @@ WSq_calculation(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE)
 
 \item{LrnFctrnDir}{directory where WSq values are saved}
 
-\item{LrnSimple}{}
+\item{LrnSimple}{ASK_DAVID}
 }
 \value{
 weights squared matrix for the current view
