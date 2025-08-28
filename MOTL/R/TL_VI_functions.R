@@ -158,7 +158,7 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls){
 
   ## prefiltering, only condition is that variance >0
   FtrsKeep <- rowVars(YTrg, na.rm = TRUE)>0
-  FtrsKeep[is.na(FtrsKeep)] = FALSE
+  FtrsKeep[is.na(FtrsKeep)] <- FALSE
   YTrg <- YTrg[FtrsKeep,]
   print(paste0("YTrg dimensions after prefiltering: ", dim(YTrg)))
 
