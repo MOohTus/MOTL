@@ -681,8 +681,8 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W){
   #' Calculate the Zeta matrix for the current data view
   #'
   #' Zeta values used for non-gaussian data
-  #' for poisson Zeta_nd = E[\sum_{k} z_{n,k} w_{d,k}] so Zeta = ZMu %*% t(W)
-  #' for bernoulli Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])
+  #' for poisson \eqn{Zeta_nd = E[\sum_{k} z_{n,k} w_{d,k}] so Zeta = ZMu %*% t(W)}
+  #' for bernoulli \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
   #'
   #' @param view current data view name
   #' @param likelihoods list of data types
