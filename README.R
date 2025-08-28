@@ -17,9 +17,15 @@ setwd("/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test
 usethis::proj_set(".", force = TRUE)
 
 ## UNIT TEST
-usethis::use_testthat()
+## https://r-pkgs.org/testing-basics.html
+## https://r-pkgs.org/testing-design.html
+## https://r-pkgs.org/testing-advanced.html
+usethis::use_testthat(3)
+## If the current page is a R script, this command will create a corresponding test file
+usethis::use_test()
 
 ## VIGNETTES
+## https://r-pkgs.org/vignettes.html
 usethis::use_vignette("Vignette")
 
 ## ROXYGEN TO DOCUMENT
