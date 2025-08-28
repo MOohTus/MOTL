@@ -409,7 +409,7 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel){
   Tau <- Tau[match(viewsLrn,names(Tau))]
 
   ## For each view, transfer rownames into the corresponding Tau matrix
-  for (i in 1:length(viewsLrn)){
+  for (i in seq_len(length(viewsLrn))){
     view = viewsLrn[i]
     rownames(Tau[[view]]$group0)=rownames(Fctrzn@expectations[["W"]][[view]])
   }
@@ -469,7 +469,7 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE){
     WSq = (Fctrzn@expectations[["W"]][[view]])^2
   } else {
     WSq = read.csv(file.path(LrnFctrnDir,paste0("WSq_",view,".csv")),header=FALSE)
-    WSq = as.matrix(WSq)[,1:dim(Fctrzn@expectations[["W"]][[view]])[2]]
+    WSq = as.matrix(WSq)[,seq_len(dim(Fctrzn@expectations[["W"]][[view]])[2])]
     rownames(WSq)=rownames(Fctrzn@expectations[["W"]][[view]])
   }
   return(WSq)
@@ -560,7 +560,7 @@ intercepts_calculation <- function(expdat_meta, Fctrzn, FctrznDir, ExpDataDir){
       ## mle estimate of intercept for ZW
       ## if optimiser fails for a feature will return the naive estimate
 
-      Intercepts_df <- do.call(rbind, lapply(c(1:DTmp), function(d, YTmp, ZWTmp){
+      Intercepts_df <- do.call(rbind, lapply(seq_len(DTmp), function(d, YTmp, ZWTmp){
         ## compute for each feature vector
         YTmp_d = YTmp[,d]
         YTmp_d_keep = !is.na(YTmp_d)
@@ -604,7 +604,7 @@ intercepts_calculation <- function(expdat_meta, Fctrzn, FctrznDir, ExpDataDir){
 
       # DTmp = 10
 
-      Intercepts_df <- do.call(rbind, lapply(c(1:DTmp), function(d, YTmp, ZWTmp){
+      Intercepts_df <- do.call(rbind, lapply(seq_len(DTmp), function(d, YTmp, ZWTmp){
         ## compute for each feature vector
 
         YTmp_d = YTmp[,d]
@@ -1052,7 +1052,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
         fctrs_to_keep = !base::rank(var_expl_max, ties.method = "first")==1
         ZMu = ZMu[,fctrs_to_keep]
         ZMuSq = ZMuSq[,fctrs_to_keep]
-        for (i in 1:length(views)){
+        for (i in seq_len(length(views))){
           Fctrzn_Lrn_W[[i]] = Fctrzn_Lrn_W[[i]][,fctrs_to_keep]
           Fctrzn_Lrn_WSq[[i]] = Fctrzn_Lrn_WSq[[i]][,fctrs_to_keep]
         }
@@ -1099,7 +1099,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
     } else {
       print("update Z")
       # variational updates
-      for (k in 1:dim(ZMu)[2]){
+      for (k in seq_len(dim(ZMu)[2])){
         ZMu_tmp <- Reduce("+", lapply(views, ZMu_calculation, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss))
         ZMu[,k] = ZMu_tmp*ZVar[,k] #update factor value for subsequent calculation
       }
