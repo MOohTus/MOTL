@@ -209,6 +209,85 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs){
 
 }
 
+GeoMeanFun = function(x){
+    ## ASK_DAVID MT ADD DESCRIPTION
+    #' Short description
+    #' 
+    #' Detailed description
+    #' 
+    #' @param x vector of numeric values
+    #' 
+    #' @return mean of non zero values from x vector
+    #' 
+    #' @export
+    
+    GeoMeans <- exp(sum(log(x[x > 0]))/length(x))
+    return(GeoMeans)
+}
+
+countsNormalization <- function(expdat, GeoMeans){
+    #' Normalize counts data
+    #' 
+    #' Normalize counts data using DESeq2 normalization. 
+    #' Calculate geometric means for normalization if data = learning set
+    #' Doesn't use geometric means for normalization if data = target set
+    #' Use provided geometric means for normalization if transfer learning
+    #' 
+    #' @param expdat SE object of experimental data (could be miRNA or mRNA)
+    #' @param GeoMeans "Trg", "Lrn" or vector of numerics
+    #' 
+    #' @returns list of data.frame of the counts normalized and GeoMeans calculated
+    #' 
+    #' @import DESeq2
+    #'
+    #' @export
+    
+    ## create deseq object
+    expdat_dds = DESeqDataSet(expdat, design = ~ 1)
+    
+    if(is.numeric(GeoMeans)){
+        ## normalization
+        expdat_dds_norm = estimateSizeFactors(expdat_dds, geoMeans = GeoMeans)
+        GeoMeans = NULL
+    }else if(GeoMeans == "Lrn"){
+        ## calculate geometric means to use for normalization of both learning and target sets
+        GeoMeans = apply(counts(expdat_dds),1,GeoMeanFun)
+        ## normalization
+        expdat_dds_norm = estimateSizeFactors(expdat_dds, geoMeans = as.vector(GeoMeans))
+    } else if(GeoMeans == "Trg"){
+        ## estimate size factors
+        expdat_dds_norm = estimateSizeFactors(expdat_dds)
+        GeoMeans = NULL
+    }else{
+        print("GeoMeans parameter should be 'Trg' or 'Lrn' or a numeric value")
+        stop()
+    }
+    
+    ## Extract normalized counts
+    expdat_counts_norm <- list("counts" = counts(expdat_dds_norm, normalized = TRUE))
+    
+    ## Save GeoMeans
+    expdat_counts_norm$GeoMeans <- GeoMeans
+    
+    return(expdat_counts_norm)
+}
+
+countsTransformation <- function(expdat_count, TopD){
+    #' Log2 Transform and select top data based on variance
+    #' 
+    #' @param expdat_count data.frame of the counts
+    #' @param TopD number of features to keep
+    #' 
+    #' @returns data.frame of the log2 transformed and filtered data
+    #' 
+    #' @export
+    
+    ## log transform and filter to keep only most variable
+    expdat_counts_log = log2(expdat_count+1)
+    FtrsKeep = base::rank(-rowVars(expdat_counts_log, na.rm = TRUE, useNames = FALSE), ties.method = "first") <= TopD
+    expdat_counts_fltr = expdat_counts_log[FtrsKeep,]
+    return(expdat_counts_fltr)
+}
 
 
 preprocessCountsData <- function(view, YTrg_list, normalization = FALSE, expdat_meta_Lrn, transformation = FALSE){
@@ -441,7 +520,7 @@ TauLn_calculation <- function(view, likelihoodsLrn, Fctrzn, LrnFctrnDir, LrnSimp
   #'
   #' @param view current learning view name
   #' @param likelihoodsLrn type of data in the learning set
-  #' @param LrnSimple if TRUE then E[W^2] and E[LnTau] are calculated from E[W] and E[Tau] otherwise imported
+  #' @param LrnSimple if TRUE then \eqn{E[W^2]} and \eqn{E[LnTau]} are calculated from \eqn{E[W]} and \eqn{E[Tau]} otherwise imported
   #' @param Fctrzn learning factorization model object (from MOFA)
   #' @param LrnFctrnDir directory where log(Tau) values are saved
   #'
@@ -468,7 +547,7 @@ TauLn_calculation <- function(view, likelihoodsLrn, Fctrzn, LrnFctrnDir, LrnSimp
 ## MT - explain LrnSimple input
 WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE){
   #'
-  #' load or calculate E[W^2] values
+  #' load or calculate \eqn{E[W^2]} values
   #' factors were ordered in the same way as for other latent variables
   #' if any factors are dropped due to being inactive, they are at the end of the dataset
   #' so can filter based on dimension of W

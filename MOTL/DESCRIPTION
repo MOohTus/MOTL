@@ -30,4 +30,5 @@ Imports:
     utils,
     rhdf5,
     matrixStats,
-    SummarizedExperiment
+    SummarizedExperiment,
+    DESeq2
