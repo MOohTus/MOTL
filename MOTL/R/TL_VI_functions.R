@@ -18,6 +18,9 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn){
   #' @param Fctrzn learning factorization model object (from MOFA)
   #'
   #' @returns the subset data for current view and SS number
+  #' 
+  #' @importFrom matrixStats rowVars
+  #' @importFrom SummarizedExperiment assay
   #'
   #' @export
 
@@ -72,6 +75,8 @@ TCGATargetDataPreparation <- function(views, YTrgFull, brcds_SS, SS, Fctrzn, smp
   #' @param transformation FALSE or TRUE
   #'
   #' @returns list of prepared subset data for the current subset number
+  #' 
+  #' @importFrom SummarizedExperiment assay
   #'
   #' @export
 
@@ -153,6 +158,8 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls){
   #' @param smpls ordered vector of sample names
   #'
   #' @returns prepared data for the current view
+  #' 
+  #' @importFrom matrixStats rowVars
   #'
   #' @export
 
@@ -202,6 +209,8 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs){
 
 }
 
+
+
 preprocessCountsData <- function(view, YTrg_list, normalization = FALSE, expdat_meta_Lrn, transformation = FALSE){
   #'
   #' Normalize and/or transform counts data
@@ -217,6 +226,8 @@ preprocessCountsData <- function(view, YTrg_list, normalization = FALSE, expdat_
   #' @param transformation boolean
   #'
   #' @returns transformed/normalized counts data for the current view
+  #' 
+  #' @importFrom SummarizedExperiment SummarizedExperiment
   #'
   #' @export
 
@@ -507,7 +518,7 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir){
   return(W0)
 }
 
-intercepts_calculation <- function(expdat_meta, Fctrzn, FctrznDir, ExpDataDir){
+intercepts_calculation <- function(expdat_meta, Fctrzn, FctrznDir, ExpDataDir, Seed, YTmp){
   #'
   #' ASK_DAVID
   #'
@@ -515,6 +526,8 @@ intercepts_calculation <- function(expdat_meta, Fctrzn, FctrznDir, ExpDataDir){
   #' @param Fctrzn learning dataset factorization model
   #' @param FctrznDir learning dataset factorization directory name
   #' @param ExpDataDir learning dataset directory name
+  #' @param YTmp ASK_DAVID
+  #' @param Seed ASK_DAVID
   #' 
   #' @importFrom data.table fread 
   #' @importFrom stats dpois, dbinom, plogis, setNames
@@ -735,7 +748,7 @@ Tau_calculation <- function(view, likelihoods, Zeta, Tau){
   return(Tau)
 }
 
-YGauss_calculation <- function(view, likelihoods, YTrg, Zeta, Tau, CenterTrg){
+YGauss_calculation <- function(view, likelihoods, YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt){
   #'
   #' Initialize or update pseudo Y values (YGauss)
   #'
@@ -750,6 +763,7 @@ YGauss_calculation <- function(view, likelihoods, YTrg, Zeta, Tau, CenterTrg){
   #' @param Zeta list of Zeta matrices
   #' @param Tau list of Tau matrices
   #' @param CenterTrg use (FALSE) or not (TRUE) use estimated intercepts
+  #' @param PoisRateCstnt ASK_DAVID
   #'
   #' @returns pseudo Y values for the current view
   #' 
@@ -818,7 +832,7 @@ ZMu_calculation <- function(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZM
   return(ZMu_tmp3)
 }
 
-ELBO_calculation <- function(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss){
+ELBO_calculation <- function(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss, PoisRateCstnt){
   #'
   #' Calculate the ELBO value for the current view/iterations
   #'
@@ -839,6 +853,7 @@ ELBO_calculation <- function(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta
   #' @param Zeta list of Zeta matrices
   #' @param YTrg list of data
   #' @param YGauss list of pseudo Y value matrices
+  #' @param PoisRateCstnt ASK_DAVID
   #'
   #' @returns ASK_DAVID
   #' 
@@ -990,6 +1005,7 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W){
 }
 
 transferLearning_function <- function(TL_param, MaxIterations, MinIterations, minFactors,
+                                      views, likelihoods, Fctrzn, 
                                       StartDropFactor, FreqDropFactor, StartELBO, FreqELBO, DropFactorTH, ConvergenceIts, ConvergenceTH,
                                       CenterTrg, PoisRateCstnt = 0.0001, ss_start_time = NULL, outputDir = "./"){
   #'
@@ -999,6 +1015,9 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
   #' @param MaxIterations maximum number of iteration
   #' @param MinIterations minimum number of iteration
   #' @param minFactors minimum number of factors
+  #' @param views ASK_DAVID
+  #' @param likelihoods ASK_DAVID
+  #' @param Fctrzn ASK_DAVID
   #' @param StartDropFactor after which iteration to start dropping factors
   #' @param FreqDropFactor how often to drop factors
   #' @param StartELBO which iteration to start checking ELBO on

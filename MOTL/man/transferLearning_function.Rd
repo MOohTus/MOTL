@@ -9,6 +9,9 @@ transferLearning_function(
   MaxIterations,
   MinIterations,
   minFactors,
+  views,
+  likelihoods,
+  Fctrzn,
   StartDropFactor,
   FreqDropFactor,
   StartELBO,
@@ -30,6 +33,12 @@ transferLearning_function(
 \item{MinIterations}{minimum number of iteration}
 
 \item{minFactors}{minimum number of factors}
+
+\item{views}{ASK_DAVID}
+
+\item{likelihoods}{ASK_DAVID}
+
+\item{Fctrzn}{ASK_DAVID}
 
 \item{StartDropFactor}{after which iteration to start dropping factors}
 

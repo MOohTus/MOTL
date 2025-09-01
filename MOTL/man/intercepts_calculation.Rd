@@ -4,7 +4,7 @@
 \alias{intercepts_calculation}
 \title{ASK_DAVID}
 \usage{
-intercepts_calculation(expdat_meta, Fctrzn, FctrznDir, ExpDataDir)
+intercepts_calculation(expdat_meta, Fctrzn, FctrznDir, ExpDataDir, Seed, YTmp)
 }
 \arguments{
 \item{expdat_meta}{learning dataset metadata}
@@ -14,6 +14,10 @@ intercepts_calculation(expdat_meta, Fctrzn, FctrznDir, ExpDataDir)
 \item{FctrznDir}{learning dataset factorization directory name}
 
 \item{ExpDataDir}{learning dataset directory name}
+
+\item{Seed}{ASK_DAVID}
+
+\item{YTmp}{ASK_DAVID}
 }
 \description{
 ASK_DAVID

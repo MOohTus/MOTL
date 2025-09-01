@@ -13,7 +13,8 @@ ELBO_calculation(
   E_ZE_W,
   Zeta,
   YTrg,
-  YGauss
+  YGauss,
+  PoisRateCstnt
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ ELBO_calculation(
 \item{YTrg}{list of data}
 
 \item{YGauss}{list of pseudo Y value matrices}
+
+\item{PoisRateCstnt}{ASK_DAVID}
 }
 \value{
 ASK_DAVID

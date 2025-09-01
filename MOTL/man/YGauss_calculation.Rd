@@ -4,7 +4,15 @@
 \alias{YGauss_calculation}
 \title{Initialize or update pseudo Y values (YGauss)}
 \usage{
-YGauss_calculation(view, likelihoods, YTrg, Zeta, Tau, CenterTrg)
+YGauss_calculation(
+  view,
+  likelihoods,
+  YTrg,
+  Zeta,
+  Tau,
+  CenterTrg,
+  PoisRateCstnt
+)
 }
 \arguments{
 \item{view}{current view name}
@@ -18,6 +26,8 @@ YGauss_calculation(view, likelihoods, YTrg, Zeta, Tau, CenterTrg)
 \item{Tau}{list of Tau matrices}
 
 \item{CenterTrg}{use (FALSE) or not (TRUE) use estimated intercepts}
+
+\item{PoisRateCstnt}{ASK_DAVID}
 }
 \value{
 pseudo Y values for the current view
