@@ -209,7 +209,7 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs){
 
 }
 
-GeoMeanFun = function(x){
+GeoMeanFun <- function(x){
     ## ASK_DAVID MT ADD DESCRIPTION
     #' Short description
     #' 
@@ -243,21 +243,21 @@ countsNormalization <- function(expdat, GeoMeans){
     #' @export
     
     ## create deseq object
-    expdat_dds = DESeqDataSet(expdat, design = ~ 1)
+    expdat_dds <- DESeqDataSet(expdat, design = ~ 1)
     
     if(is.numeric(GeoMeans)){
         ## normalization
-        expdat_dds_norm = estimateSizeFactors(expdat_dds, geoMeans = GeoMeans)
-        GeoMeans = NULL
+        expdat_dds_norm <- estimateSizeFactors(expdat_dds, geoMeans = GeoMeans)
+        GeoMeans <- NULL
     }else if(GeoMeans == "Lrn"){
         ## calculate geometric means to use for normalization of both learning and target sets
-        GeoMeans = apply(counts(expdat_dds),1,GeoMeanFun)
+        GeoMeans <- apply(counts(expdat_dds),1,GeoMeanFun)
         ## normalization
-        expdat_dds_norm = estimateSizeFactors(expdat_dds, geoMeans = as.vector(GeoMeans))
+        expdat_dds_norm <- estimateSizeFactors(expdat_dds, geoMeans = as.vector(GeoMeans))
     } else if(GeoMeans == "Trg"){
         ## estimate size factors
-        expdat_dds_norm = estimateSizeFactors(expdat_dds)
-        GeoMeans = NULL
+        expdat_dds_norm <- estimateSizeFactors(expdat_dds)
+        GeoMeans <- NULL
     }else{
         print("GeoMeans parameter should be 'Trg' or 'Lrn' or a numeric value")
         stop()
@@ -283,9 +283,9 @@ countsTransformation <- function(expdat_count, TopD){
     #' @export
     
     ## log transform and filter to keep only most variable
-    expdat_counts_log = log2(expdat_count+1)
-    FtrsKeep = base::rank(-rowVars(expdat_counts_log, na.rm = TRUE, useNames = FALSE), ties.method = "first") <= TopD
-    expdat_counts_fltr = expdat_counts_log[FtrsKeep,]
+    expdat_counts_log <- log2(expdat_count+1)
+    FtrsKeep <- base::rank(-rowVars(expdat_counts_log, na.rm = TRUE, useNames = FALSE), ties.method = "first") <= TopD
+    expdat_counts_fltr <- expdat_counts_log[FtrsKeep,]
     return(expdat_counts_fltr)
 }
 
