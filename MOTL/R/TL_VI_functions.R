@@ -120,13 +120,15 @@ mRNA_addVersion <- function(expdat, Lrndat){
   #' @param Lrndat the mRNA W matrix from the learning dataset factorization with genes in rows
   #'
   #' @returns the target mRNA matrix with versions attached
+  #' 
+  #' @import dplyr
   #'
   #' @export
 
   tmp <- as.data.frame(do.call(rbind,strsplit(rownames(Lrndat),"[.]")))
   # match to stripped ids from target set
   tmp <- data.frame(V1 = rownames(expdat)) %>%
-    dplyr::left_join(tmp, by = c('V1')) %>%
+    left_join(tmp, by = c('V1')) %>%
     as.data.frame()
   # rename target dataset features
   rownames(expdat) <- paste0(tmp$V1,'.',tmp$V2)
@@ -401,6 +403,8 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel){
   #' @param InputModel factorization model object of learning set (from MOFA)
   #'
   #' @returns named list of Tau matrices
+  #' 
+  #' @importFrom rhdf5 h5read
   #'
   #' @export
 
@@ -431,6 +435,8 @@ TauLn_calculation <- function(view, likelihoodsLrn, Fctrzn, LrnFctrnDir, LrnSimp
   #' @param LrnFctrnDir directory where log(Tau) values are saved
   #'
   #' @returns log(Tau) matrix for the current view
+  #' 
+  #' @importFrom utils read.csv
   #'
   #' @export
 
@@ -462,6 +468,8 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE){
   #' @param LrnFctrnDir directory where WSq values are saved
   #'
   #' @returns weights squared matrix for the current view
+  #' 
+  #' @importFrom utils read.csv
   #'
   #' @export
 
@@ -492,7 +500,7 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir){
   if (CenterTrg){
     W0 <- Fctrzn@expectations[["W"]][[view]][,1]*0
   } else {
-    EstInts <- readRDS(file.path(LrnFctrnDir,"EstimatedIntercepts.rds"))
+    EstInts <- base::readRDS(file.path(LrnFctrnDir,"EstimatedIntercepts.rds"))
     EstInts <- EstInts$Intercepts
     W0 <- EstInts[[view]]
   }
@@ -507,6 +515,10 @@ intercepts_calculation <- function(expdat_meta, Fctrzn, FctrznDir, ExpDataDir){
   #' @param Fctrzn learning dataset factorization model
   #' @param FctrznDir learning dataset factorization directory name
   #' @param ExpDataDir learning dataset directory name
+  #' 
+  #' @importFrom data.table fread 
+  #' @importFrom stats dpois, dbinom, plogis, setNames
+  #' @importFrom stats4 mle
   #'
   #' @export
   #'
@@ -534,7 +546,7 @@ intercepts_calculation <- function(expdat_meta, Fctrzn, FctrznDir, ExpDataDir){
     DTmp <- D[which(names(D) == view)]
 
     # YTmp <- read.table(file = file.path(ExpDataDir, paste0(view,'.csv')), sep = ",")
-    YTmp <- as.data.frame(data.table::fread(file = file.path(ExpDataDir, paste0(view,'.csv')), sep = ","))
+    YTmp <- as.data.frame(fread(file = file.path(ExpDataDir, paste0(view,'.csv')), sep = ","))
     YTmp <- t(as.matrix(YTmp))
     rownames(YTmp) <- expdat_meta$smpls
     colnames(YTmp) <- expdat_meta[[which(names(expdat_meta) == paste0("ftrs_",view))]]
@@ -571,12 +583,12 @@ intercepts_calculation <- function(expdat_meta, Fctrzn, FctrznDir, ExpDataDir){
         ## NLL function to optimize
         # nLL = function(interceptMLE) -sum(stats::dpois(YLrn[,d], log(1 + exp(ZWLrn[,d]+interceptMLE)), log = TRUE))
         nLL <- function(interceptMLE) -sum(log(
-          stats::dpois(YTmp_d, log(1 + exp(ZWTmp_d+interceptMLE)))[stats::dpois(YTmp_d[,d], log(1 + exp(ZWTmp_d+interceptMLE))) != 0]
+          dpois(YTmp_d, log(1 + exp(ZWTmp_d+interceptMLE)))[dpois(YTmp_d[,d], log(1 + exp(ZWTmp_d+interceptMLE))) != 0]
         ))
 
         ## try to solve it and use the result otherwise use the naive estimate
         # interceptMLEfit = try(as.vector(stats4::mle(nLL, start=list(interceptMLE=0))@coef[1]))
-        interceptMLEfit <- try(as.vector(stats4::mle(nLL, start = list(interceptMLE = InterceptsNaive[d]))@coef[1]))
+        interceptMLEfit <- try(as.vector(mle(nLL, start = list(interceptMLE = InterceptsNaive[d]))@coef[1]))
 
         if (class(interceptMLEfit) == "try-error"){
           InterceptsTmp <- InterceptsNaive[d]
@@ -620,7 +632,7 @@ intercepts_calculation <- function(expdat_meta, Fctrzn, FctrznDir, ExpDataDir){
 
         ## try to solve it and use the result otherwise use the naive estimate
 
-        interceptMLEfit <- try(stats4::mle(nLL, start = list(InterceptMLE = InterceptsNaive[d]))@coef[1])
+        interceptMLEfit <- try(mle(nLL, start = list(InterceptMLE = InterceptsNaive[d]))@coef[1])
 
         if (class(interceptMLEfit) == "try-error"){
           InterceptsTmp <- InterceptsNaive[d]
@@ -740,6 +752,8 @@ YGauss_calculation <- function(view, likelihoods, YTrg, Zeta, Tau, CenterTrg){
   #' @param CenterTrg use (FALSE) or not (TRUE) use estimated intercepts
   #'
   #' @returns pseudo Y values for the current view
+  #' 
+  #' @importFrom stats plogis
   #'
   #' @export
 
@@ -827,6 +841,8 @@ ELBO_calculation <- function(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta
   #' @param YGauss list of pseudo Y value matrices
   #'
   #' @returns ASK_DAVID
+  #' 
+  #' @importFrom stats plogis
   #'
   #' @export
 
@@ -996,7 +1012,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
   #' @param outputDir output directory name
   #'
   #' @returns list of transfer learning data
-  #'
+  #' 
   #' @export
 
   ss_fit_start_time <- Sys.time()

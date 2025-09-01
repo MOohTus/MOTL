@@ -32,6 +32,9 @@ usethis::use_vignette("Vignette")
 ## LOAD COMPLETE PACKAGE
 devtools::document(); devtools::load_all()
 
+## IMPORT SOME PACKAGES BY HAND ...
+usethis::use_import_from("stats", c("dpois", "dbinom"))
+
 ## BUILD and CHECK PACKAGE (devtools::check("../"))
 devtools::build(); devtools::check_built("../MOTL_0.99.0.tar.gz")
 
