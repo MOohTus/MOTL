@@ -14,6 +14,12 @@ test_that("mRNA_addVersion", {
   print("to do")
 })
 
+test_that("mRNA_addVersion", {
+    expdat_mRNA_wov_up = mRNA_addVersion(expdat = df, Lrndat)
+    expect_in(rownames(expdat_mRNA_wov_up), rownames(Lrndat))
+})
+
+
 test_that("GeoMeans_Lrn_init", {
   print("to do")
 })
@@ -52,7 +58,6 @@ test_that("TauLn_calculation_TRUE", {
   expect_equal(Fctrzn@expectations[["TauLn"]]$SNV, numeric())
 })
 
-## ASK_DAVID FAUDRA ESSAYER AVEC LE FICHIER
 test_that("TauLn_calculation_FALSE", {
   skip_issue_2_solve("miRNA length is different between model and imported TauLn file")
   ## LrnSimple = FALSE / USE LrnFctrnDir TAU FILES
@@ -94,7 +99,6 @@ test_that("WSq_calculation_FALSE", {
   expect_equal(length(Fctrzn@expectations[["WSq"]]$SNV), Fctrzn@dimensions$D["SNV"][[1]])
 })
 
-## ASK_DAVID / REVOIR L'APPEL AU FICHIER
 test_that("W0_calculation_FALSE", {
   ## CenterTrg = FALSE
   Fctrzn@expectations[["W0"]] = sapply(viewsLrn, W0_calculation, CenterTrg = FALSE, Fctrzn, LrnFctrnDir)
