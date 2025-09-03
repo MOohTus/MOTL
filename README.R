@@ -26,6 +26,8 @@ usethis::use_import_from("stats", c("dpois", "dbinom"))
 usethis::use_testthat(3)
 ## If the current page is a R script, this command will create a corresponding test file
 usethis::use_test()
+## Perfom test
+devtools::test()
 
 ## VIGNETTES
 ## https://r-pkgs.org/vignettes.html

@@ -40,6 +40,7 @@ test_that("Tau_init", {
 
 ##
 test_that("TauLn_calculation_TRUE", {
+  Fctrzn@expectations[["Tau"]] <- Tau_init(viewsLrn, Fctrzn, InputModel)
   ## LrnSimple = TRUE / DON'T USE LrnFctrnDir TAU FILES
   Fctrzn@expectations[["TauLn"]] <-  sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn, LrnFctrnTauLn, LrnSimple = TRUE)
   expect_equal(length(Fctrzn@expectations[["TauLn"]]$mRNA), Fctrzn@dimensions$D["mRNA"][[1]])
@@ -163,14 +164,3 @@ test_that("VarExplFun", {
 test_that("transferLearning_function", {
   print("to do")
 })
-
-
-
-
-
-
-
-
-
-
-
