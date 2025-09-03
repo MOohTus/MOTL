@@ -18,7 +18,7 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn){
   #' @param Fctrzn learning factorization model object (from MOFA)
   #'
   #' @returns the subset data for current view and SS number
-  #' 
+  #'
   #' @importFrom matrixStats rowVars
   #' @importFrom SummarizedExperiment assay
   #'
@@ -75,7 +75,7 @@ TCGATargetDataPreparation <- function(views, YTrgFull, brcds_SS, SS, Fctrzn, smp
   #' @param transformation FALSE or TRUE
   #'
   #' @returns list of prepared subset data for the current subset number
-  #' 
+  #'
   #' @importFrom SummarizedExperiment assay
   #'
   #' @export
@@ -125,7 +125,7 @@ mRNA_addVersion <- function(expdat, Lrndat){
   #' @param Lrndat the mRNA W matrix from the learning dataset factorization with genes in rows
   #'
   #' @returns the target mRNA matrix with versions attached
-  #' 
+  #'
   #' @import dplyr
   #'
   #' @export
@@ -158,7 +158,7 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls){
   #' @param smpls ordered vector of sample names
   #'
   #' @returns prepared data for the current view
-  #' 
+  #'
   #' @importFrom matrixStats rowVars
   #'
   #' @export
@@ -212,39 +212,39 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs){
 GeoMeanFun <- function(x){
     ## ASK_DAVID MT ADD DESCRIPTION
     #' Short description
-    #' 
+    #'
     #' Detailed description
-    #' 
+    #'
     #' @param x vector of numeric values
-    #' 
+    #'
     #' @return mean of non zero values from x vector
-    #' 
+    #'
     #' @export
-    
+
     GeoMeans <- exp(sum(log(x[x > 0]))/length(x))
     return(GeoMeans)
 }
 
 countsNormalization <- function(expdat, GeoMeans){
     #' Normalize counts data
-    #' 
-    #' Normalize counts data using DESeq2 normalization. 
+    #'
+    #' Normalize counts data using DESeq2 normalization.
     #' Calculate geometric means for normalization if data = learning set
     #' Doesn't use geometric means for normalization if data = target set
     #' Use provided geometric means for normalization if transfer learning
-    #' 
+    #'
     #' @param expdat SE object of experimental data (could be miRNA or mRNA)
     #' @param GeoMeans "Trg", "Lrn" or vector of numerics
-    #' 
+    #'
     #' @returns list of data.frame of the counts normalized and GeoMeans calculated
-    #' 
+    #'
     #' @import DESeq2
     #'
     #' @export
-    
+
     ## create deseq object
     expdat_dds <- DESeqDataSet(expdat, design = ~ 1)
-    
+
     if(is.numeric(GeoMeans)){
         ## normalization
         expdat_dds_norm <- estimateSizeFactors(expdat_dds, geoMeans = GeoMeans)
@@ -262,26 +262,26 @@ countsNormalization <- function(expdat, GeoMeans){
         print("GeoMeans parameter should be 'Trg' or 'Lrn' or a numeric value")
         stop()
     }
-    
+
     ## Extract normalized counts
     expdat_counts_norm <- list("counts" = counts(expdat_dds_norm, normalized = TRUE))
-    
+
     ## Save GeoMeans
     expdat_counts_norm$GeoMeans <- GeoMeans
-    
+
     return(expdat_counts_norm)
 }
 
 countsTransformation <- function(expdat_count, TopD){
     #' Log2 Transform and select top data based on variance
-    #' 
+    #'
     #' @param expdat_count data.frame of the counts
     #' @param TopD number of features to keep
-    #' 
+    #'
     #' @returns data.frame of the log2 transformed and filtered data
-    #' 
+    #'
     #' @export
-    
+
     ## log transform and filter to keep only most variable
     expdat_counts_log <- log2(expdat_count+1)
     FtrsKeep <- base::rank(-rowVars(expdat_counts_log, na.rm = TRUE, useNames = FALSE), ties.method = "first") <= TopD
@@ -305,7 +305,7 @@ preprocessCountsData <- function(view, YTrg_list, normalization = FALSE, expdat_
   #' @param transformation boolean
   #'
   #' @returns transformed/normalized counts data for the current view
-  #' 
+  #'
   #' @importFrom SummarizedExperiment SummarizedExperiment
   #'
   #' @export
@@ -493,7 +493,7 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel){
   #' @param InputModel factorization model object of learning set (from MOFA)
   #'
   #' @returns named list of Tau matrices
-  #' 
+  #'
   #' @importFrom rhdf5 h5read
   #'
   #' @export
@@ -525,7 +525,7 @@ TauLn_calculation <- function(view, likelihoodsLrn, Fctrzn, LrnFctrnDir, LrnSimp
   #' @param LrnFctrnDir directory where log(Tau) values are saved
   #'
   #' @returns log(Tau) matrix for the current view
-  #' 
+  #'
   #' @importFrom utils read.csv
   #'
   #' @export
@@ -558,7 +558,7 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE){
   #' @param LrnFctrnDir directory where WSq values are saved
   #'
   #' @returns weights squared matrix for the current view
-  #' 
+  #'
   #' @importFrom utils read.csv
   #'
   #' @export
@@ -607,8 +607,8 @@ intercepts_calculation <- function(expdat_meta, Fctrzn, FctrznDir, ExpDataDir, S
   #' @param ExpDataDir learning dataset directory name
   #' @param YTmp ASK_DAVID
   #' @param Seed ASK_DAVID
-  #' 
-  #' @importFrom data.table fread 
+  #'
+  #' @importFrom data.table fread
   #' @importFrom stats dpois, dbinom, plogis, setNames
   #' @importFrom stats4 mle
   #'
@@ -845,7 +845,7 @@ YGauss_calculation <- function(view, likelihoods, YTrg, Zeta, Tau, CenterTrg, Po
   #' @param PoisRateCstnt ASK_DAVID
   #'
   #' @returns pseudo Y values for the current view
-  #' 
+  #'
   #' @importFrom stats plogis
   #'
   #' @export
@@ -935,7 +935,7 @@ ELBO_calculation <- function(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta
   #' @param PoisRateCstnt ASK_DAVID
   #'
   #' @returns ASK_DAVID
-  #' 
+  #'
   #' @importFrom stats plogis
   #'
   #' @export
@@ -1084,7 +1084,7 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W){
 }
 
 transferLearning_function <- function(TL_param, MaxIterations, MinIterations, minFactors,
-                                      views, likelihoods, Fctrzn, 
+                                      views, likelihoods, Fctrzn,
                                       StartDropFactor, FreqDropFactor, StartELBO, FreqELBO, DropFactorTH, ConvergenceIts, ConvergenceTH,
                                       CenterTrg, PoisRateCstnt = 0.0001, ss_start_time = NULL, outputDir = "./"){
   #'
@@ -1110,7 +1110,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
   #' @param outputDir output directory name
   #'
   #' @returns list of transfer learning data
-  #' 
+  #'
   #' @export
 
   ss_fit_start_time <- Sys.time()

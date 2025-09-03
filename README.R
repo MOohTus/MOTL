@@ -16,6 +16,9 @@ library("BiocCheck")
 setwd("/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/MOTL/")
 usethis::proj_set(".", force = TRUE)
 
+## IMPORT SOME PACKAGES BY HAND ...
+usethis::use_import_from("stats", c("dpois", "dbinom"))
+
 ## UNIT TEST
 ## https://r-pkgs.org/testing-basics.html
 ## https://r-pkgs.org/testing-design.html
@@ -31,9 +34,6 @@ usethis::use_vignette("Vignette")
 ## ROXYGEN TO DOCUMENT
 ## LOAD COMPLETE PACKAGE
 devtools::document(); devtools::load_all()
-
-## IMPORT SOME PACKAGES BY HAND ...
-usethis::use_import_from("stats", c("dpois", "dbinom"))
 
 ## BUILD and CHECK PACKAGE (devtools::check("../"))
 devtools::build(); devtools::check_built("../MOTL_0.99.0.tar.gz")
