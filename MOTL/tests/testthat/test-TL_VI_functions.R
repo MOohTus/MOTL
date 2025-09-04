@@ -28,6 +28,26 @@ test_that("preprocessCountsData", {
   print("to do")
 })
 
+
+test_that("TargetDataPrefiltering", {
+  YTrg_prep = sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
+  expect_equal(names(YTrg_prep), names(YTrg_list))
+  expect_equal(nrow(YTrg_prep$mRNA), 3043)
+  expect_equal(nrow(YTrg_prep$miRNA), 1047)
+  expect_equal(nrow(YTrg_prep$DNAme), 2180)
+  expect_equal(colnames(YTrg_prep$mRNA), colnames(YTrg_prep$miRNA))
+  expect_equal(colnames(YTrg_prep$mRNA), colnames(YTrg_prep$DNAme))
+  expect_equal(colnames(YTrg_prep$mRNA), smpls)
+  expect_in(rownames(YTrg_prep$mRNA), Fctrzn@features_metadata[Fctrzn@features_metadata$view == "mRNA",1])
+  expect_in(rownames(YTrg_prep$miRNA), Fctrzn@features_metadata[Fctrzn@features_metadata$view == "miRNA",1])
+  expect_in(rownames(YTrg_prep$DNAme), Fctrzn@features_metadata[Fctrzn@features_metadata$view == "DNAme",1])
+})
+
+# YTrg_list = TargetDataPreparation(views = views, YTrg_list = YTrg_list,
+#                                   Fctrzn = Fctrzn, smpls = smpls, expdat_meta_Lrn = expdat_meta_Lrn,
+#                                   normalization = 'Lrn', transformation = TRUE)
+
+
 test_that("TargetDataPreparation", {
   print("to do")
 })
