@@ -53,7 +53,41 @@ test_that("TargetDataPreparation", {
 })
 
 test_that("initTransferLearningParamaters", {
-  print("to do")
+  ## INPUT PREPARATION
+  Fctrzn@expectations[["Tau"]] = Tau_init(viewsLrn, Fctrzn, InputModel)
+  Fctrzn@expectations[["TauLn"]] = sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn, LrnFctrnDir)
+  Fctrzn@expectations[["WSq"]] = sapply(viewsLrn, WSq_calculation, Fctrzn, LrnFctrnDir)
+  Fctrzn@expectations[["W0"]] = sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrnDir)
+  YTrg_prep = sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
+  YTrgFtrs <- lapply(YTrg, rownames)
+  ##
+  TL_param = initTransferLearningParamaters(YTrg_prep, views, expdat_meta_Lrn, Fctrzn, likelihoods)
+  expect_equal(names(TL_param), c("YTrg", "Fctrzn_Lrn_W0", "Fctrzn_Lrn_W", "Fctrzn_Lrn_WSq", "Tau", "TauLn"))
+  expect_equal(names(TL_param$Fctrzn_Lrn_W0$mRNA), YTrgFtrs$mRNA)
+  expect_equal(names(TL_param$Fctrzn_Lrn_W0$miRNA), YTrgFtrs$miRNA)
+  expect_equal(names(TL_param$Fctrzn_Lrn_W0$DNAme), YTrgFtrs$DNAme)
+  expect_equal(rownames(TL_param$Fctrzn_Lrn_W$mRNA), YTrgFtrs$mRNA)
+  expect_equal(rownames(TL_param$Fctrzn_Lrn_W$miRNA), YTrgFtrs$miRNA)
+  expect_equal(rownames(TL_param$Fctrzn_Lrn_W$DNAme), YTrgFtrs$DNAme)
+  expect_equal(rownames(TL_param$Fctrzn_Lrn_WSq$mRNA), YTrgFtrs$mRNA)
+  expect_equal(rownames(TL_param$Fctrzn_Lrn_WSq$miRNA), YTrgFtrs$miRNA)
+  expect_equal(rownames(TL_param$Fctrzn_Lrn_WSq$DNAme), YTrgFtrs$DNAme)
+  expect_equal(nrow(TL_param$Tau$mRNA), ncol(YTrg_prep$mRNA))
+  expect_equal(ncol(TL_param$Tau$mRNA), nrow(YTrg_prep$mRNA))
+  expect_equal(nrow(TL_param$Tau$miRNA), ncol(YTrg_prep$miRNA))
+  expect_equal(ncol(TL_param$Tau$miRNA), nrow(YTrg_prep$miRNA))
+  expect_equal(nrow(TL_param$Tau$DNAme), ncol(YTrg_prep$DNAme))
+  expect_equal(ncol(TL_param$Tau$DNAme), nrow(YTrg_prep$DNAme))
+  ## MAKE TEST WITH SNV - ASK_DAVID
+  expect_equal(nrow(TL_param$TauLn$mRNA), ncol(YTrg_prep$mRNA))
+  expect_equal(ncol(TL_param$TauLn$mRNA), nrow(YTrg_prep$mRNA))
+  expect_equal(nrow(TL_param$TauLn$miRNA), ncol(YTrg_prep$miRNA))
+  expect_equal(ncol(TL_param$TauLn$miRNA), nrow(YTrg_prep$miRNA))
+  expect_equal(nrow(TL_param$TauLn$DNAme), ncol(YTrg_prep$DNAme))
+  expect_equal(ncol(TL_param$TauLn$DNAme), nrow(YTrg_prep$DNAme))
+  expect_equal(TL_param$YTrg$mRNA, t(YTrg_prep$mRNA))
+  expect_equal(TL_param$YTrg$miRNA, t(YTrg_prep$miRNA))
+  expect_equal(TL_param$YTrg$DNAme, t(YTrg_prep$DNAme))
 })
 
 test_that("Tau_init", {
