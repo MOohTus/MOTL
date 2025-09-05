@@ -29,10 +29,3 @@ smpls <- colnames(YTrg_list[[1]])
 viewsTrg <- names(YTrg_list)
 views <- viewsLrn[is.element(viewsLrn, viewsTrg)]
 likelihoods = likelihoodsLrn[views]
-
-
-
-TL_param = initTransferLearningParamaters(YTrg = YTrg_list, views = views,
-                                          expdat_meta_Lrn = expdat_meta_Lrn,
-                                          Fctrzn = Fctrzn, likelihoods = likelihoods
-)
