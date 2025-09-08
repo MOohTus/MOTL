@@ -15,54 +15,69 @@ test_that("mRNA_addVersion", {
     expect_in(rownames(expdat_mRNA_wov_up), rownames(Lrndat))
 })
 
-
-test_that("GeoMeans_Lrn_init", {
-  GeoMeans <- GeoMeans_Lrn_init(viewsTrg[[1]], expdat_meta_Lrn, rownames(YTrg$mRNA))
-  expect_equal(length(GeoMeans), nrow(YTrg$mRNA))
-  expect_equal(names(GeoMeans), rownames(YTrg$mRNA))
-  GeoMeans <- GeoMeans_Lrn_init(viewsTrg[[2]], expdat_meta_Lrn, rownames(YTrg$miRNA))
-  expect_equal(length(GeoMeans), nrow(YTrg$miRNA))
-  expect_equal(names(GeoMeans), rownames(YTrg$miRNA))
+test_that("GeoMeanFun", {
+  x <- YTrg_list$mRNA[41,]
+  GeoMean <- GeoMeanFun(x)
+  expect_equal(length(GeoMean), 1)
+  expect_equal(GeoMean, exp(sum(log(x[x > 0]))/length(x)))
 })
 
 
 test_that("GeoMeans_Lrn_init", {
-  GeoMeans <- GeoMeans_Lrn_init("mRNA", expdat_meta_Lrn, YTrgFtrs$mRNA)
-  expect_equal(length(GeoMeans), length(YTrgFtrs$mRNA))
+  YTrg_prep = sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
+  GeoMeans <- GeoMeans_Lrn_init("mRNA", expdat_meta_Lrn, rownames(YTrg_prep$mRNA))
+  expect_equal(length(GeoMeans), length(rownames(YTrg_prep$mRNA)))
   expect_in(GeoMeans, expdat_meta_Lrn$GeoMeans_mRNA)
-  GeoMeans <- GeoMeans_Lrn_init("miRNA", expdat_meta_Lrn, YTrgFtrs$miRNA)
-  expect_equal(length(GeoMeans), length(YTrgFtrs$miRNA))
+  GeoMeans <- GeoMeans_Lrn_init("miRNA", expdat_meta_Lrn, rownames(YTrg_prep$miRNA))
+  expect_equal(length(GeoMeans), length(rownames(YTrg_prep$miRNA)))
   expect_in(GeoMeans, expdat_meta_Lrn$GeoMeans_miRNA)
-  GeoMeans <- GeoMeans_Lrn_init("DNAme", expdat_meta_Lrn, YTrgFtrs$DNAme)
+  GeoMeans <- GeoMeans_Lrn_init("DNAme", expdat_meta_Lrn, rownames(YTrg_prep$DNAme))
   expect_equal(GeoMeans, numeric())
 })
 
 
-test_that("countsTransformation"){
+test_that("countsTransformation", {
   expdat_trans <- countsTransformation(YTrg_list$mRNA, 50)
   expect_equal(nrow(expdat_trans), 50)
   expect_equal(names(expdat_trans), names(YTrg_list$mRNA))
   expect_in(rownames(expdat_trans), rownames(YTrg_list$mRNA))
-}
+})
 
-test_that("countsNormalization_Lrn"){
+test_that("countsNormalization_Lrn", {
   expdat <- TargetDataPrefiltering(view = "mRNA", YTrg_list, Fctrzn, smpls)
   expdat <- apply(expdat, MARGIN = 2, round)
   expdat <- SummarizedExperiment(assays = expdat)
+  expdat_norm <- countsNormalization(expdat, GeoMeans = "Lrn")
+  expect_equal(length(expdat_norm), 2)
+  expect_equal(dim(expdat_norm$counts), dim(expdat))
+  expect_equal(rownames(expdat_norm$counts), rownames(expdat))
+  expect_equal(colnames(expdat_norm$counts), colnames(expdat))
+})
+
+test_that("countsNormalization_Trg", {
+  expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Fctrzn, smpls)
+  expdat <- apply(expdat, MARGIN = 2, round)
+  expdat <- SummarizedExperiment(assays = expdat)
   expdat_norm <- countsNormalization(expdat, GeoMeans = "Trg")
+  expect_equal(length(expdat_norm), 1)
+  expect_equal(dim(expdat_norm$counts), dim(expdat))
+  expect_equal(rownames(expdat_norm$counts), rownames(expdat))
+  expect_equal(colnames(expdat_norm$counts), colnames(expdat))
+})
 
-}
+test_that("countsNormalization_num", {
+  expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Fctrzn, smpls)
+  expdat <- apply(expdat, MARGIN = 2, round)
+  expdat <- SummarizedExperiment(assays = expdat)
+  GeoMeans <- GeoMeans_Lrn_init("mRNA", expdat_meta_Lrn, rownames(expdat))
+  expdat_norm <- countsNormalization(expdat, GeoMeans = GeoMeans)
+  expect_equal(length(expdat_norm), 1)
+  expect_equal(dim(expdat_norm$counts), dim(expdat))
+  expect_equal(rownames(expdat_norm$counts), rownames(expdat))
+  expect_equal(colnames(expdat_norm$counts), colnames(expdat))
+})
 
-test_that("countsNormalization_Trg"){
-  expdat_norm <- countsNormalization(YTrg_list$mRNA, GeoMeans = "Lrn")
 
-}
-
-test_that("countsNormalization_num"){
-  GeoMeans <- GeoMeans_Lrn_init("mRNA", expdat_meta_Lrn, YTrgFtrs$mRNA)
-  expdat_norm <- countsNormalization(YTrg_list$mRNA, GeoMeans = GeoMeans)
-
-}
 
 
 
@@ -104,35 +119,33 @@ test_that("preprocessCountsData_TRANS", {
 })
 
 test_that("preprocessCountsData_NORM_LRN", {
-  YTrg_pre = sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
   ## NO TRANSFORMATION NORMALIZATION WITH LRN DATASET
-  YTrg = sapply(viewsTrg, preprocessCountsData, YTrg_pre, normalization = "Lrn", expdat_meta_Lrn, transformation = FALSE)
-  expect_equal(names(YTrg), names(YTrg_pre))
-  expect_equal(YTrg$mRNA, YTrg_pre$mRNA)
-  expect_equal(YTrg$miRNA, YTrg_pre$miRNA)
-  expect_equal(YTrg$DNAme, YTrg_pre$DNAme)
+  expdat <- list()
+  expdat$mRNA <- TargetDataPrefiltering(view = "mRNA", YTrg_list, Fctrzn, smpls)
+  expdat$mRNA <- apply(expdat$mRNA, MARGIN = 2, round)
+  expdat_norm <- preprocessCountsData(view = "mRNA", expdat, normalization = "Lrn", expdat_meta_Lrn, transformation = FALSE)
+  expect_equal(dim(expdat_norm), dim(expdat$mRNA))
+  expect_equal(rownames(expdat_norm), rownames(expdat$mRNA))
+  expect_equal(colnames(expdat_norm), colnames(expdat$mRNA))
 })
 
 
 test_that("preprocessCountsData_NORM_TRG", {
-  YTrg_pre = sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
-  ## NO TRANSFORMATION NO NORMALIZATION
-  YTrg = sapply(viewsTrg, preprocessCountsData, YTrg_pre, normalization = FALSE, expdat_meta_Lrn, transformation = FALSE)
-  expect_equal(names(YTrg), names(YTrg_pre))
-  expect_equal(YTrg$mRNA, YTrg_pre$mRNA)
-  expect_equal(YTrg$miRNA, YTrg_pre$miRNA)
-  expect_equal(YTrg$DNAme, YTrg_pre$DNAme)
+  ## NO TRANSFORMATION NORMALIZATION WITH TRG DATASET
+  expdat <- list()
+  expdat$mRNA <- TargetDataPrefiltering(view = "mRNA", YTrg_list, Fctrzn, smpls)
+  expdat$mRNA <- apply(expdat$mRNA, MARGIN = 2, round)
+  expdat_norm <- preprocessCountsData(view = "mRNA", expdat, normalization = "Trg", expdat_meta_Lrn, transformation = FALSE)
+  expect_equal(dim(expdat_norm), dim(expdat$mRNA))
+  expect_equal(rownames(expdat_norm), rownames(expdat$mRNA))
+  expect_equal(colnames(expdat_norm), colnames(expdat$mRNA))
 })
 
 
-
-# YTrg_list = TargetDataPreparation(views = views, YTrg_list = YTrg_list,
-#                                   Fctrzn = Fctrzn, smpls = smpls, expdat_meta_Lrn = expdat_meta_Lrn,
-#                                   normalization = 'Lrn', transformation = TRUE)
-
-
 test_that("TargetDataPreparation", {
-  print("to do")
+  expdat_prep <- TargetDataPreparation(views = c("mRNA", "miRNA"), YTrg_list, Fctrzn, smpls, expdat_meta_Lrn, normalization = FALSE, transformation = FALSE)
+  expect_equal(names(expdat_prep), c("mRNA", "miRNA"))
+  expect_equal(colnames(expdat_prep$mRNA), colnames(expdat_prep$miRNA))
 })
 
 test_that("initTransferLearningParamaters", {
@@ -142,7 +155,7 @@ test_that("initTransferLearningParamaters", {
   Fctrzn@expectations[["WSq"]] = sapply(viewsLrn, WSq_calculation, Fctrzn, LrnFctrnDir)
   Fctrzn@expectations[["W0"]] = sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrnDir)
   YTrg_prep = sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
-  YTrgFtrs <- lapply(YTrg, rownames)
+  YTrgFtrs <- lapply(YTrg_prep, rownames)
   ##
   TL_param = initTransferLearningParamaters(YTrg_prep, views, expdat_meta_Lrn, Fctrzn, likelihoods)
   expect_equal(names(TL_param), c("YTrg", "Fctrzn_Lrn_W0", "Fctrzn_Lrn_W", "Fctrzn_Lrn_WSq", "Tau", "TauLn"))
