@@ -325,6 +325,14 @@ test_that("ZVar_calculation", {
 })
 
 test_that("ZMu_calculation", {
+  E_ZE_W <- list("mRNA" = E_ZE_W_update(view = c("mRNA"), ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W))
+  E_Z_SqE_W_Sq <- list("mRNA" = E_Z_SqE_W_Sq_update(view = c("mRNA"), ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W))
+  E_ZSqE_WSq <- list("mRNA" = E_ZSqE_WSq_update(view = c("mRNA"), ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq))
+  E_ZWSq <- list("mRNA" = E_ZWSq_update(view = c("mRNA"), E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq))
+  Zeta <- Zeta_calculation("mRNA", likelihoods, E_ZWSq, E_ZE_W)
+  Tau_m <- Tau_calculation("mRNA", likelihoods, Zeta, Tau)
+  YGauss <- YGauss_calculation("mRNA", likelihoods, YTrg, Zeta, Tau_m, CenterTrg, PoisRateCstnt)
+  ZMu <- ZMu_calculation(view = "mRNA", k = 1, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss)
   # ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
   # ZMu_0 <- rep(1,dim(ZVar)[1])
   # ZMu <- ZMu_calculation(view = "mRNA", k = 1, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss = )
