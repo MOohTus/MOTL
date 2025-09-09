@@ -32,6 +32,7 @@ likelihoods = likelihoodsLrn[views]
 
 
 ##
+TL_param <- readRDS(test_path("fixtures", "TL_param.rds"))
 YTrg <- TL_param$YTrg
 Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
 Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
@@ -39,3 +40,6 @@ Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
 Tau <- TL_param$Tau
 TauLn <- TL_param$TauLn
 ZMu <- TL_param$ZMu
+ZVar <- TL_param$ZVar
+ZMu_0 <- TL_param$ZMu_0
+ZMuSq <- TL_param$ZMuSq

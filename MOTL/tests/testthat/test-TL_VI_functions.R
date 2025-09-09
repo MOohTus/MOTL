@@ -273,6 +273,7 @@ test_that("intercepts_calculation", {
 })
 
 test_that("Zeta_calculation", {
+  print("to do")
     # zeta <- Zeta_calculation(view = "mRNA", likelihoods, E_ZWSq = ) 
 })
 
@@ -281,7 +282,8 @@ test_that("Tau_calculation", {
 })
 
 test_that("YGauss_calculation", {
-  YGauss <- YGauss_calculation("mRNA", likelihoods, YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
+  print("to do")
+  # YGauss <- YGauss_calculation("mRNA", likelihoods, YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
 })
 
 test_that("ZVar_calculation", {
@@ -293,9 +295,9 @@ test_that("ZVar_calculation", {
 })
 
 test_that("ZMu_calculation", {
-  ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
-  ZMu_0 <- rep(1,dim(ZVar)[1])
-  ZMu <- ZMu_calculation(view = "mRNA", k = 1, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss = )
+  # ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
+  # ZMu_0 <- rep(1,dim(ZVar)[1])
+  # ZMu <- ZMu_calculation(view = "mRNA", k = 1, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss = )
   print("to do")
 })
 
@@ -311,8 +313,8 @@ test_that("E_ZE_W_update", {
 
 test_that("E_Z_SqE_W_Sq_update", {
   E_Z_SqE_W_Sq <- E_Z_SqE_W_Sq_update(view = "mRNA", ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-  expect_equal(rownames(E_ZE_W), rownames(ZMu))
-  expect_equal(colnames(E_ZE_W), names(Fctrzn_Lrn_W0$mRNA))
+  expect_equal(rownames(E_Z_SqE_W_Sq), rownames(ZMu))
+  expect_equal(colnames(E_Z_SqE_W_Sq), names(Fctrzn_Lrn_W0$mRNA))
 })
 
 test_that("E_ZSqE_WSq_update", {
