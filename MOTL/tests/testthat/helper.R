@@ -29,3 +29,13 @@ smpls <- colnames(YTrg_list[[1]])
 viewsTrg <- names(YTrg_list)
 views <- viewsLrn[is.element(viewsLrn, viewsTrg)]
 likelihoods = likelihoodsLrn[views]
+
+
+##
+YTrg <- TL_param$YTrg
+Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
+Tau <- TL_param$Tau
+TauLn <- TL_param$TauLn
+ZMu <- TL_param$ZMu

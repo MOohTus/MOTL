@@ -33,3 +33,25 @@ expdat_miRNA[c(1:5), c(1:5)]
 dim(expdat_miRNA)
 expdat_DNAme[c(1:5), c(1:5)]
 dim(expdat_DNAme)
+
+
+## 
+Fctrzn@expectations[["Tau"]] = Tau_init(viewsLrn, Fctrzn, InputModel)
+Fctrzn@expectations[["TauLn"]] = sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn, LrnFctrnDir)
+Fctrzn@expectations[["WSq"]] = sapply(viewsLrn, WSq_calculation, Fctrzn, LrnFctrnDir)
+Fctrzn@expectations[["W0"]] = sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrnDir)
+YTrg_prep = sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
+YTrgFtrs <- lapply(YTrg_prep, rownames)
+##
+TL_param = initTransferLearningParamaters(YTrg_prep, views, expdat_meta_Lrn, Fctrzn, likelihoods)
+TL_param$ZMu <- matrix(data = as.vector(colMeans(Fctrzn@expectations$Z$group0)),
+                            nrow = dim(ZVar)[1], ncol = dim(ZVar)[2], byrow = TRUE)
+rownames(TL_param$ZMu) <- smpls
+colnames(TL_param$ZMu) <- colnames(TL_param$Fctrzn_Lrn_W[[1]])
+TL_param$ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
+TL_param$ZMu_0 <- rep(1,dim(ZVar)[1])
+TL_param$ZMuSq <- ZVar + ZMu^2
+
+
+saveRDS(TL_param, file = "tests/testthat/fixtures/TL_param.rds")
+

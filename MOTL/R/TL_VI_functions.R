@@ -879,7 +879,7 @@ ZVar_calculation <- function(view, Tau, Fctrzn_Lrn_WSq){
   #' @returns calculated Z variances matrix for the current data
   #'
   #' @export
-
+  #' 
   ZVar_m <- Tau[[view]] %*% Fctrzn_Lrn_WSq[[view]]
   return(ZVar_m)
 }

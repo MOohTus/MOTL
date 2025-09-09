@@ -78,9 +78,6 @@ test_that("countsNormalization_num", {
 })
 
 
-
-
-
 test_that("TargetDataPrefiltering", {
   YTrg_prep = sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
   expect_equal(names(YTrg_prep), names(YTrg_list))
@@ -276,7 +273,7 @@ test_that("intercepts_calculation", {
 })
 
 test_that("Zeta_calculation", {
-  print("to do")
+    # zeta <- Zeta_calculation(view = "mRNA", likelihoods, E_ZWSq = ) 
 })
 
 test_that("Tau_calculation", {
@@ -284,14 +281,21 @@ test_that("Tau_calculation", {
 })
 
 test_that("YGauss_calculation", {
-  print("to do")
+  YGauss <- YGauss_calculation("mRNA", likelihoods, YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
 })
 
 test_that("ZVar_calculation", {
-  print("to do")
+  # ASK_DAVID - matrix looks strange - number inside are same
+  ZVar <- ZVar_calculation(view = "mRNA", Tau = TL_param$Tau, Fctrzn_Lrn_WSq = TL_param$Fctrzn_Lrn_WSq)
+  expect_equal(nrow(ZVar), nrow(TL_param$Tau$mRNA))
+  expect_equal(ncol(ZVar), ncol(TL_param$Fctrzn_Lrn_WSq$mRNA))
+  expect_equal(ZVar, TL_param$Tau$mRNA %*% TL_param$Fctrzn_Lrn_WSq$mRNA)
 })
 
 test_that("ZMu_calculation", {
+  ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
+  ZMu_0 <- rep(1,dim(ZVar)[1])
+  ZMu <- ZMu_calculation(view = "mRNA", k = 1, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss = )
   print("to do")
 })
 
@@ -300,15 +304,30 @@ test_that("ELBO_calculation", {
 })
 
 test_that("E_ZE_W_update", {
-  print("to do")
+  E_ZE_W <- E_ZE_W_update(view = "mRNA", ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+  expect_equal(rownames(E_ZE_W), rownames(ZMu))
+  expect_equal(colnames(E_ZE_W), names(Fctrzn_Lrn_W0$mRNA))
 })
 
 test_that("E_Z_SqE_W_Sq_update", {
-  print("to do")
+  E_Z_SqE_W_Sq <- E_Z_SqE_W_Sq_update(view = "mRNA", ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+  expect_equal(rownames(E_ZE_W), rownames(ZMu))
+  expect_equal(colnames(E_ZE_W), names(Fctrzn_Lrn_W0$mRNA))
+})
+
+test_that("E_ZSqE_WSq_update", {
+  E_ZSqE_WSq <- E_ZSqE_WSq_update(view = "mRNA", ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+  expect_equal(rownames(E_ZSqE_WSq), rownames(ZMu_0))
+  expect_equal(colnames(E_ZSqE_WSq), names(Fctrzn_Lrn_W0$mRNA))
 })
 
 test_that("E_ZWSq_update", {
-  print("to do")
+  E_ZE_W <- list("mRNA" = E_ZE_W_update(view = "mRNA", ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W))
+  E_Z_SqE_W_Sq <- list("mRNA" = E_Z_SqE_W_Sq_update(view = "mRNA", ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W))
+  E_ZSqE_WSq <- list("mRNA" = E_ZSqE_WSq_update(view = "mRNA", ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq))
+  E_ZWSq <- E_ZWSq_update(view = "mRNA", E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+  expect_equal(dim(E_ZWSq), dim(E_Z_SqE_W_Sq$mRNA))
+  expect_equal(dim(E_ZWSq), dim(E_ZSqE_WSq$mRNA))
 })
 
 test_that("VarExplFun", {
