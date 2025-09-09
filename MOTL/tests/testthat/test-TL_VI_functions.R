@@ -287,12 +287,33 @@ test_that("Zeta_calculation", {
 })
 
 test_that("Tau_calculation", {
-  print("to do")
+  likelihoods <- list("mRNA" = "gaussian", "miRNA" = "bernoulli")
+  E_ZE_W <- list("mRNA" = E_ZE_W_update(view = "mRNA", ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W))
+  E_Z_SqE_W_Sq <- list("mRNA" = E_Z_SqE_W_Sq_update(view = "mRNA", ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W))
+  E_ZSqE_WSq <- list("mRNA" = E_ZSqE_WSq_update(view = "mRNA", ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq))
+  E_ZWSq <- list("mRNA" = E_ZWSq_update(view = "mRNA", E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq))
+  E_ZWSq$miRNA <- E_ZWSq$mRNA
+  E_ZE_W$miRNA <- E_ZE_W$mRNA
+  Zeta <- list("mRNA" = Zeta_calculation(view = "mRNA", likelihoods, E_ZWSq, E_ZE_W))
+  Zeta$miRNA <- Zeta$mRNA
+  Tau_m <- Tau_calculation(view = "mRNA", likelihoods, Zeta, Tau)
+  expect_equal(Tau_m, Tau$mRNA)
+  Tau_m <- Tau_calculation(view = "miRNA", likelihoods, Zeta, Tau)
+  expect_equal(Tau_m, (1/2)*(1/Zeta$miRNA)*tanh(Zeta$miRNA/2))
 })
 
 test_that("YGauss_calculation", {
-  print("to do")
-  # YGauss <- YGauss_calculation("mRNA", likelihoods, YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
+  likelihoods <- list("mRNA" = "gaussian", "miRNA" = "bernoulli")
+  E_ZE_W <- sapply(c("mRNA", "miRNA"), E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+  E_Z_SqE_W_Sq <- sapply(c("mRNA", "miRNA"), E_Z_SqE_W_Sq_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+  E_ZSqE_WSq <- sapply(c("mRNA", "miRNA"), E_ZSqE_WSq_update, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+  E_ZWSq <- sapply(c("mRNA", "miRNA"), E_ZWSq_update, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+  Zeta <- sapply(c("mRNA", "miRNA"), Zeta_calculation, likelihoods, E_ZWSq, E_ZE_W)
+  Tau_m <- sapply(c("mRNA", "miRNA"), Tau_calculation, likelihoods, Zeta, Tau)
+  YGauss <- YGauss_calculation("mRNA", likelihoods, YTrg, Zeta, Tau_m, CenterTrg, PoisRateCstnt)
+  expect_equal(YGauss, YTrg$mRNA)
+  YGauss <- YGauss_calculation("miRNA", likelihoods, YTrg, Zeta, Tau_m, CenterTrg, PoisRateCstnt)
+  expect_equal(YGauss, (2*YTrg$miRNA - 1) / (2*Tau_m$miRNA))
 })
 
 test_that("ZVar_calculation", {

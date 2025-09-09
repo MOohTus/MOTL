@@ -43,3 +43,5 @@ ZMu <- TL_param$ZMu
 ZVar <- TL_param$ZVar
 ZMu_0 <- TL_param$ZMu_0
 ZMuSq <- TL_param$ZMuSq
+
+PoisRateCstnt = 0.0001
