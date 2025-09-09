@@ -272,7 +272,7 @@ test_that("intercepts_calculation", {
   print("to do")
 })
 
-test_that("Zeta_calculation_", {
+test_that("Zeta_calculation", {
   likelihoods <- list("mRNA" = "gaussian", "miRNA" = "bernoulli")
   E_ZE_W <- list("mRNA" = E_ZE_W_update(view = "mRNA", ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W))
   E_Z_SqE_W_Sq <- list("mRNA" = E_Z_SqE_W_Sq_update(view = "mRNA", ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W))
@@ -284,14 +284,6 @@ test_that("Zeta_calculation_", {
   expect_equal(zeta, E_ZE_W$mRNA)
   zeta <- Zeta_calculation(view = "miRNA", likelihoods, E_ZWSq, E_ZE_W)
   expect_equal(zeta, sqrt(E_ZWSq$miRNA))
-})
-
-test_that("Zeta_calculation_others", {
-  E_ZE_W <- list("" = E_ZE_W_update(view = "mRNA", ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W))
-  E_Z_SqE_W_Sq <- list("mRNA" = E_Z_SqE_W_Sq_update(view = "mRNA", ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W))
-  E_ZSqE_WSq <- list("mRNA" = E_ZSqE_WSq_update(view = "mRNA", ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq))
-  E_ZWSq <- E_ZWSq_update(view = "mRNA", E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
-  zeta <- Zeta_calculation(view = "mRNA", likelihoods, E_ZWSq, E_ZE_W) 
 })
 
 test_that("Tau_calculation", {

@@ -812,7 +812,7 @@ Tau_calculation <- function(view, likelihoods, Zeta, Tau){
   #'
   #' @param view current view data name
   #' @param likelihoods list of data types
-  #' @param Zeta Zeta matrix for the current view
+  #' @param Zeta list of Zeta matrix for the current view
   #' @param Tau list of tau matrices
   #'
   #' @returns (updated) Tau matrix for the current view data
