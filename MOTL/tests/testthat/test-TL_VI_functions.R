@@ -331,12 +331,10 @@ test_that("ZMu_calculation", {
   E_ZWSq <- list("mRNA" = E_ZWSq_update(view = c("mRNA"), E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq))
   Zeta <- Zeta_calculation("mRNA", likelihoods, E_ZWSq, E_ZE_W)
   Tau_m <- Tau_calculation("mRNA", likelihoods, Zeta, Tau)
-  YGauss <- YGauss_calculation("mRNA", likelihoods, YTrg, Zeta, Tau_m, CenterTrg, PoisRateCstnt)
-  ZMu <- ZMu_calculation(view = "mRNA", k = 1, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss)
-  # ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
-  # ZMu_0 <- rep(1,dim(ZVar)[1])
-  # ZMu <- ZMu_calculation(view = "mRNA", k = 1, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss = )
-  print("to do")
+  YGauss <- list("mRNA" = YGauss_calculation("mRNA", likelihoods, YTrg, Zeta, Tau_m, CenterTrg, PoisRateCstnt))
+  ZMu_m <- ZMu_calculation(view = "mRNA", k = 1, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss)
+  expect_equal(length(ZMu_m), nrow(Tau$mRNA))
+  expect_equal(length(ZMu_m), length(ZMu_0))
 })
 
 test_that("ELBO_calculation", {

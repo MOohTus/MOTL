@@ -11,7 +11,7 @@ Tau_calculation(view, likelihoods, Zeta, Tau)
 
 \item{likelihoods}{list of data types}
 
-\item{Zeta}{Zeta matrix for the current view}
+\item{Zeta}{list of Zeta matrix for the current view}
 
 \item{Tau}{list of tau matrices}
 }
