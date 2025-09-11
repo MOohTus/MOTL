@@ -338,7 +338,20 @@ test_that("ZMu_calculation", {
 })
 
 test_that("ELBO_calculation", {
-  print("to do")
+  likelihoods <- list("mRNA" = "gaussian", "miRNA" = "bernoulli", "DNAme" = "poisson")
+  E_ZE_W <- sapply(views, E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+  E_Z_SqE_W_Sq <- sapply(views, E_Z_SqE_W_Sq_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+  E_ZSqE_WSq <- sapply(views, E_ZSqE_WSq_update, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+  E_ZWSq <- sapply(views, E_ZWSq_update, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+  Zeta <- sapply(views, Zeta_calculation, likelihoods, E_ZWSq, E_ZE_W)
+  Tau_m <- sapply(views, Tau_calculation, likelihoods, Zeta, Tau)
+  YGauss <- sapply(views, YGauss_calculation, likelihoods, YTrg, Zeta, Tau_m, CenterTrg, PoisRateCstnt)
+  ELBO_L <- ELBO_calculation(view = "mRNA", likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss, PoisRateCstnt)
+  expect_contains(ELBO_L, numeric())
+  ELBO_L <- ELBO_calculation(view = "miRNA", likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss, PoisRateCstnt)
+  expect_contains(ELBO_L, numeric())
+  ELBO_L <- ELBO_calculation(view = "DNAme", likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss, PoisRateCstnt)
+  expect_contains(ELBO_L, numeric())
 })
 
 test_that("E_ZE_W_update", {
