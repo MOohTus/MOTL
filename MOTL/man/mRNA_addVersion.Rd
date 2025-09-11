@@ -19,3 +19,9 @@ the target mRNA matrix with versions attached
 get ensembl mRNA versions from learning dataset
 and attach to the correspnding mRNA ensembl id in the target dataset
 }
+\examples{
+Lrndat <- data.frame("view" = c("mRNA", "mRNA", "mRNA"), row.names = c("ENSG00000122133.17", "ENSG00000122194.19", "ENSG00000119411.11"))
+expdat <- data.frame("sample1" = c(1, 52, 4), row.names = c("ENSG00000122133", "ENSG00000122194", "ENSG00000119411"))
+mRNA_addVersion(expdat, Lrndat)
+
+}

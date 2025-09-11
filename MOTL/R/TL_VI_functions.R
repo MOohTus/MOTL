@@ -128,8 +128,13 @@ mRNA_addVersion <- function(expdat, Lrndat){
   #'
   #' @import dplyr
   #'
+  #' @examples
+    #' Lrndat <- data.frame("view" = c("mRNA", "mRNA", "mRNA"), row.names = c("ENSG00000122133.17", "ENSG00000122194.19", "ENSG00000119411.11"))
+    #' expdat <- data.frame("sample1" = c(1, 52, 4), row.names = c("ENSG00000122133", "ENSG00000122194", "ENSG00000119411"))
+    #' mRNA_addVersion(expdat, Lrndat)
+  #'
   #' @export
-
+  #'
   tmp <- as.data.frame(do.call(rbind,strsplit(rownames(Lrndat),"[.]")))
   # match to stripped ids from target set
   tmp <- data.frame(V1 = rownames(expdat)) %>%
@@ -879,7 +884,7 @@ ZVar_calculation <- function(view, Tau, Fctrzn_Lrn_WSq){
   #' @returns calculated Z variances matrix for the current data
   #'
   #' @export
-  #' 
+  #'
   ZVar_m <- Tau[[view]] %*% Fctrzn_Lrn_WSq[[view]]
   return(ZVar_m)
 }
