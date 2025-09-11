@@ -41,4 +41,4 @@ devtools::document(); devtools::load_all()
 devtools::build(); devtools::check_built("../MOTL_0.99.0.tar.gz")
 
 ## Check for bioconductor
-BiocCheck("../MOTL_0.99.0.tar.gz")
+BiocCheck::BiocCheck("../MOTL_0.99.0.tar.gz")
