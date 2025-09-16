@@ -9,6 +9,9 @@ transferLearning_function(
   MaxIterations,
   MinIterations,
   minFactors,
+  views,
+  likelihoods,
+  Fctrzn,
   StartDropFactor,
   FreqDropFactor,
   StartELBO,
@@ -31,6 +34,12 @@ transferLearning_function(
 
 \item{minFactors}{minimum number of factors}
 
+\item{views}{ASK_DAVID}
+
+\item{likelihoods}{ASK_DAVID}
+
+\item{Fctrzn}{ASK_DAVID}
+
 \item{StartDropFactor}{after which iteration to start dropping factors}
 
 \item{FreqDropFactor}{how often to drop factors}
@@ -41,7 +50,9 @@ transferLearning_function(
 
 \item{DropFactorTH}{factor with lowest max variance, that is less than this, is dropped}
 
-\item{ConvergenceTH}{}
+\item{ConvergenceIts}{ASK_DAVID}
+
+\item{ConvergenceTH}{ASK_DAVID}
 
 \item{CenterTrg}{Center Trg with own means or use estimated intercepts}
 

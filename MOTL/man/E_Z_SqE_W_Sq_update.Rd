@@ -17,6 +17,9 @@ E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
 
 \item{Fctrzn_Lrn_W}{list of factorized learning set weight matrices}
 }
+\value{
+ASK_DAVID
+}
 \description{
 Calculate
 }

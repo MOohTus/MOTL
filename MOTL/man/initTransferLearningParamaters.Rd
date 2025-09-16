@@ -24,8 +24,7 @@ initTransferLearningParamaters(
 \item{likelihoods}{list of data types}
 }
 \value{
-list of initialized parameters for transfer learning
-(YTrg, Fctrzn_Lrn_W0, Fctrzn_Lrn_WFctrzn_Lrn_WSq, Tau, TauLn)
+list of initialized parameters for transfer learning (YTrg, Fctrzn_Lrn_W0, Fctrzn_Lrn_WFctrzn_Lrn_WSq, Tau, TauLn)
 }
 \description{
 Extract the factorized learning set weight intercepts (from MOFA)

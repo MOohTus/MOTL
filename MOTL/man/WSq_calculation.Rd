@@ -2,7 +2,7 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{WSq_calculation}
 \alias{WSq_calculation}
-\title{load or calculate E\link{W^2} values
+\title{load or calculate \eqn{E[W^2]} values
 factors were ordered in the same way as for other latent variables
 if any factors are dropped due to being inactive, they are at the end of the dataset
 so can filter based on dimension of W}
@@ -16,13 +16,13 @@ WSq_calculation(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE)
 
 \item{LrnFctrnDir}{directory where WSq values are saved}
 
-\item{LrnSimple}{}
+\item{LrnSimple}{ASK_DAVID}
 }
 \value{
 weights squared matrix for the current view
 }
 \description{
-load or calculate E\link{W^2} values
+load or calculate \eqn{E[W^2]} values
 factors were ordered in the same way as for other latent variables
 if any factors are dropped due to being inactive, they are at the end of the dataset
 so can filter based on dimension of W

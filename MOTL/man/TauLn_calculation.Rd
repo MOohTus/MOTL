@@ -15,7 +15,7 @@ TauLn_calculation(view, likelihoodsLrn, Fctrzn, LrnFctrnDir, LrnSimple = TRUE)
 
 \item{LrnFctrnDir}{directory where log(Tau) values are saved}
 
-\item{LrnSimple}{if TRUE then E\link{W^2} and E\link{LnTau} are calculated from E\link{W} and E\link{Tau} otherwise imported}
+\item{LrnSimple}{if TRUE then \eqn{E[W^2]} and \eqn{E[LnTau]} are calculated from \eqn{E[W]} and \eqn{E[Tau]} otherwise imported}
 }
 \value{
 log(Tau) matrix for the current view

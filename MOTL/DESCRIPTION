@@ -20,3 +20,15 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+biocViews: DimensionReduction, FeatureExtraction, Bayesian, Normalization
+Imports: 
+    base,
+    dplyr,
+    data.table,
+    stats,
+    stats4,
+    utils,
+    rhdf5,
+    matrixStats,
+    SummarizedExperiment,
+    DESeq2

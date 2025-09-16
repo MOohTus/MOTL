@@ -11,13 +11,15 @@ Zeta_calculation(view, likelihoods, E_ZWSq, E_ZE_W)
 
 \item{likelihoods}{list of data types}
 
-\item{E_ZWSq}{}
+\item{E_ZWSq}{ASK_DAVID}
+
+\item{E_ZE_W}{ASK_DAVID}
 }
 \value{
 Zeta matrix for the current data view
 }
 \description{
 Zeta values used for non-gaussian data
-for poisson Zeta_nd = E\link[=\\sum_{k} z_{n,k} w_{d,k}]{\sum_{k} z_{n,k} w_{d,k}} so Zeta = ZMu \%*\% t(W)
-for bernoulli Zeta_nd = sqrt(E\link[=(\\sum_{k} z_{n,k} w_{d,k})^2]{(\sum_{k} z_{n,k} w_{d,k})^2})
+for poisson \eqn{Zeta_nd = E\link[=\\sum_{k} z_{n,k} w_{d,k}]{\sum_{k} z_{n,k} w_{d,k}} so Zeta = ZMu \%*\% t(W)}
+for bernoulli \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
 }

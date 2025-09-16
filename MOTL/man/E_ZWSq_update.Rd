@@ -9,7 +9,16 @@ E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 \arguments{
 \item{view}{current view name}
 
+\item{E_ZE_W}{ASK_DAVID}
+
 \item{ZMuSq}{list of ZMu squared matrices}
+
+\item{E_Z_SqE_W_Sq}{ASK_DAVID}
+
+\item{E_ZSqE_WSq}{ASK_DAVID}
+}
+\value{
+ASK_DAVID
 }
 \description{
 Calculate
