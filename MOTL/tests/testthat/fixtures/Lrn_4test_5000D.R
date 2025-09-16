@@ -1,14 +1,17 @@
 ## MT - 12/09/2025
 ##
 
+## CREATE LEARNING DATASET TOY DATA FOR TESTS
+
 ## LIBRARIES
 library("rjson")
+library("MOFA2")
 
 ## ENVIRONEMENT
 Seed = 1234567
 mode(Seed) = 'integer'
 set.seed(Seed)
-wd <- "/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/00_Ressources/00_DATA/4Package/"
+wd <- "/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/MOTL/tests/testthat/fixtures/"
 
 ## LEARNING DATASET
 Prjct_dir <- "Lrn_4test_5000D/"
@@ -57,70 +60,14 @@ Lrn_meta.json <- toJSON(Lrn_meta)
 write(Lrn_meta.json, file.path(wd, Prjct_dir, "Lrn_meta.json"))
 saveRDS(Lrn_meta, file.path(wd, Prjct_dir, "Lrn_meta.rds"))
 
-## CREATE MODEL WITH makeFiles4Package.py
-FctrznDir = file.path(wd, Prjct_dir,'Fctrzn_50K_01TH')
-Lrn_meta = readRDS(file.path(wd, Prjct_dir,'Lrn_meta.rds'))
-InputModel = file.path(FctrznDir,"Model.hdf5")
+## CREATE MODEL
+FctrznDir = file.path(wd, Prjct_dir, 'Fctrzn_50K_01TH')
+Lrn_meta = readRDS(file.path(wd, Prjct_dir, 'Lrn_meta.rds'))
+InputModel = file.path(FctrznDir, "Model.hdf5")
 Fctrzn = load_model(file = InputModel)
 
-intercepts_calculation(expdat_meta = Lrn_meta, 
+intercepts_calculation(expdat_meta = Lrn_meta,
                        Fctrzn = Fctrzn,
-                       FctrznDir = FctrznDir, 
-                       ExpDataDir = file.path(wd, Prjct_dir), 
+                       FctrznDir = FctrznDir,
+                       ExpDataDir = file.path(wd, Prjct_dir),
                        Seed = Seed)
-
-
-## MAKE INPUT FILES FOR MOTL PACKAGE
-
-## ENVIRONMENT 
-wd <- "/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/00_Ressources/00_DATA/Trg_PAAD_SKCM_Full_5000D"
-
-## INIT PARAMETERS
-views = c("mRNA", "miRNA", "DNAme", "SNV")
-
-## METADATA OF TARGET DATA
-expdat_meta <- readRDS(file.path(wd, "expdat_meta.rds"))
-smpls <- sample(expdat_meta$smpls, 10)
-
-## mRNA
-expdat_mRNA <- read.table(file = file.path(wd, "mRNA.csv"), sep = ",")
-rownames(expdat_mRNA) <- expdat_meta$ftrs_mRNA
-colnames(expdat_mRNA) <- expdat_meta$smpls
-expdat_mRNA <- expdat_mRNA[c(1:(nrow(expdat_mRNA)/10)),smpls]
-## miRNA
-expdat_miRNA <- read.table(file = file.path(wd, "miRNA.csv"), sep = ",")
-rownames(expdat_miRNA) <- expdat_meta$ftrs_miRNA
-colnames(expdat_miRNA) <- expdat_meta$smpls
-expdat_miRNA <- expdat_miRNA[c(1:round(nrow(expdat_miRNA)/10)),smpls]
-## DNAme
-expdat_DNAme <- read.table(file = file.path(wd, "DNAme.csv"), sep = ",")
-rownames(expdat_DNAme) <- expdat_meta$ftrs_DNAme
-colnames(expdat_DNAme) <- expdat_meta$smpls
-expdat_DNAme <- expdat_DNAme[c(1:(nrow(expdat_DNAme)/10)),smpls]
-## SNV
-expdat_SNV <- read.table(file = file.path(wd, "SNV.csv"), sep = ",")
-rownames(expdat_SNV) <- expdat_meta$ftrs_SNV
-colnames(expdat_SNV) <- expdat_meta$smpls
-expdat_SNV <- expdat_SNV[c(1:(nrow(expdat_SNV)/10)),smpls]
-
-## CREATE LIST OF TARGET DATASETS
-YTrg_list <- list("mRNA" = expdat_mRNA,
-                  "miRNA" = expdat_miRNA,
-                  "DNAme" = expdat_DNAme,
-                  "SNV" = expdat_SNV)
-
-## PREPARE TARGET DATASET LIST
-YTrg_prep <- TCGATargetDataPreparation(views = views, 
-                                       YTrgFull = YTrg_list, 
-                                       brcds_SS = smpls, 
-                                       SS = 1, Fctrzn = , 
-                                       smpls = smpls, 
-                                       normalization = FALSE, 
-                                       expdat_meta_Lrn = , 
-                                       transformation = FALSE)
-
-
-
-
-TCGATargetDataPreparation(views = views, YTrgFull = YTrg_list, brcds_SS = )
-
