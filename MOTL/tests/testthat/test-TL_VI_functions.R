@@ -16,22 +16,26 @@ test_that("mRNA_addVersion", {
 })
 
 test_that("GeoMeanFun", {
-  x <- YTrg_list$mRNA[41,]
+  x <- assay(YTrg_list$mRNA)[41,]
   GeoMean <- GeoMeanFun(x)
   expect_equal(length(GeoMean), 1)
   expect_equal(GeoMean, exp(sum(log(x[x > 0]))/length(x)))
 })
 
-
 test_that("GeoMeans_Lrn_init", {
-  YTrg_prep = sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
-  GeoMeans <- GeoMeans_Lrn_init("mRNA", expdat_meta_Lrn, rownames(YTrg_prep$mRNA))
+  YTrg_list$mRNA <- assay(YTrg_list$mRNA)
+  YTrg_list$miRNA <- assay(YTrg_list$miRNA)
+  YTrg_list$DNAme <- assay(YTrg_list$DNAme)
+  YTrg_prep = sapply(views, TargetDataPrefiltering, YTrg_list, Lrn_Fctrzn, smpls)
+  GeoMeans <- GeoMeans_Lrn_init("mRNA", Lrn_meta, rownames(YTrg_prep$mRNA))
   expect_equal(length(GeoMeans), length(rownames(YTrg_prep$mRNA)))
-  expect_in(GeoMeans, expdat_meta_Lrn$GeoMeans_mRNA)
-  GeoMeans <- GeoMeans_Lrn_init("miRNA", expdat_meta_Lrn, rownames(YTrg_prep$miRNA))
+  expect_in(GeoMeans, Lrn_meta$GeoMeans_mRNA)
+  GeoMeans <- GeoMeans_Lrn_init("miRNA", Lrn_meta, rownames(YTrg_prep$miRNA))
   expect_equal(length(GeoMeans), length(rownames(YTrg_prep$miRNA)))
-  expect_in(GeoMeans, expdat_meta_Lrn$GeoMeans_miRNA)
-  GeoMeans <- GeoMeans_Lrn_init("DNAme", expdat_meta_Lrn, rownames(YTrg_prep$DNAme))
+  expect_in(GeoMeans, Lrn_meta$GeoMeans_miRNA)
+  GeoMeans <- GeoMeans_Lrn_init("DNAme", Lrn_meta, rownames(YTrg_prep$DNAme))
+  expect_equal(GeoMeans, numeric())
+  GeoMeans <- GeoMeans_Lrn_init("SNV", Lrn_meta, rownames(YTrg_prep$SNV))
   expect_equal(GeoMeans, numeric())
 })
 

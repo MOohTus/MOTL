@@ -3,6 +3,9 @@
 
 ## CREATE LEARNING DATASET TOY DATA FOR TESTS
 
+## expdat_meta.json is coming from https://zenodo.org/records/10848217
+## mRNA_4test.csv / miRNA_4test.csv / DNAme_4test.csv / SNV_4test.csv were renamed without _4test
+
 ## LIBRARIES
 library("rjson")
 library("MOFA2")
