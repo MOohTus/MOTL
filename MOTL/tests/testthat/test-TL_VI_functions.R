@@ -26,7 +26,7 @@ test_that("GeoMeans_Lrn_init", {
   YTrg_list$mRNA <- assay(YTrg_list$mRNA)
   YTrg_list$miRNA <- assay(YTrg_list$miRNA)
   YTrg_list$DNAme <- assay(YTrg_list$DNAme)
-  YTrg_prep = sapply(views, TargetDataPrefiltering, YTrg_list, Lrn_Fctrzn, smpls)
+  YTrg_prep <- sapply(views, TargetDataPrefiltering, YTrg_list, Lrn_Fctrzn, smpls)
   GeoMeans <- GeoMeans_Lrn_init("mRNA", Lrn_meta, rownames(YTrg_prep$mRNA))
   expect_equal(length(GeoMeans), length(rownames(YTrg_prep$mRNA)))
   expect_in(GeoMeans, Lrn_meta$GeoMeans_mRNA)
@@ -41,14 +41,16 @@ test_that("GeoMeans_Lrn_init", {
 
 
 test_that("countsTransformation", {
-  expdat_trans <- countsTransformation(YTrg_list$mRNA, 50)
+  mat <- assay(YTrg_list$mRNA)
+  expdat_trans <- countsTransformation(mat, 50)
   expect_equal(nrow(expdat_trans), 50)
-  expect_equal(names(expdat_trans), names(YTrg_list$mRNA))
-  expect_in(rownames(expdat_trans), rownames(YTrg_list$mRNA))
+  expect_equal(names(expdat_trans), names(mat))
+  expect_in(rownames(expdat_trans), rownames(mat))
 })
 
 test_that("countsNormalization_Lrn", {
-  expdat <- TargetDataPrefiltering(view = "mRNA", YTrg_list, Fctrzn, smpls)
+  YTrg_list$mRNA <- assay(YTrg_list$mRNA)
+  expdat <- TargetDataPrefiltering(view = "mRNA", YTrg_list, Lrn_Fctrzn, smpls)
   expdat <- apply(expdat, MARGIN = 2, round)
   expdat <- SummarizedExperiment(assays = expdat)
   expdat_norm <- countsNormalization(expdat, GeoMeans = "Lrn")
@@ -59,7 +61,8 @@ test_that("countsNormalization_Lrn", {
 })
 
 test_that("countsNormalization_Trg", {
-  expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Fctrzn, smpls)
+  YTrg_list$mRNA <- assay(YTrg_list$mRNA)
+  expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Lrn_Fctrzn, smpls)
   expdat <- apply(expdat, MARGIN = 2, round)
   expdat <- SummarizedExperiment(assays = expdat)
   expdat_norm <- countsNormalization(expdat, GeoMeans = "Trg")
@@ -70,10 +73,11 @@ test_that("countsNormalization_Trg", {
 })
 
 test_that("countsNormalization_num", {
-  expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Fctrzn, smpls)
+  YTrg_list$mRNA <- assay(YTrg_list$mRNA)
+  expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Lrn_Fctrzn, smpls)
   expdat <- apply(expdat, MARGIN = 2, round)
   expdat <- SummarizedExperiment(assays = expdat)
-  GeoMeans <- GeoMeans_Lrn_init("mRNA", expdat_meta_Lrn, rownames(expdat))
+  GeoMeans <- GeoMeans_Lrn_init("mRNA", Lrn_meta, rownames(expdat))
   expdat_norm <- countsNormalization(expdat, GeoMeans = GeoMeans)
   expect_equal(length(expdat_norm), 1)
   expect_equal(dim(expdat_norm$counts), dim(expdat))

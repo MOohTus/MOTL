@@ -7,7 +7,6 @@
 ## mRNA_4test.csv / miRNA_4test.csv / DNAme_4test.csv / SNV_4test.csv were renamed without _4test
 
 ## LIBRARIES
-library("rjson")
 library("MOFA2")
 
 ## ENVIRONEMENT
@@ -18,7 +17,7 @@ wd <- "/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test
 
 ## LEARNING DATASET
 Prjct_dir <- "Lrn_4test_5000D/"
-Lrn_meta <- fromJSON(file = file.path(wd, Prjct_dir, "expdat_meta.json"))
+Lrn_meta <- readRDS(file = file.path(wd, Prjct_dir, "expdat_meta_Lrn.rds"))
 Lrn_mRNA_ftrs <- sample(Lrn_meta$ftrs_mRNA, 2000)
 Lrn_miRNA_ftrs <- sample(Lrn_meta$ftrs_miRNA, 500)
 Lrn_DNAme_ftrs <- sample(Lrn_meta$ftrs_DNAme, 2000)
@@ -59,8 +58,8 @@ Lrn_meta$ftrs_miRNA <- rownames(Lrn_miRNA)
 Lrn_meta$ftrs_DNAme <- rownames(Lrn_DNAme)
 Lrn_meta$ftrs_SNV <- rownames(Lrn_SNV)
 Lrn_meta$smpls <- Lrn_smpls
-Lrn_meta.json <- toJSON(Lrn_meta)
-write(Lrn_meta.json, file.path(wd, Prjct_dir, "Lrn_meta.json"))
+# Lrn_meta.json <- toJSON(Lrn_meta)
+# write(Lrn_meta.json, file.path(wd, Prjct_dir, "Lrn_meta.json"))
 saveRDS(Lrn_meta, file.path(wd, Prjct_dir, "Lrn_meta.rds"))
 
 ## CREATE MODEL
