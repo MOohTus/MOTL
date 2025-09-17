@@ -89,10 +89,6 @@ brcds_SS <- list("brcds_mRNA_SS" = list(data.frame("brcds" = smpls)),
                  "brcds_DNAme_SS" = list(data.frame("brcds" = smpls)),
                  "brcds_SNV_SS" = list(data.frame("brcds" = smpls)))
 
-## SAVE INTO RDS OBJECTF
-Trg <- list("YTrg_list" = YTrg_list, "Trg_meta" = expdat_meta, "brcds_SS" = brcds_SS)
-saveRDS(Trg, file = file.path(wd, "Trg_4test_4omics.rds"))
-
 ## PREPARE TARGET DATASET LIST
 YTrg_prep <- TCGATargetDataPreparation(views = views,
                                        YTrgFull = YTrg_list,
@@ -103,5 +99,14 @@ YTrg_prep <- TCGATargetDataPreparation(views = views,
                                        normalization = FALSE,
                                        expdat_meta_Lrn = Lrn_meta,
                                        transformation = FALSE)
-saveRDS(YTrg_prep, file = file.path(wd, "Trg_prep_4test_4omics.rds"))
+
+## SAVE INTO RDS OBJECTF
+Trg <- list("YTrg_list" = YTrg_list,
+            "Trg_meta" = expdat_meta,
+            "brcds_SS" = brcds_SS,
+            "YTrg_prep" = YTrg_prep)
+saveRDS(Trg, file = file.path(wd, "Trg_4test_4omics.rds"))
+
+
+# saveRDS(YTrg_prep, file = file.path(wd, "Trg_prep_4test_4omics.rds"))
 

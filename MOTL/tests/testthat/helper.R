@@ -3,16 +3,16 @@
 
 ## LEARNING DATA SET
 Lrn_FctrnDir <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/", "", package = "MOTL")
-Lrn_ModelFile <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "Model.hdf5", package = "MOTL")
+## Lrn_ModelFile <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "Model.hdf5", package = "MOTL")
 
 Lrn_meta <- readRDS(test_path("fixtures/Lrn_4test_5000D", "Lrn_meta.rds"))
-Lrn_Fctrzn = load_model(file = Lrn_ModelFile)
+Lrn_Fctrzn = readRDS(test_path("fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "Lrn_Fctrzn.rds"))
 
 ## TARGET DATA SET
 Trg <- readRDS(test_path("fixtures", "Trg_4test_4omics.rds"))
+Trg_meta <- Trg$Trg_meta
 YTrg_list <- Trg$YTrg_list
-YTrg_meta <- Trg$Trg_meta
-Trg <- readRDS(test_path("fixtures", "Trg_4test_4omics.rds"))
+YTrg_prep <- Trg$YTrg_prep
 
 ## PARAMETERS
 views <- c("mRNA", "miRNA", "DNAme", "SNV")
