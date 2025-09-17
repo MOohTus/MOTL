@@ -6,16 +6,10 @@ Lrn_FctrnDir <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/", ""
 Lrn_ModelDir <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "", package = "MOTL")
 Lrn_ModelFile <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "Model.hdf5", package = "MOTL")
 
-Lrn_meta <- readRDS(test_path("fixtures/Lrn_4test_5000D", "Lrn_meta.rds"))
+Lrn_meta <- readRDS(test_path("fixtures", "Lrn_meta.rds"))
 Lrn = readRDS(test_path("fixtures/", "Lrn_4test_4omics.rds"))
 Lrn_Fctrzn <- Lrn$Fctrzn
 Lrn_Fctrzn_init <- Lrn$Fctrzn_init
-
-
-
-
-
-
 
 ## TARGET DATA SET
 Trg <- readRDS(test_path("fixtures", "Trg_4test_4omics.rds"))
