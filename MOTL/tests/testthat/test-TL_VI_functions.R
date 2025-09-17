@@ -3,11 +3,35 @@ skip_issue_2_solve <- function(message) {
 }
 
 test_that("TCGATargetDataPrefiltering", {
-  print("to do")
+  YTrg_mRNA <- TCGATargetDataPrefiltering(view = "mRNA", brcds_SS = Trg$brcds_SS, SS = 1, YTrg_list, Lrn_Fctrzn_init)
+  expect_equal(class(YTrg_mRNA), class(SummarizedExperiment()))
+  expect_equal(dim(YTrg_mRNA), dim(YTrg_list$mRNA))
+  expect_equal(colnames(YTrg_mRNA), colnames(YTrg_list$mRNA))
+  expect_in(rownames(YTrg_mRNA), rownames(YTrg_list$mRNA))
+  YTrg_miRNA <- TCGATargetDataPrefiltering(view = "miRNA", brcds_SS = Trg$brcds_SS, SS = 1, YTrg_list, Lrn_Fctrzn_init)
+  expect_equal(class(YTrg_miRNA), class(SummarizedExperiment()))
+  expect_equal(dim(YTrg_miRNA)[[1]], sum(rowVars(assay(YTrg_list$miRNA))>0))
+  expect_equal(colnames(YTrg_miRNA), colnames(YTrg_list$miRNA))
+  expect_in(rownames(YTrg_miRNA), rownames(YTrg_list$miRNA))
+  YTrg_DNAme <- TCGATargetDataPrefiltering(view = "DNAme", brcds_SS = Trg$brcds_SS, SS = 1, YTrg_list, Lrn_Fctrzn_init)
+  expect_equal(class(YTrg_DNAme), class(SummarizedExperiment()))
+  expect_equal(dim(YTrg_DNAme), dim(YTrg_list$DNAme))
+  expect_equal(colnames(YTrg_DNAme), colnames(YTrg_list$DNAme))
+  expect_in(rownames(YTrg_DNAme), rownames(YTrg_list$DNAme))
+  YTrg_SNV <- TCGATargetDataPrefiltering(view = "SNV", brcds_SS = Trg$brcds_SS, SS = 1, YTrg_list, Lrn_Fctrzn_init)
+  expect_equal(class(YTrg_SNV), class(matrix()))
+  expect_equal(dim(YTrg_SNV)[[1]], sum(rowVars(YTrg_list$SNV)>0))
+  expect_equal(colnames(YTrg_SNV), colnames(YTrg_list$SNV))
+  expect_in(rownames(YTrg_SNV), rownames(YTrg_list$SNV))
+  expect_equal(colnames(YTrg_mRNA), colnames(YTrg_miRNA))
+  expect_equal(colnames(YTrg_mRNA), colnames(YTrg_DNAme))
+  expect_equal(colnames(YTrg_mRNA), colnames(YTrg_SNV))
 })
 
 test_that("TCGATargetDataPreparation", {
-  print("to do")
+  Trg_exp <- TCGATargetDataPreparation(views, YTrg_list, Trg$brcds_SS, SS = 1, Lrn_Fctrzn, smpls, normalization = FALSE, transformation = FALSE, Lrn_meta)
+  expect_equal(names(Trg_exp), views)
+  expect_equal(Trg_exp, YTrg_prep)
 })
 
 test_that("mRNA_addVersion", {
