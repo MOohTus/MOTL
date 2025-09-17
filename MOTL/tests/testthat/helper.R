@@ -2,7 +2,7 @@
 ##
 
 ## LEARNING DATA SET
-Lrn_FctrnDir <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/", "", package = "MOTL")
+Lrn_FctrznDir <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/", "", package = "MOTL")
 Lrn_ModelDir <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "", package = "MOTL")
 Lrn_ModelFile <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "Model.hdf5", package = "MOTL")
 
