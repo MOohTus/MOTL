@@ -3,12 +3,19 @@
 
 ## LEARNING DATA SET
 Lrn_FctrnDir <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/", "", package = "MOTL")
+Lrn_ModelDir <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "", package = "MOTL")
 Lrn_ModelFile <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "Model.hdf5", package = "MOTL")
 
 Lrn_meta <- readRDS(test_path("fixtures/Lrn_4test_5000D", "Lrn_meta.rds"))
 Lrn = readRDS(test_path("fixtures/", "Lrn_4test_4omics.rds"))
 Lrn_Fctrzn <- Lrn$Fctrzn
 Lrn_Fctrzn_init <- Lrn$Fctrzn_init
+
+
+
+
+
+
 
 ## TARGET DATA SET
 Trg <- readRDS(test_path("fixtures", "Trg_4test_4omics.rds"))
@@ -21,6 +28,25 @@ CenterTrg <- FALSE
 views <- c("mRNA", "miRNA", "DNAme", "SNV")
 smpls <- colnames(YTrg_list$mRNA)
 likelihoods <- Lrn_Fctrzn@model_options$likelihoods
+PoisRateCstnt = 0.0001
+
+## TRANSFER LEARNING INIT
+TL_param <- readRDS(test_path("fixtures", "TL_param_4test_4omics.rds"))
+
+# ##
+# TL_param <- readRDS(test_path("fixtures", "TL_param.rds"))
+# YTrg <- TL_param$YTrg
+# Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+# Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+# Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
+# Tau <- TL_param$Tau
+# TauLn <- TL_param$TauLn
+# ZMu <- TL_param$ZMu
+# ZVar <- TL_param$ZVar
+# ZMu_0 <- TL_param$ZMu_0
+# ZMuSq <- TL_param$ZMuSq
+
+
 
 ## SELECT RANDOM FEATURE NAMES
 ## REMOVE FEATURE NAMES VERSION

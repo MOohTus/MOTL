@@ -100,6 +100,21 @@ YTrg_prep <- TCGATargetDataPreparation(views = views,
                                        expdat_meta_Lrn = Lrn_meta,
                                        transformation = FALSE)
 
+## INITIALIZE VALUES FOR TRANSFER LEARNING
+TL_param <- initTransferLearningParamaters(YTrg = YTrg_prep,
+                                           views = views,
+                                           expdat_meta_Lrn = Lrn_meta,
+                                           Fctrzn = Lrn_Fctrzn_init,
+                                           likelihoods = likelihoods)
+TL_param$ZVar <- ZVar_calculation(view = "mRNA", TL_param$Tau, TL_param$Fctrzn_Lrn_WSq)
+TL_param$ZMu <- matrix(data = as.vector(colMeans(Lrn_Fctrzn_init@expectations$Z$group0)),
+                       nrow = dim(TL_param$ZVar)[1], ncol = dim(TL_param$ZVar)[2], byrow = TRUE)
+rownames(TL_param$ZMu) <- smpls
+colnames(TL_param$ZMu) <- colnames(TL_param$Fctrzn_Lrn_W[[1]])
+TL_param$ZMu_0 <- rep(1,dim(TL_param$ZVar)[1])
+TL_param$ZMuSq <- TL_param$ZVar + TL_param$ZMu^2
+saveRDS(TL_param, file = file.path(wd, "TL_param_4test_4omics.rds"))
+
 ## SAVE INTO RDS OBJECTF
 Trg <- list("YTrg_list" = YTrg_list,
             "Trg_meta" = expdat_meta,
