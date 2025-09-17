@@ -3,10 +3,12 @@
 
 ## LEARNING DATA SET
 Lrn_FctrnDir <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/", "", package = "MOTL")
-## Lrn_ModelFile <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "Model.hdf5", package = "MOTL")
+Lrn_ModelFile <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "Model.hdf5", package = "MOTL")
 
 Lrn_meta <- readRDS(test_path("fixtures/Lrn_4test_5000D", "Lrn_meta.rds"))
-Lrn_Fctrzn = readRDS(test_path("fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "Lrn_Fctrzn.rds"))
+Lrn = readRDS(test_path("fixtures/", "Lrn_4test_4omics.rds"))
+Lrn_Fctrzn <- Lrn$Fctrzn
+Lrn_Fctrzn_init <- Lrn$Fctrzn_init
 
 ## TARGET DATA SET
 Trg <- readRDS(test_path("fixtures", "Trg_4test_4omics.rds"))
@@ -15,8 +17,10 @@ YTrg_list <- Trg$YTrg_list
 YTrg_prep <- Trg$YTrg_prep
 
 ## PARAMETERS
+CenterTrg <- FALSE
 views <- c("mRNA", "miRNA", "DNAme", "SNV")
 smpls <- colnames(YTrg_list$mRNA)
+likelihoods <- Lrn_Fctrzn@model_options$likelihoods
 
 ## SELECT RANDOM FEATURE NAMES
 ## REMOVE FEATURE NAMES VERSION

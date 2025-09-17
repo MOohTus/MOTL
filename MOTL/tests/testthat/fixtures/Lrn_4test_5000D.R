@@ -67,7 +67,8 @@ FctrznDir = file.path(wd, Prjct_dir, 'Fctrzn_50K_01TH')
 Lrn_meta = readRDS(file.path(wd, Prjct_dir, 'Lrn_meta.rds'))
 InputModel = file.path(FctrznDir, "Model.hdf5")
 Fctrzn = load_model(file = InputModel)
-saveRDS(Fctrzn, file.path(FctrznDir, "Lrn_Fctrzn.rds"))
+Lrn <- list("Fctrzn" = Fctrzn)
+saveRDS(Lrn, file.path(FctrznDir, "Lrn_4test_4omics.rds"))
 
 intercepts_calculation(expdat_meta = Lrn_meta,
                        Fctrzn = Fctrzn,

@@ -107,6 +107,13 @@ Trg <- list("YTrg_list" = YTrg_list,
             "YTrg_prep" = YTrg_prep)
 saveRDS(Trg, file = file.path(wd, "Trg_4test_4omics.rds"))
 
+## SAVE THE INITIALIZED LRN DATA SET
+Lrn <- readRDS(file.path(Lrn_FctrnDir, "Lrn_Fctrzn.rds"))
+Lrn$Fctrzn_init <- Fctrzn
+saveRDS(Lrn, file = file.path(wd, "Lrn_4test_4omics.rds"))
+
+
+
 
 # saveRDS(YTrg_prep, file = file.path(wd, "Trg_prep_4test_4omics.rds"))
 

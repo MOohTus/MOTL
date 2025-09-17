@@ -170,15 +170,15 @@ test_that("TargetDataPreparation", {
 })
 
 test_that("initTransferLearningParamaters", {
-  ## INPUT PREPARATION
-  Fctrzn@expectations[["Tau"]] = Tau_init(viewsLrn, Fctrzn, InputModel)
-  Fctrzn@expectations[["TauLn"]] = sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn, LrnFctrnDir)
-  Fctrzn@expectations[["WSq"]] = sapply(viewsLrn, WSq_calculation, Fctrzn, LrnFctrnDir)
-  Fctrzn@expectations[["W0"]] = sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrnDir)
-  YTrg_prep = sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
+  # ## INPUT PREPARATION
+  # Lrn_Fctrzn@expectations[["Tau"]] = Tau_init(views, Lrn_Fctrzn, Lrn_ModelFile)
+  # Lrn_Fctrzn@expectations[["TauLn"]] = sapply(views, TauLn_calculation, likelihoods, Lrn_Fctrzn, Lrn_FctrnDir)
+  # Lrn_Fctrzn@expectations[["WSq"]] = sapply(views, WSq_calculation, Lrn_Fctrzn, Lrn_FctrnDir)
+  # Lrn_Fctrzn@expectations[["W0"]] = sapply(views, W0_calculation, CenterTrg, Lrn_Fctrzn, Lrn_FctrnDir)
+  # YTrg_prep = sapply(views, TargetDataPrefiltering, YTrg_prep, Lrn_Fctrzn, smpls)
   YTrgFtrs <- lapply(YTrg_prep, rownames)
   ##
-  TL_param = initTransferLearningParamaters(YTrg_prep, views, expdat_meta_Lrn, Fctrzn, likelihoods)
+  TL_param = initTransferLearningParamaters(YTrg_prep, views, Lrn_meta, Lrn_Fctrzn_init, likelihoods)
   expect_equal(names(TL_param), c("YTrg", "Fctrzn_Lrn_W0", "Fctrzn_Lrn_W", "Fctrzn_Lrn_WSq", "Tau", "TauLn"))
   expect_equal(names(TL_param$Fctrzn_Lrn_W0$mRNA), YTrgFtrs$mRNA)
   expect_equal(names(TL_param$Fctrzn_Lrn_W0$miRNA), YTrgFtrs$miRNA)
