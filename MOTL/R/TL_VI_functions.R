@@ -6,21 +6,48 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn){
   #'
   #' Filter out TCGA target subset data according variance
   #'
-  #' Extract data for the given sample names (brcds_SS)
-  #' Remove features with variance equal to zero
-  #' Match features between training set and learning set
+  #' This function performs a prefiltering analysis through the steps:
+  #' 1. Extract data for the given sample names (\code{brcds_SS})
+  #' 2. Remove features with variance equal to zero
+  #' 3. Match features between target data set and learning data set
   #'
+  #' The function return a prefiltered target dataframe for the current view.
   #'
-  #' @param view current view name data
-  #' @param brcds_SS list of subset sample names for each subset number/view
+  #' @param view a character of current view name data
+  #' @param brcds_SS a list of sample names for each view. The list is named
+  #' according views (e.g. "brcds_mRNA_SS") and contains list of dataframes
+  #' for each view. Each dataframe contains at least one column named "brcds"
+  #' (the one used).
   #' @param SS current subset number
-  #' @param YTrgFull named list of training set data
-  #' @param Fctrzn learning factorization model object (from MOFA)
+  #' @param YTrgFull named list of target set data
+  #' @param Fctrzn learning factorization model object (from code\{MOFA})
   #'
   #' @returns the subset data for current view and SS number
   #'
   #' @importFrom matrixStats rowVars
   #' @importFrom SummarizedExperiment assay
+  #'
+  #' @examples
+  #'
+    #' # In the paper, several target datasets were created as subset of the
+    #' # reference dataset R. This function was used to generate them
+    #' # automatically.
+    #' # If you are not doing the paper analysis, you can create the brcds_SS
+    #' # using the following command line. Replace the "nameX" with the sample
+    #' # names of your data.
+    #' # You can as much as you want add dataframe on each view.
+    #'
+    #' brcds_SS_ex <- list("brcds_mRNA_SS" =
+    #'                      list(data.frame("brcds" = c("name01", "name02"))),
+    #'                    "brcds_miRNA_SS" =
+    #'                      list(data.frame("brcds" = c("name10", "name11"))))
+    #'
+    #' # See the doc to create the input parameter
+    #'
+    #' expdat_mRNA <- TCGATargetDataPrefiltering(view = "mRNA",
+    #' brcds_SS = brcds_SS, SS = 1, YTrgFull = YTrg_list, Fctrzn = Lrn_Fctrzn)
+    #' expdat_mRNA[c(1:5), c(1:5)]
+    #'
   #'
   #' @export
 
@@ -54,29 +81,85 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn){
 
 TCGATargetDataPreparation <- function(views, YTrgFull, brcds_SS, SS, Fctrzn, smpls, normalization = "Lrn", expdat_meta_Lrn, transformation = TRUE){
   #'
-  #' Prepare TCGA data for transfer learning
+  #' Prepare TCGA target dataset for transfer learning
   #'
-  #' Filter out features according variance
-  #' Reshape data into matrices
-  #' Order samples to have the same columns order between different data
-  #' Normalize and/or transform counts data (DESeq2 normalization)
-  #' If normalization = FALSE: no normalization
-  #' If normalization = "Lrn": normalize with learning set geomeans
-  #' If normalization = "Trg": normalize without geomeans
+  #' This function follows these steps:
+  #' 1. Filter out features according variance
+  #' 2. Reshape data into matrices
+  #' 3. Order samples to have the same columns order between different views
+  #' 4. Normalize and/or transform counts data
   #'
-  #' @param views list of data names
-  #' @param YTrgFull named list of training data
-  #' @param brcds_SS list of subset sample names for each subset number/view
+  #'
+  #' First, samples included in the brcds_SS list are selected. Then features
+  #' with variance equal to zero are removed. They are also remove if they are
+  #' not retrieved in the learning dataset. These steps are performed using
+  #' \code{\link{TCGATargetDataPrefiltering}} function.
+  #'
+  #' The mRNA, miRNA et DNAme data are stored into \code{SummarizedExperiment}
+  #' object. For the next step, data have to be stored into a \code{matrix}.
+  #' Then, samples are ordered in the same way between views.
+  #'
+  #' Finally, counts data (e.g. mRNA and miRNA) can be normalized and/or
+  #' transformed using \code{\link{preprocessCountsData}} function.
+  #'  - if \code{normalization = FALSE}: counts data are not normalized
+  #'  - if \code{normalization = "Lrn"}: counts data are normalized using
+  #'  the learning dataset geomeans calculated
+  #'  - if \code{normalization = "Trg"}: counts data are normalized without the
+  #'  learning dataset geomeans.
+  #'
+  #'  Normalization is performed in the \code{\link{countsNormalization}}
+  #'  function using \code{\link{estimateSizeFactors}} from \code{\link{DESeq2}}
+  #'  package. And transformation is perform using
+  #'  \code{\link{countsTransformation}} with a log2 transformation.
+  #'
+  #'  Look \code{\link{GeoMeans_Lrn_init}} and \code{\link{GeoMeanFun}} to see
+  #'  how learning GeoMeans are calculated.
+  #'
+  #' @param views a list of target data views (e.g. \code{c("mRNA", "miRNA")})
+  #' @param YTrgFull a named list of target data
+  #' @param brcds_SS a list of sample names for each view. The list is named
+  #' according views (e.g. "brcds_mRNA_SS") and contains list of dataframes
+  #' for each view. Each dataframe contains at least one column named "brcds"
+  #' (the one used).
   #' @param SS current subset number
-  #' @param Fctrzn learning factorization model object (from MOFA)
-  #' @param smpls sample names
-  #' @param normalization FALSE or "Lrn" or "Trg"
-  #' @param expdat_meta_Lrn list of learning set factorization metadata
-  #' @param transformation FALSE or TRUE
+  #' @param Fctrzn the learning factorization model object (from code\{MOFA})
+  #' @param smpls a vector of sample names (i.e. column names of the
+  #' \code{YTrgFull})
+  #' @param normalization if FALSE, no normalization. If "Lrn", normalization
+  #' using the learning GeoMeans. If "Trg", normalization without learning
+  #' GeoMeans. By default it's set to "Lrn".
+  #' @param expdat_meta_Lrn the list of learning set factorization metadata
+  #' @param transformation if FALSE, no transformation. If TRUE, log2
+  #' transformation of counts data. By default it's set to TRUE
   #'
   #' @returns list of prepared subset data for the current subset number
   #'
   #' @importFrom SummarizedExperiment assay
+  #'
+  #' @examples
+    #' # see to create input data
+    #'
+    #' YTrg_prep <- TCGATargetDataPreparation(views, YTrgFull, brcds_SS, SS, Fctrzn, smpls, normalization = "Lrn", expdat_meta_Lrn, transformation = TRUE
+    #' YTrg_prep$mRNA[c(1:5), c(1:5)]
+    #' YTrg_prep$DNAme[c(1:5), c(1:5)]
+    #'
+  #' # In the paper, several target datasets were created as subset of the
+  #' # reference dataset R. This function was used to generate them
+  #' # automatically.
+  #' # If you are not doing the paper analysis, you can create the brcds_SS
+  #' # using the following command line. Replace the "nameX" with the sample
+  #' # names of your data.
+  #' # You can as much as you want add dataframe on each view.
+  #'
+  #' brcds_SS_ex <- list("brcds_mRNA_SS" =
+  #'                      list(data.frame("brcds" = c("name01", "name02"))),
+  #'                    "brcds_miRNA_SS" =
+  #'                      list(data.frame("brcds" = c("name10", "name11"))))
+  #'
+  #' # The SS parameter corresponds to the index of the subset you want to
+  #' # prepare for a specific view. It's generated automatically if you used the
+  #' # workflow describe in the github paper
+  #' https://github.com/david-hirst/MOTL/blob/main/TCGAStudy/00_TCGAstudy_ReadMe.md
   #'
   #' @export
 
