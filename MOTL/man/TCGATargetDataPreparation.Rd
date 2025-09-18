@@ -19,7 +19,9 @@ TCGATargetDataPreparation(
 \arguments{
 \item{views}{a list of target data views (e.g. \code{c("mRNA", "miRNA")})}
 
-\item{YTrgFull}{a named list of target data}
+\item{YTrgFull}{a named list of target set data. Names correspond to the
+defined views. The list contains \code{SummarizedExperiment} for miRNA,
+mRNA and DNAme and \code{matrix} for SNV.}
 
 \item{brcds_SS}{a list of sample names for each view. The list is named
 according views (e.g. "brcds_mRNA_SS") and contains list of dataframes
@@ -27,6 +29,8 @@ for each view. Each dataframe contains at least one column named "brcds"
 (the one used).}
 
 \item{SS}{current subset number}
+
+\item{Fctrzn}{the learning factorization model object (from \code{MOFA})}
 
 \item{smpls}{a vector of sample names (i.e. column names of the
 \code{YTrgFull})}
@@ -59,7 +63,8 @@ not retrieved in the learning dataset. These steps are performed using
 \code{\link{TCGATargetDataPrefiltering}} function.
 
 The mRNA, miRNA et DNAme data are stored into \code{SummarizedExperiment}
-object. For the next step, data have to be stored into a \code{matrix}.
+object. For the next step, data have to be stored into a \code{matrix}. SNV
+data are already a matrix.
 Then, samples are ordered in the same way between views.
 
 Finally, counts data (e.g. mRNA and miRNA) can be normalized and/or

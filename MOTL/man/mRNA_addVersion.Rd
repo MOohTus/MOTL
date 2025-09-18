@@ -2,26 +2,34 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{mRNA_addVersion}
 \alias{mRNA_addVersion}
-\title{get ensembl mRNA versions from learning dataset
-and attach to the correspnding mRNA ensembl id in the target dataset}
+\title{Format mRNA features to match with learning dataset}
 \usage{
 mRNA_addVersion(expdat, Lrndat)
 }
 \arguments{
-\item{expdat}{the mRNA matrix from the target dataset with genes in rows}
+\item{expdat}{the mRNA matrix from the target dataset with genes in rows.
+Gene names should be in ensembl format and don't contain the version
+(e.g. ENSG00000122133). Rownames contain ensembl IDs and colnames sample
+names.}
 
-\item{Lrndat}{the mRNA W matrix from the learning dataset factorization with genes in rows}
+\item{Lrndat}{the mRNA W matrix from the learning dataset factorization
+with genes in rows. Gene names should be in ensembl format. Rownames
+contain ensembl IDs.}
 }
 \value{
 the target mRNA matrix with versions attached
 }
 \description{
-get ensembl mRNA versions from learning dataset
-and attach to the correspnding mRNA ensembl id in the target dataset
+Get mRNA ensembl ID version from learning dataset (e.g. ENSG00000122133.17)
+and attach to the corresponding mRNA ensembl ID in the target dataset.
+Feature names need to be similar between target dataset and learning
+dataset.
 }
 \examples{
 Lrndat <- data.frame("view" = c("mRNA", "mRNA", "mRNA"), row.names = c("ENSG00000122133.17", "ENSG00000122194.19", "ENSG00000119411.11"))
 expdat <- data.frame("sample1" = c(1, 52, 4), row.names = c("ENSG00000122133", "ENSG00000122194", "ENSG00000119411"))
-mRNA_addVersion(expdat, Lrndat)
+expdat_prep <- mRNA_addVersion(expdat, Lrndat)
+expdat
+expdat_prep
 
 }

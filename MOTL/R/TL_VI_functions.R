@@ -19,8 +19,10 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn){
   #' for each view. Each dataframe contains at least one column named "brcds"
   #' (the one used).
   #' @param SS current subset number
-  #' @param YTrgFull named list of target set data
-  #' @param Fctrzn learning factorization model object (from code\{MOFA})
+  #' @param YTrgFull a named list of target set data. Names correspond to the
+  #' defined views. The list contains \code{SummarizedExperiment} for miRNA,
+  #' mRNA and DNAme and \code{matrix} for SNV.
+  #' @param Fctrzn learning factorization model object (from \code{MOFA})
   #'
   #' @returns the subset data for current view and SS number
   #'
@@ -96,7 +98,8 @@ TCGATargetDataPreparation <- function(views, YTrgFull, brcds_SS, SS, Fctrzn, smp
   #' \code{\link{TCGATargetDataPrefiltering}} function.
   #'
   #' The mRNA, miRNA et DNAme data are stored into \code{SummarizedExperiment}
-  #' object. For the next step, data have to be stored into a \code{matrix}.
+  #' object. For the next step, data have to be stored into a \code{matrix}. SNV
+  #' data are already a matrix.
   #' Then, samples are ordered in the same way between views.
   #'
   #' Finally, counts data (e.g. mRNA and miRNA) can be normalized and/or
@@ -116,13 +119,15 @@ TCGATargetDataPreparation <- function(views, YTrgFull, brcds_SS, SS, Fctrzn, smp
   #'  how learning GeoMeans are calculated.
   #'
   #' @param views a list of target data views (e.g. \code{c("mRNA", "miRNA")})
-  #' @param YTrgFull a named list of target data
+  #' @param YTrgFull a named list of target set data. Names correspond to the
+  #' defined views. The list contains \code{SummarizedExperiment} for miRNA,
+  #' mRNA and DNAme and \code{matrix} for SNV.
   #' @param brcds_SS a list of sample names for each view. The list is named
   #' according views (e.g. "brcds_mRNA_SS") and contains list of dataframes
   #' for each view. Each dataframe contains at least one column named "brcds"
   #' (the one used).
   #' @param SS current subset number
-  #' @param Fctrzn the learning factorization model object (from code\{MOFA})
+  #' @param Fctrzn the learning factorization model object (from \code{MOFA})
   #' @param smpls a vector of sample names (i.e. column names of the
   #' \code{YTrgFull})
   #' @param normalization if FALSE, no normalization. If "Lrn", normalization
@@ -201,11 +206,22 @@ TCGATargetDataPreparation <- function(views, YTrgFull, brcds_SS, SS, Fctrzn, smp
 
 mRNA_addVersion <- function(expdat, Lrndat){
   #'
-  #' get ensembl mRNA versions from learning dataset
-  #' and attach to the correspnding mRNA ensembl id in the target dataset
+  #' Format mRNA features to match with learning dataset
   #'
-  #' @param expdat the mRNA matrix from the target dataset with genes in rows
-  #' @param Lrndat the mRNA W matrix from the learning dataset factorization with genes in rows
+  #'
+  #' Get mRNA ensembl ID version from learning dataset (e.g. ENSG00000122133.17)
+  #' and attach to the corresponding mRNA ensembl ID in the target dataset.
+  #' Feature names need to be similar between target dataset and learning
+  #' dataset.
+  #'
+  #'
+  #' @param expdat the mRNA matrix from the target dataset with genes in rows.
+  #' Gene names should be in ensembl format and don't contain the version
+  #' (e.g. ENSG00000122133). Rownames contain ensembl IDs and colnames sample
+  #' names.
+  #' @param Lrndat the mRNA W matrix from the learning dataset factorization
+  #' with genes in rows. Gene names should be in ensembl format. Rownames
+  #' contain ensembl IDs.
   #'
   #' @returns the target mRNA matrix with versions attached
   #'
@@ -214,7 +230,9 @@ mRNA_addVersion <- function(expdat, Lrndat){
   #' @examples
     #' Lrndat <- data.frame("view" = c("mRNA", "mRNA", "mRNA"), row.names = c("ENSG00000122133.17", "ENSG00000122194.19", "ENSG00000119411.11"))
     #' expdat <- data.frame("sample1" = c(1, 52, 4), row.names = c("ENSG00000122133", "ENSG00000122194", "ENSG00000119411"))
-    #' mRNA_addVersion(expdat, Lrndat)
+    #' expdat_prep <- mRNA_addVersion(expdat, Lrndat)
+    #' expdat
+    #' expdat_prep
   #'
   #' @export
   #'
@@ -235,19 +253,27 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls){
   #'
   #' Prepare the target data for a given view
   #'
-  #' Remove the features with variance equal to zero
-  #' Harmonize features between the target data and the learning data
-  #' (keep only shared features)
-  #' Order columns based on give sample order (smpls)
+  #' The function performs the following steps:
+  #' 1. Remove the features with variance equal to zero
+  #' 2. Harmonize features between the target data and the learning data. Only
+  #' the shared features are kept.
+  #' 3. Order columns according the order of samples (i.e. \code{smpls})
   #'
-  #' @param view current view data name
-  #' @param YTrg_list named list of data
-  #' @param Fctrzn learning factorization model object (from MOFA)
-  #' @param smpls ordered vector of sample names
+  #' @param view current view data name (e.g. "mRNA", or "DNAme")
+  #' @param YTrg_list a named list of target data. Names correspond to the views
+  #' defined and the corresponding data are saved into \code{matrix}.
+  #' @param Fctrzn the learning factorization model object (from \code{MOFA})
+  #' @param smpls an ordered vector of sample names
   #'
-  #' @returns prepared data for the current view
+  #' @returns a matrix that contains the prepared data for the current view with
+  #' the sample ordered.
   #'
   #' @importFrom matrixStats rowVars
+  #'
+  #' @examples
+    #' #
+    #' TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
+    #'
   #'
   #' @export
 
@@ -270,7 +296,6 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls){
   YTrg <- YTrg[,match(smpls,colnames(YTrg))]
 
   return(YTrg)
-
 }
 
 GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs){

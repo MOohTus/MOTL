@@ -7,20 +7,25 @@
 TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
 }
 \arguments{
-\item{view}{current view data name}
+\item{view}{current view data name (e.g. "mRNA", or "DNAme")}
 
-\item{YTrg_list}{named list of data}
+\item{YTrg_list}{a named list of target data. Names correspond to the views
+defined and the corresponding data are saved into \code{matrix}.}
 
-\item{Fctrzn}{learning factorization model object (from MOFA)}
+\item{Fctrzn}{the learning factorization model object (from \code{MOFA})}
 
-\item{smpls}{ordered vector of sample names}
+\item{smpls}{an ordered vector of sample names}
 }
 \value{
-prepared data for the current view
+a matrix that contains the prepared data for the current view with
+the sample ordored.
 }
 \description{
-Remove the features with variance equal to zero
-Harmonize features between the target data and the learning data
-(keep only shared features)
-Order columns based on give sample order (smpls)
+The function performs the following steps:
+\enumerate{
+\item Remove the features with variance equal to zero
+\item Harmonize features between the target data and the learning data. Only
+the shared features are kept.
+\item Order columns according the order of samples (i.e. \code{smpls})
+}
 }

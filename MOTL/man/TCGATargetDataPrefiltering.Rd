@@ -16,7 +16,11 @@ for each view. Each dataframe contains at least one column named "brcds"
 
 \item{SS}{current subset number}
 
-\item{YTrgFull}{named list of target set data}
+\item{YTrgFull}{a named list of target set data. Names correspond to the
+defined views. The list contains \code{SummarizedExperiment} for miRNA,
+mRNA and DNAme and \code{matrix} for SNV.}
+
+\item{Fctrzn}{learning factorization model object (from \code{MOFA})}
 }
 \value{
 the subset data for current view and SS number
