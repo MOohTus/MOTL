@@ -2,7 +2,7 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{TargetDataPreparation}
 \alias{TargetDataPreparation}
-\title{Prepare data for the transfer learning}
+\title{Target data preparation for transfer learning}
 \usage{
 TargetDataPreparation(
   views,
@@ -15,24 +15,52 @@ TargetDataPreparation(
 )
 }
 \arguments{
-\item{views}{list of data names}
+\item{views}{a list of target data views (e.g. \code{c("mRNA", "miRNA")})}
 
-\item{YTrg_list}{named list of training data}
+\item{YTrg_list}{a named list of target set data. Names correspond to the
+defined views. The list contains matrices.}
 
-\item{Fctrzn}{learning factorization model object (from MOFA)}
+\item{Fctrzn}{the learning factorization model object (from \code{MOFA})}
 
-\item{smpls}{sample names}
+\item{smpls}{a vector of sample names (i.e. column names of the
+\code{YTrgFull})}
 
-\item{expdat_meta_Lrn}{list of learning set factorization metadata}
+\item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 
-\item{normalization}{FALSE or "Lrn" or "Trg"}
+\item{normalization}{if FALSE, no normalization. If "Lrn", normalization
+using the learning GeoMeans. If "Trg", normalization without learning
+GeoMeans. By default it's set to FALSE.}
 
-\item{transformation}{FALSE or TRUE}
+\item{transformation}{if FALSE, no transformation. If TRUE, log2
+transformation of counts data. By default it's set to FALSE.}
 }
 \value{
-list of prepared subset data for the current subset number
+a list of prepared target data
 }
 \description{
-Filter out features according variance
-Normalize/transform counts data
+The function follows these steps:
+\enumerate{
+\item Prepare target data for each view
+\item Normalize and/or transform counts data
+}
+}
+\details{
+Preparation of data consists on removing features with variance equal to
+zero, features harmonization between target and learning data and column
+ordering between views. Preparation is perform using the
+\code{\link{TargetDataPrefiltering}} function. See the doc for more details.
+
+It could be possible to normalize and or transform counts data using the
+\code{\link{preprocessCountsData}} function. Normalization can be done
+using GeoMeans and transformation is a log2 transformation of the counts.
+}
+\examples{
+YTrg_prep <- TargetDataPreparation(views = c("mRNA", "miRNA", "DNAme"),
+                                   YTrg_list = YTrg_list,
+                                   Fctrzn = Fctrzn, smpls = smpls,
+                                   expdat_meta_Lrn = expdat_meta_Lrn,
+                                   normalization = FALSE,
+                                   transformation = FALSE)
+
+
 }

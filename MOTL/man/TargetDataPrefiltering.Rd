@@ -18,7 +18,7 @@ defined and the corresponding data are saved into \code{matrix}.}
 }
 \value{
 a matrix that contains the prepared data for the current view with
-the sample ordored.
+the sample ordered.
 }
 \description{
 The function performs the following steps:
@@ -28,4 +28,10 @@ The function performs the following steps:
 the shared features are kept.
 \item Order columns according the order of samples (i.e. \code{smpls})
 }
+}
+\examples{
+#
+TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
+
+
 }

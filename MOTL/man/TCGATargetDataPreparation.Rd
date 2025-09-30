@@ -88,7 +88,7 @@ how learning GeoMeans are calculated.
 \examples{
 # see to create input data
 
-YTrg_prep <- TCGATargetDataPreparation(views, YTrgFull, brcds_SS, SS, Fctrzn, smpls, normalization = "Lrn", expdat_meta_Lrn, transformation = TRUE
+YTrg_prep <- TCGATargetDataPreparation(views, YTrgFull, brcds_SS, SS, Fctrzn, smpls, normalization = "Lrn", expdat_meta_Lrn, transformation = TRUE)
 YTrg_prep$mRNA[c(1:5), c(1:5)]
 YTrg_prep$DNAme[c(1:5), c(1:5)]
 
@@ -108,6 +108,6 @@ brcds_SS_ex <- list("brcds_mRNA_SS" =
 # The SS parameter corresponds to the index of the subset you want to
 # prepare for a specific view. It's generated automatically if you used the
 # workflow describe in the github paper
-https://github.com/david-hirst/MOTL/blob/main/TCGAStudy/00_TCGAstudy_ReadMe.md
+# \link{https://github.com/david-hirst/MOTL/blob/main/TCGAStudy/00_TCGAstudy_ReadMe.md}
 
 }

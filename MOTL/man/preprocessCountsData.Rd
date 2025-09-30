@@ -2,7 +2,7 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{preprocessCountsData}
 \alias{preprocessCountsData}
-\title{Normalize and/or transform counts data}
+\title{Preprocess counts data}
 \usage{
 preprocessCountsData(
   view,
@@ -13,21 +13,38 @@ preprocessCountsData(
 )
 }
 \arguments{
-\item{view}{current data view name}
+\item{view}{a data view name vector (i.e. mRNA or miRNA)}
 
-\item{YTrg_list}{named list of training data}
+\item{YTrg_list}{a named list of target data. Names correspond to the
+defined views. The list contains matrices.}
 
-\item{normalization}{FALSE or "Lrn" or "Trg"}
+\item{normalization}{if FALSE, no normalization. If "Lrn", normalization
+using the learning GeoMeans. If "Trg", normalization without learning
+GeoMeans. By default, it's set to FALSE.}
 
-\item{expdat_meta_Lrn}{list of learning set factorization metadata}
+\item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 
-\item{transformation}{boolean}
+\item{transformation}{if FALSE, no transformation. If TRUE, log2
+normalization.}
 }
 \value{
-transformed/normalized counts data for the current view
+Preprocessed counts data for the current view
 }
 \description{
-If normalization = FALSE: no normalization
-If normalization = "Lrn": normalize with learning set geomeans
-If normalization = "Trg": normalize without geomeans
+Counts data (i.e. mRNA and miRNA) can be normalized and/or transformed.
+}
+\details{
+Normalization is performed using the \code{\link{countsNormalization}}
+function with or without GeoMeans.
+
+Transformation is performed using the \code{\link{countsTransformation}}
+function with log2.
+}
+\examples{
+mRNA <- preprocessCountsData(view = "mRNA", YTrg_list = YTrg_list,
+                             normalization = "Trg",
+                             expdat_meta_Lrn = expdat_meta_Lrn,
+                             transformation = TRUE)
+
+
 }

@@ -2,24 +2,50 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{TauLn_calculation}
 \alias{TauLn_calculation}
-\title{Initialization of the log(Tau) values for each learning view}
+\title{Initialization of the log(Tau) values}
 \usage{
 TauLn_calculation(view, likelihoodsLrn, Fctrzn, LrnFctrnDir, LrnSimple = TRUE)
 }
 \arguments{
-\item{view}{current learning view name}
+\item{view}{a character of current view name data (e.g. "mRNA")}
 
-\item{likelihoodsLrn}{type of data in the learning set}
+\item{likelihoodsLrn}{a named list of data types. The list can contain
+\code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+type. Names are the view names.}
 
-\item{Fctrzn}{learning factorization model object (from MOFA)}
+\item{Fctrzn}{learning factorization model object (from \code{MOFA})}
 
-\item{LrnFctrnDir}{directory where log(Tau) values are saved}
+\item{LrnFctrnDir}{directory where log(Tau) values are saved. Files should
+be named like \code{"TauLn_mRNA.csv"}.}
 
-\item{LrnSimple}{if TRUE then \eqn{E[W^2]} and \eqn{E[LnTau]} are calculated from \eqn{E[W]} and \eqn{E[Tau]} otherwise imported}
+\item{LrnSimple}{if TRUE, initialization uses the Tau values. If FALSE,
+imports values from a .csv file.}
 }
 \value{
-log(Tau) matrix for the current view
+the log(Tau) matrix for the current view
 }
 \description{
-Initialization of the log(Tau) values for each learning view
+Two ways to initialize the log(Tau) values:
+\enumerate{
+\item log transformation of the expected Tau (already init in the
+\code{Fctrzn}) variable
+\item extract values from a .csv file that saved in \code{LrnFctrnDir}
+directory
+Tau is initialized only for gaussian data.
+}
+}
+\details{
+For gaussian data, \eqn{TauLn <- log(Tau)}
+}
+\examples{
+
+likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+                "DNAme" = "gaussian", "SNV" = "bernoulli")
+
+TauLn_mRNA = TauLn_calculation(view = "mRNA",
+                               likelihoodsLrn = likelihoods,
+                               Fctrzn = Fctrzn,
+                               LrnFctrnDir = LrnFctrnDir)
+
+
 }

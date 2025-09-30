@@ -144,7 +144,7 @@ TCGATargetDataPreparation <- function(views, YTrgFull, brcds_SS, SS, Fctrzn, smp
   #' @examples
     #' # see to create input data
     #'
-    #' YTrg_prep <- TCGATargetDataPreparation(views, YTrgFull, brcds_SS, SS, Fctrzn, smpls, normalization = "Lrn", expdat_meta_Lrn, transformation = TRUE
+    #' YTrg_prep <- TCGATargetDataPreparation(views, YTrgFull, brcds_SS, SS, Fctrzn, smpls, normalization = "Lrn", expdat_meta_Lrn, transformation = TRUE)
     #' YTrg_prep$mRNA[c(1:5), c(1:5)]
     #' YTrg_prep$DNAme[c(1:5), c(1:5)]
     #'
@@ -164,7 +164,7 @@ TCGATargetDataPreparation <- function(views, YTrgFull, brcds_SS, SS, Fctrzn, smp
   #' # The SS parameter corresponds to the index of the subset you want to
   #' # prepare for a specific view. It's generated automatically if you used the
   #' # workflow describe in the github paper
-  #' https://github.com/david-hirst/MOTL/blob/main/TCGAStudy/00_TCGAstudy_ReadMe.md
+  #' # \link{https://github.com/david-hirst/MOTL/blob/main/TCGAStudy/00_TCGAstudy_ReadMe.md}
   #'
   #' @export
 
@@ -405,21 +405,36 @@ countsTransformation <- function(expdat_count, TopD){
 
 preprocessCountsData <- function(view, YTrg_list, normalization = FALSE, expdat_meta_Lrn, transformation = FALSE){
   #'
-  #' Normalize and/or transform counts data
+  #' Preprocess counts data
   #'
-  #' If normalization = FALSE: no normalization
-  #' If normalization = "Lrn": normalize with learning set geomeans
-  #' If normalization = "Trg": normalize without geomeans
+  #' Counts data (i.e. mRNA and miRNA) can be normalized and/or transformed.
   #'
-  #' @param view current data view name
-  #' @param YTrg_list named list of training data
-  #' @param normalization FALSE or "Lrn" or "Trg"
-  #' @param expdat_meta_Lrn list of learning set factorization metadata
-  #' @param transformation boolean
+  #' Normalization is performed using the \code{\link{countsNormalization}}
+  #' function with or without GeoMeans.
   #'
-  #' @returns transformed/normalized counts data for the current view
+  #' Transformation is performed using the \code{\link{countsTransformation}}
+  #' function with log2.
+  #'
+  #' @param view a data view name vector (i.e. mRNA or miRNA)
+  #' @param YTrg_list a named list of target data. Names correspond to the
+  #' defined views. The list contains matrices.
+  #' @param normalization if FALSE, no normalization. If "Lrn", normalization
+  #' using the learning GeoMeans. If "Trg", normalization without learning
+  #' GeoMeans. By default, it's set to FALSE.
+  #' @param expdat_meta_Lrn the list of learning set factorization metadata
+  #' @param transformation if FALSE, no transformation. If TRUE, log2
+  #' normalization.
+  #'
+  #' @returns Preprocessed counts data for the current view
   #'
   #' @importFrom SummarizedExperiment SummarizedExperiment
+  #'
+  #' @examples
+    #' mRNA <- preprocessCountsData(view = "mRNA", YTrg_list = YTrg_list,
+    #'                              normalization = "Trg",
+    #'                              expdat_meta_Lrn = expdat_meta_Lrn,
+    #'                              transformation = TRUE)
+    #'
   #'
   #' @export
 
@@ -460,20 +475,45 @@ preprocessCountsData <- function(view, YTrg_list, normalization = FALSE, expdat_
 
 TargetDataPreparation <- function(views, YTrg_list, Fctrzn, smpls, expdat_meta_Lrn, normalization = FALSE, transformation = FALSE){
   #'
-  #' Prepare data for the transfer learning
+  #' Target data preparation for transfer learning
   #'
-  #' Filter out features according variance
-  #' Normalize/transform counts data
+  #' The function follows these steps:
+  #' 1. Prepare target data for each view
+  #' 2. Normalize and/or transform counts data
   #'
-  #' @param views list of data names
-  #' @param YTrg_list named list of training data
-  #' @param Fctrzn learning factorization model object (from MOFA)
-  #' @param smpls sample names
-  #' @param normalization FALSE or "Lrn" or "Trg"
-  #' @param expdat_meta_Lrn list of learning set factorization metadata
-  #' @param transformation FALSE or TRUE
   #'
-  #' @returns list of prepared subset data for the current subset number
+  #' Preparation of data consists on removing features with variance equal to
+  #' zero, features harmonization between target and learning data and column
+  #' ordering between views. Preparation is perform using the
+  #' \code{\link{TargetDataPrefiltering}} function. See the doc for more details.
+  #'
+  #' It could be possible to normalize and or transform counts data using the
+  #' \code{\link{preprocessCountsData}} function. Normalization can be done
+  #' using GeoMeans and transformation is a log2 transformation of the counts.
+  #'
+  #' @param views a list of target data views (e.g. \code{c("mRNA", "miRNA")})
+  #' @param YTrg_list a named list of target set data. Names correspond to the
+  #' defined views. The list contains matrices.
+  #' @param Fctrzn the learning factorization model object (from \code{MOFA})
+  #' @param smpls a vector of sample names (i.e. column names of the
+  #' \code{YTrgFull})
+  #' @param normalization if FALSE, no normalization. If "Lrn", normalization
+  #' using the learning GeoMeans. If "Trg", normalization without learning
+  #' GeoMeans. By default it's set to FALSE.
+  #' @param expdat_meta_Lrn the list of learning set factorization metadata
+  #' @param transformation if FALSE, no transformation. If TRUE, log2
+  #' transformation of counts data. By default it's set to FALSE.
+  #'
+  #' @returns a list of prepared target data
+  #'
+  #' @examples
+    #' YTrg_prep <- TargetDataPreparation(views = c("mRNA", "miRNA", "DNAme"),
+    #'                                    YTrg_list = YTrg_list,
+    #'                                    Fctrzn = Fctrzn, smpls = smpls,
+    #'                                    expdat_meta_Lrn = expdat_meta_Lrn,
+    #'                                    normalization = FALSE,
+    #'                                    transformation = FALSE)
+    #'
   #'
   #' @export
 
@@ -491,22 +531,55 @@ TargetDataPreparation <- function(views, YTrg_list, Fctrzn, smpls, expdat_meta_L
 
 initTransferLearningParamaters <- function(YTrg, views, expdat_meta_Lrn, Fctrzn, likelihoods){
   #'
-  #' Transfer Learning parameters initialization
+  #' Transfer learning parameters initialization
   #'
-  #' Extract the factorized learning set weight intercepts (from MOFA)
-  #' Extract the factorized learning set weights (from MOFA)
-  #' Extract the factorized learning set squared weights (from MOFA)
-  #' Extract the learning set Tau and log(Tau) (from MOFA)
-  #' For each parameter, commun features (YTrgFtrs) with the YTrg are selected
-  #' YTrg, Tau and TauLn matrices are transposed
+  #' The function performs the following steps:
+  #' 1. Extract the factorized learning set weight intercepts \code{W0}
+  #' 2. Extract the factorized learning set weights \code{W}
+  #' 3. Extract the factorized learning set squared weights \code{Wsq}
+  #' 4. Extract the learning set \code{Tau} and log(Tau) \code{TauLn}
+  #' For each extracted parameter, common features between learning and target
+  #' data are kept. Then target data \code{YTrg}, \code{Tau} and \code{TauLn}
+  #' are transposed.
   #'
-  #' @param YTrg named list of data (data should have the same order of the columns)
-  #' @param views vector of data names
-  #' @param expdat_meta_Lrn list of learning set factorization metadata
-  #' @param Fctrzn learning factorization model object (from MOFA)
-  #' @param likelihoods list of data types
+  #' Each parameter are extracted from the \code{Fctrzn} model created using
+  #' \code{\link{MOFA2}}. More details.
   #'
-  #' @returns list of initialized parameters for transfer learning (YTrg, Fctrzn_Lrn_W0, Fctrzn_Lrn_WFctrzn_Lrn_WSq, Tau, TauLn)
+  #' \code{YTrg} matrices should have the same columns order.
+  #'
+  #' Define what is each returned parameters?
+  #'
+  #' @param YTrg a named list of target set data. Names correspond to the
+  #' defined views. The list contains \code{matrix}.
+  #' @param views a vector of target data views (e.g. \code{c("mRNA", "miRNA")})
+  #' @param expdat_meta_Lrn the list of learning set factorization metadata
+  #' @param Fctrzn the learning factorization model object (from \code{MOFA})
+  #' @param likelihoods a named list of data types. The list can contain
+  #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+  #' type. Names are the view names.
+  #'
+  #' @returns a list of initialized parameters for transfer learning
+  #' 1. \code{YTrg} - the transposed named list of target data
+  #' 2. \code{Fctrzn_Lrn_W0} - the Factorized learning set weight intercepts
+  #' with same features as YTrg
+  #' 3. \code{Fctrzn_Lrn_W} - Factorized learning set weights with same
+  #' features as YTrg
+  #' 4. \code{Fctrzn_Lrn_WSq} - Factorized learning set squared weights with
+  #' same features as YTrg
+  #' 5. \code{Tau} - the transposed Tau matrix with same features as YTrg
+  #' 6. \code{TauLn} - the transposed log2(Tau) matrix with same features as
+  #' YTrg
+  #'
+  #' @examples
+    #' views = c("mRNA", "miRNA", "DNAme", "SNV")
+    #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+    #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+    #'
+    #' TLparameter <- initTransferLearningParamaters(YTrg = YTrg,
+    #'                                               views = views,
+    #'                                               expdat_meta_Lrn = expdat_meta_Lrn,
+    #'                                               Fctrzn = Fctrzn,
+    #'                                               likelihoods = likelihoods)
   #'
   #' @export
   #'
@@ -601,13 +674,27 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel){
   #'
   #' Initialization of the Tau values for each view
   #'
-  #' @param viewsLrn list of view in learning set
-  #' @param Fctrzn learning factorization model object (from MOFA)
-  #' @param InputModel factorization model object of learning set (from MOFA)
+  #' Extract the Tau matrix from the MOFA object \code{Fctrzn} for each view.
+  #' More explanation about Tau.
   #'
-  #' @returns named list of Tau matrices
+  #' @param viewsLrn the list of learning data views. For TCGA learning data it
+  #' will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).
+  #' @param Fctrzn the learning factorization from \code{\link{MOFA2}}.
+  #' @param InputModel the factorization model object of learning set
+  #' \code{\link{MOFA2}}
+  #'
+  #' @returns a named list of Tau matrices. Names correspond to the view names.
   #'
   #' @importFrom rhdf5 h5read
+  #'
+  #' @examples
+    #' viewsLrn = c("mRNA", "miRNA", "DNAme", "SNV")
+    #' InputModel <- "Model.hdf5"
+    #' Fctrzn <- load_model(file = InputModel)
+    #'
+    #' Fctrzn@expectations[["Tau"]] <- Tau_init(viewsLrn = viewsLrn,
+    #'                                          Fctrzn = Fctrzn,
+    #'                                          InputModel = InputModel)
   #'
   #' @export
 
@@ -629,17 +716,41 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel){
 ## MT - view = viewsLrn ?
 TauLn_calculation <- function(view, likelihoodsLrn, Fctrzn, LrnFctrnDir, LrnSimple = TRUE){
   #'
-  #' Initialization of the log(Tau) values for each learning view
+  #' Initialization of the log(Tau) values
   #'
-  #' @param view current learning view name
-  #' @param likelihoodsLrn type of data in the learning set
-  #' @param LrnSimple if TRUE then \eqn{E[W^2]} and \eqn{E[LnTau]} are calculated from \eqn{E[W]} and \eqn{E[Tau]} otherwise imported
-  #' @param Fctrzn learning factorization model object (from MOFA)
-  #' @param LrnFctrnDir directory where log(Tau) values are saved
+  #' Two ways to initialize the log(Tau) values:
+  #' 1. log transformation of the expected Tau (already init in the
+  #' \code{Fctrzn}) variable
+  #' 2. extract values from a .csv file that saved in \code{LrnFctrnDir}
+  #' directory
+  #' Tau is initialized only for gaussian data.
   #'
-  #' @returns log(Tau) matrix for the current view
+  #' For gaussian data, \eqn{TauLn <- log(Tau)}
+  #'
+  #' @param view a character of current view name data (e.g. "mRNA")
+  #' @param likelihoodsLrn a named list of data types. The list can contain
+  #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+  #' type. Names are the view names.
+  #' @param LrnSimple if TRUE, initialization uses the Tau values. If FALSE,
+  #' imports values from a .csv file.
+  #' @param Fctrzn learning factorization model object (from \code{MOFA})
+  #' @param LrnFctrnDir directory where log(Tau) values are saved. Files should
+  #' be named like \code{"TauLn_mRNA.csv"}.
+  #'
+  #' @returns the log(Tau) matrix for the current view
   #'
   #' @importFrom utils read.csv
+  #'
+  #' @examples
+    #'
+    #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+  #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+  #'
+    #' TauLn_mRNA = TauLn_calculation(view = "mRNA",
+    #'                                likelihoodsLrn = likelihoods,
+    #'                                Fctrzn = Fctrzn,
+    #'                                LrnFctrnDir = LrnFctrnDir)
+    #'
   #'
   #' @export
 
@@ -660,19 +771,41 @@ TauLn_calculation <- function(view, likelihoodsLrn, Fctrzn, LrnFctrnDir, LrnSimp
 ## MT - explain LrnSimple input
 WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE){
   #'
-  #' load or calculate \eqn{E[W^2]} values
-  #' factors were ordered in the same way as for other latent variables
+  #' Initialization of the squared weight values
+  #'
+  #' This function load or calculate the squares weight values.
+  #'
+  #' The squared weight values can be load from a .csv file. This file can be
+  #' created during the factorization of the learning data. See the documentation
+  #' to learn how to create this file. The file name should follow this format:
+  #' \code{WSq_mRNA.csv}.
+  #'
+  #' The squared weight valued can also be calculated using the weight values
+  #' calculated during the factorization of the learning data. These values are
+  #' saved in the \code{Fctrzn} variable. See the documentation.
+  #'
+  #' "factors were ordered in the same way as for other latent variables
   #' if any factors are dropped due to being inactive, they are at the end of the dataset
-  #' so can filter based on dimension of W
+  #' so can filter based on dimension of W" <-- keep ?
   #'
-  #' @param view current view name
-  #' @param LrnSimple ASK_DAVID
-  #' @param Fctrzn learning factorization model object (from MOFA)
-  #' @param LrnFctrnDir directory where WSq values are saved
+  #' @param view a character of current view name data
+  #' @param LrnSimple if TRUE, calculates the squared weight values \code{WSq}
+  #' using the weight values \code{W}. If FALSE, load squared weight values
+  #' from a file. By default, it's set to TRUE.
+  #' @param Fctrzn learning factorization model object (from \code{MOFA})
+  #' @param LrnFctrnDir directory where \code{WSq} values are saved
   #'
-  #' @returns weights squared matrix for the current view
+  #' @returns the squared weight matrix for the current view
   #'
   #' @importFrom utils read.csv
+  #'
+  #' @examples
+    #'
+    #' WSq_mRNA = WSq_calculation(view = "mRNA",
+  #'                              Fctrzn = Fctrzn,
+  #'                              LrnFctrnDir = LrnFctrnDir,
+  #'                              LrnSimple = TRUE)
+    #'
   #'
   #' @export
 
@@ -689,14 +822,33 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE){
 ## MT - maybe change name into W0_init ?
 W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir){
   #'
-  #' Initialization of the weight intercept
+  #' Initialization of the weight intercept values
   #'
-  #' @param view current view data name
-  #' @param CenterTrg use (FALSE) or not (TRUE) use estimated intercepts
-  #' @param Fctrzn learning factorization model object (from MOFA)
-  #' @param LrnFctrnDir directory where estimated intercept values are saved
+  #' This function loads or calculates the weight intercept values.
   #'
-  #' @returns weight intercepts values of tjhe current data
+  #' The weight intercept values can be load from the
+  #' \code{EstimatedIntercepts.rds} file. This file can be created using the
+  #' \code{\link{intercepts_calculation}} function.
+  #'
+  #' The weight intercept values can also be initialized using the weight
+  #' matrix. The weight matrix is set to zero.
+  #'
+  #' @param view a character of current view name data
+  #' @param CenterTrg if TRUE, init the weight intercept values using the weight
+  #' values. If FALSE, load the estimated weight intercept values from the
+  #' \code{EstimatedIntercepts.rds} file.
+  #' @param Fctrzn learning factorization model object (from \code{MOFA})
+  #' @param LrnFctrnDir directory where the extimated intercepts file is.
+  #'
+  #' @returns a weight intercepts values matrix of the current data
+  #'
+  #' @examples
+    #'
+    #' W0_mRNA = W0_calculation(view = "mRNA",
+    #'                          CenterTrg = TRUE,
+    #'                          Fctrzn = Fctrzn,
+    #'                          LrnFctrnDir = LrnFctrnDir)
+    #'
   #'
   #' @export
 
