@@ -10,8 +10,8 @@
 library("MOFA2")
 
 ## ENVIRONEMENT
-Seed = 1234567
-mode(Seed) = 'integer'
+Seed <- 1234567
+mode(Seed) <- "integer"
 set.seed(Seed)
 wd <- "/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/MOTL/tests/testthat/fixtures/"
 
@@ -63,15 +63,17 @@ Lrn_meta$smpls <- Lrn_smpls
 saveRDS(Lrn_meta, file.path(wd, Prjct_dir, "Lrn_meta.rds"))
 
 ## CREATE MODEL
-FctrznDir = file.path(wd, Prjct_dir, 'Fctrzn_50K_01TH')
-Lrn_meta = readRDS(file.path(wd, Prjct_dir, 'Lrn_meta.rds'))
-InputModel = file.path(FctrznDir, "Model.hdf5")
-Fctrzn = load_model(file = InputModel)
+FctrznDir <- file.path(wd, Prjct_dir, "Fctrzn_50K_01TH")
+Lrn_meta <- readRDS(file.path(wd, Prjct_dir, "Lrn_meta.rds"))
+InputModel <- file.path(FctrznDir, "Model.hdf5")
+Fctrzn <- load_model(file = InputModel)
 Lrn <- list("Fctrzn" = Fctrzn)
 saveRDS(Lrn, file.path(FctrznDir, "Lrn_4test_4omics.rds"))
 
-intercepts_calculation(expdat_meta = Lrn_meta,
-                       Fctrzn = Fctrzn,
-                       FctrznDir = FctrznDir,
-                       ExpDataDir = file.path(wd, Prjct_dir),
-                       Seed = Seed)
+intercepts_calculation(
+    expdat_meta = Lrn_meta,
+    Fctrzn = Fctrzn,
+    FctrznDir = FctrznDir,
+    ExpDataDir = file.path(wd, Prjct_dir),
+    Seed = Seed
+)

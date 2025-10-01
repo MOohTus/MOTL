@@ -7,7 +7,7 @@ Lrn_ModelDir <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrz
 Lrn_ModelFile <- base::system.file("tests/testthat/fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH", "Model.hdf5", package = "MOTL")
 
 Lrn_meta <- readRDS(test_path("fixtures", "Lrn_meta.rds"))
-Lrn = readRDS(test_path("fixtures/", "Lrn_4test_4omics.rds"))
+Lrn <- readRDS(test_path("fixtures/", "Lrn_4test_4omics.rds"))
 Lrn_Fctrzn <- Lrn$Fctrzn
 Lrn_Fctrzn_init <- Lrn$Fctrzn_init
 
@@ -22,7 +22,7 @@ CenterTrg <- FALSE
 views <- c("mRNA", "miRNA", "DNAme", "SNV")
 smpls <- colnames(YTrg_list$mRNA)
 likelihoods <- Lrn_Fctrzn@model_options$likelihoods
-PoisRateCstnt = 0.0001
+PoisRateCstnt <- 0.0001
 
 ## TRANSFER LEARNING INIT
 TL_param <- readRDS(test_path("fixtures", "TL_param_4test_4omics.rds"))
@@ -46,7 +46,9 @@ TL_param <- readRDS(test_path("fixtures", "TL_param_4test_4omics.rds"))
 ## REMOVE FEATURE NAMES VERSION
 ## FOR mRNA_addVersion TESTING
 ftrs <- sample(x = Lrn_meta$ftrs_mRNA, size = 100)
-ftrs_wov <- unlist(lapply(strsplit(ftrs, "[.]"), function(x){return(x[[1]])}))
+ftrs_wov <- unlist(lapply(strsplit(ftrs, "[.]"), function(x) {
+    return(x[[1]])
+}))
 df <- data.frame(row.names = ftrs_wov, "sample1" = seq(1:100))
 Lrndat <- data.frame(row.names = Lrn_meta$ftrs_mRNA, "view" = rep("mRNA", length(Lrn_meta$ftrs_mRNA)))
 

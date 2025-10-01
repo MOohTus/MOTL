@@ -23,3 +23,9 @@ ASK_DAVID
 \description{
 Calculate
 }
+\examples{
+
+E_ZE_W <- E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+
+
+}

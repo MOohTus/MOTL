@@ -13,21 +13,21 @@ Lrn_FctrnDir <- file.path(Lrn_dir, "Fctrzn_50K_01TH")
 
 ## LOAD FACTORIZED LEARNING DATA SET
 Lrn_meta <- readRDS(file.path(Lrn_dir, "Lrn_meta.rds"))
-InputModel = file.path(Lrn_FctrnDir, "Model.hdf5")
-Fctrzn = load_model(file = InputModel)
+InputModel <- file.path(Lrn_FctrnDir, "Model.hdf5")
+Fctrzn <- load_model(file = InputModel)
 
 ## INIT VALUES FROM FACTORIZATION
 Lrn_views <- Fctrzn@data_options$views
 Lrn_likelihoods <- Fctrzn@model_options$likelihoods
 Lrn_M <- Fctrzn@dimensions$M
 
-Fctrzn@expectations[["Tau"]] = Tau_init(Lrn_views, Fctrzn, InputModel)
-Fctrzn@expectations[["TauLn"]] = sapply(Lrn_views, TauLn_calculation, Lrn_likelihoods, Fctrzn, Lrn_FctrnDir)
-Fctrzn@expectations[["WSq"]] = sapply(Lrn_views, WSq_calculation, Fctrzn, Lrn_FctrnDir)
-Fctrzn@expectations[["W0"]] = sapply(Lrn_views, W0_calculation, CenterTrg, Fctrzn, Lrn_FctrnDir)
+Fctrzn@expectations[["Tau"]] <- Tau_init(Lrn_views, Fctrzn, InputModel)
+Fctrzn@expectations[["TauLn"]] <- sapply(Lrn_views, TauLn_calculation, Lrn_likelihoods, Fctrzn, Lrn_FctrnDir)
+Fctrzn@expectations[["WSq"]] <- sapply(Lrn_views, WSq_calculation, Fctrzn, Lrn_FctrnDir)
+Fctrzn@expectations[["W0"]] <- sapply(Lrn_views, W0_calculation, CenterTrg, Fctrzn, Lrn_FctrnDir)
 
 ## INIT PARAMETERS
-views = c("mRNA", "miRNA", "DNAme", "SNV")
+views <- c("mRNA", "miRNA", "DNAme", "SNV")
 Lrn_ftrs_mRNA <- Fctrzn@features_metadata[Fctrzn@features_metadata$view == "mRNA", "feature"]
 Lrn_ftrs_miRNA <- Fctrzn@features_metadata[Fctrzn@features_metadata$view == "miRNA", "feature"]
 Lrn_ftrs_DNAme <- Fctrzn@features_metadata[Fctrzn@features_metadata$view == "DNAme", "feature"]
@@ -35,10 +35,12 @@ Lrn_ftrs_SNV <- Fctrzn@features_metadata[Fctrzn@features_metadata$view == "SNV",
 
 ## METADATA OF TARGET DATA
 expdat_meta <- readRDS(file.path(Trg_dir, "expdat_meta.rds"))
-smpls <- c("TCGA-D9-A4Z2-01A", "TCGA-EE-A2MN-06A", "TCGA-IB-A5ST-01A",
-           "TCGA-XD-AAUG-01A", "TCGA-GN-A26D-06A", "TCGA-IB-7887-01A",
-           "TCGA-FB-AAPP-01A", "TCGA-D9-A1X3-06A", "TCGA-2J-AABV-01A",
-           "TCGA-FS-A1Z7-06A")
+smpls <- c(
+    "TCGA-D9-A4Z2-01A", "TCGA-EE-A2MN-06A", "TCGA-IB-A5ST-01A",
+    "TCGA-XD-AAUG-01A", "TCGA-GN-A26D-06A", "TCGA-IB-7887-01A",
+    "TCGA-FB-AAPP-01A", "TCGA-D9-A1X3-06A", "TCGA-2J-AABV-01A",
+    "TCGA-FS-A1Z7-06A"
+)
 # smpls <- sample(expdat_meta$smpls, 10)
 
 ## mRNA
@@ -71,10 +73,12 @@ expdat_SNV_ftrs <- expdat_SNV_ftrs[expdat_SNV_ftrs %in% Lrn_ftrs_SNV]
 expdat_SNV <- expdat_SNV[expdat_SNV_ftrs, smpls]
 
 ## CREATE LIST OF TARGET DATASETS
-YTrg_list <- list("mRNA" = SummarizedExperiment(list(expdat_mRNA)),
-                  "miRNA" = SummarizedExperiment(list(expdat_miRNA)),
-                  "DNAme" = SummarizedExperiment(list(expdat_DNAme)),
-                  "SNV" = expdat_SNV)
+YTrg_list <- list(
+    "mRNA" = SummarizedExperiment(list(expdat_mRNA)),
+    "miRNA" = SummarizedExperiment(list(expdat_miRNA)),
+    "DNAme" = SummarizedExperiment(list(expdat_DNAme)),
+    "SNV" = expdat_SNV
+)
 
 ## UPDATE METADATA OF TARGET DATA
 expdat_meta$smpls <- smpls
@@ -84,42 +88,52 @@ expdat_meta$ftrs_DNAme <- rownames(expdat_DNAme)
 expdat_meta$ftrs_SNV <- rownames(expdat_SNV)
 
 ## CREATE LIST OF TABLES WITH SAMPLE NAMES
-brcds_SS <- list("brcds_mRNA_SS" = list(data.frame("brcds" = smpls)),
-                 "brcds_miRNA_SS" = list(data.frame("brcds" = smpls)),
-                 "brcds_DNAme_SS" = list(data.frame("brcds" = smpls)),
-                 "brcds_SNV_SS" = list(data.frame("brcds" = smpls)))
+brcds_SS <- list(
+    "brcds_mRNA_SS" = list(data.frame("brcds" = smpls)),
+    "brcds_miRNA_SS" = list(data.frame("brcds" = smpls)),
+    "brcds_DNAme_SS" = list(data.frame("brcds" = smpls)),
+    "brcds_SNV_SS" = list(data.frame("brcds" = smpls))
+)
 
 ## PREPARE TARGET DATASET LIST
-YTrg_prep <- TCGATargetDataPreparation(views = views,
-                                       YTrgFull = YTrg_list,
-                                       brcds_SS = brcds_SS,
-                                       SS = 1,
-                                       Fctrzn = Fctrzn,
-                                       smpls = smpls,
-                                       normalization = FALSE,
-                                       expdat_meta_Lrn = Lrn_meta,
-                                       transformation = FALSE)
+YTrg_prep <- TCGATargetDataPreparation(
+    views = views,
+    YTrgFull = YTrg_list,
+    brcds_SS = brcds_SS,
+    SS = 1,
+    Fctrzn = Fctrzn,
+    smpls = smpls,
+    normalization = FALSE,
+    expdat_meta_Lrn = Lrn_meta,
+    transformation = FALSE
+)
 
 ## INITIALIZE VALUES FOR TRANSFER LEARNING
-TL_param <- initTransferLearningParamaters(YTrg = YTrg_prep,
-                                           views = views,
-                                           expdat_meta_Lrn = Lrn_meta,
-                                           Fctrzn = Lrn_Fctrzn_init,
-                                           likelihoods = likelihoods)
+TL_param <- initTransferLearningParamaters(
+    YTrg = YTrg_prep,
+    views = views,
+    expdat_meta_Lrn = Lrn_meta,
+    Fctrzn = Lrn_Fctrzn_init,
+    likelihoods = likelihoods
+)
 TL_param$ZVar <- ZVar_calculation(view = "mRNA", TL_param$Tau, TL_param$Fctrzn_Lrn_WSq)
-TL_param$ZMu <- matrix(data = as.vector(colMeans(Lrn_Fctrzn_init@expectations$Z$group0)),
-                       nrow = dim(TL_param$ZVar)[1], ncol = dim(TL_param$ZVar)[2], byrow = TRUE)
+TL_param$ZMu <- matrix(
+    data = as.vector(colMeans(Lrn_Fctrzn_init@expectations$Z$group0)),
+    nrow = dim(TL_param$ZVar)[1], ncol = dim(TL_param$ZVar)[2], byrow = TRUE
+)
 rownames(TL_param$ZMu) <- smpls
 colnames(TL_param$ZMu) <- colnames(TL_param$Fctrzn_Lrn_W[[1]])
-TL_param$ZMu_0 <- rep(1,dim(TL_param$ZVar)[1])
+TL_param$ZMu_0 <- rep(1, dim(TL_param$ZVar)[1])
 TL_param$ZMuSq <- TL_param$ZVar + TL_param$ZMu^2
 saveRDS(TL_param, file = file.path(wd, "TL_param_4test_4omics.rds"))
 
 ## SAVE INTO RDS OBJECTF
-Trg <- list("YTrg_list" = YTrg_list,
-            "Trg_meta" = expdat_meta,
-            "brcds_SS" = brcds_SS,
-            "YTrg_prep" = YTrg_prep)
+Trg <- list(
+    "YTrg_list" = YTrg_list,
+    "Trg_meta" = expdat_meta,
+    "brcds_SS" = brcds_SS,
+    "YTrg_prep" = YTrg_prep
+)
 saveRDS(Trg, file = file.path(wd, "Trg_4test_4omics.rds"))
 
 ## SAVE THE INITIALIZED LRN DATA SET
@@ -131,4 +145,3 @@ saveRDS(Lrn, file = file.path(wd, "Lrn_4test_4omics.rds"))
 
 
 # saveRDS(YTrg_prep, file = file.path(wd, "Trg_prep_4test_4omics.rds"))
-

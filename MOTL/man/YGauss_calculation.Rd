@@ -15,9 +15,11 @@ YGauss_calculation(
 )
 }
 \arguments{
-\item{view}{current view name}
+\item{view}{a character of current view name data}
 
-\item{likelihoods}{list of data types}
+\item{likelihoods}{a named list of data types. The list can contain
+\code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+type. Names are the view names.}
 
 \item{YTrg}{current data matrix}
 
@@ -25,7 +27,7 @@ YGauss_calculation(
 
 \item{Tau}{list of Tau matrices}
 
-\item{CenterTrg}{use (FALSE) or not (TRUE) use estimated intercepts}
+\item{CenterTrg}{if FALSE, use (FALSE) or not (TRUE) use estimated intercepts ??}
 
 \item{PoisRateCstnt}{ASK_DAVID}
 }
@@ -37,4 +39,15 @@ For gaussian data this is just the (centered) Y values which are fixed
 For non gaussian these are transformed y values that change after each update of z
 the y pseudo values are centered at each step if the centering option is selected
 For gaussian data this is done for It>=0, for others it is It>0
+}
+\examples{
+view = "mRNA"
+likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+                "DNAme" = "gaussian", "SNV" = "bernoulli")
+
+YGauss <- YGauss_calculation(view = view,
+                             likelihoods = likelihoods,
+                             YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
+
+
 }

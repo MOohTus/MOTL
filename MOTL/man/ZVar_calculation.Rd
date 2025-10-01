@@ -7,7 +7,7 @@
 ZVar_calculation(view, Tau, Fctrzn_Lrn_WSq)
 }
 \arguments{
-\item{view}{current data view name}
+\item{view}{a character of current view name data}
 
 \item{Tau}{list of Tau matrices}
 
@@ -19,4 +19,9 @@ calculated Z variances matrix for the current data
 \description{
 Z variances using initialised / updated tau values and W^2 values
 based on the appendix of the mofa paper and Github code
+}
+\examples{
+
+ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
+
 }

@@ -27,8 +27,8 @@ viewsLrn = c("mRNA", "miRNA", "DNAme", "SNV")
 InputModel <- "Model.hdf5"
 Fctrzn <- load_model(file = InputModel)
 
-Fctrzn@expectations[["Tau"]] <- Tau_init(viewsLrn = viewsLrn,
-                                         Fctrzn = Fctrzn,
-                                         InputModel = InputModel)
+Tau_list <- Tau_init(viewsLrn = viewsLrn,
+                     Fctrzn = Fctrzn,
+                     InputModel = InputModel)
 
 }
