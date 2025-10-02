@@ -2,28 +2,47 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{WSq_calculation}
 \alias{WSq_calculation}
-\title{load or calculate \eqn{E[W^2]} values
-factors were ordered in the same way as for other latent variables
-if any factors are dropped due to being inactive, they are at the end of the dataset
-so can filter based on dimension of W}
+\title{Initialization of the squared weight values}
 \usage{
 WSq_calculation(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE)
 }
 \arguments{
-\item{view}{current view name}
+\item{view}{a character of current view name data}
 
-\item{Fctrzn}{learning factorization model object (from MOFA)}
+\item{Fctrzn}{learning factorization model object (from \code{MOFA})}
 
-\item{LrnFctrnDir}{directory where WSq values are saved}
+\item{LrnFctrnDir}{directory where \code{WSq} values are saved}
 
-\item{LrnSimple}{ASK_DAVID}
+\item{LrnSimple}{if TRUE, calculates the squared weight values \code{WSq}
+using the weight values \code{W}. If FALSE, load squared weight values
+from a file. By default, it's set to TRUE.}
 }
 \value{
-weights squared matrix for the current view
+the squared weight matrix for the current view
 }
 \description{
-load or calculate \eqn{E[W^2]} values
-factors were ordered in the same way as for other latent variables
+This function load or calculate the squares weight values.
+}
+\details{
+The squared weight values can be load from a .csv file. This file can be
+created during the factorization of the learning data. See the documentation
+to learn how to create this file. The file name should follow this format:
+\code{WSq_mRNA.csv}.
+
+The squared weight valued can also be calculated using the weight values
+calculated during the factorization of the learning data. These values are
+saved in the \code{Fctrzn} variable. See the documentation.
+
+"factors were ordered in the same way as for other latent variables
 if any factors are dropped due to being inactive, they are at the end of the dataset
-so can filter based on dimension of W
+so can filter based on dimension of W" <-- keep ?
+}
+\examples{
+
+WSq_mRNA = WSq_calculation(view = "mRNA",
+                             Fctrzn = Fctrzn,
+                             LrnFctrnDir = LrnFctrnDir,
+                             LrnSimple = TRUE)
+
+
 }

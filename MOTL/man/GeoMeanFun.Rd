@@ -15,3 +15,8 @@ mean of non zero values from x vector
 \description{
 Detailed description
 }
+\examples{
+x <- c(125,12,4545,7878,6777,454545,88979)
+GeoMeans <- GeoMeanFun(x)
+
+}

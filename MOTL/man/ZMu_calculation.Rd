@@ -7,7 +7,7 @@
 ZMu_calculation(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss)
 }
 \arguments{
-\item{view}{current data view name}
+\item{view}{a character of current view name data}
 
 \item{k}{feature index in the current data}
 
@@ -28,4 +28,10 @@ ZMu values for the current view
 }
 \description{
 Z mu calculation for the current data
+}
+\examples{
+
+ZMu <- ZMu_calculation(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss)
+
+
 }

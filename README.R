@@ -39,6 +39,7 @@ devtools::document(); devtools::load_all()
 
 ## BUILD and CHECK PACKAGE (devtools::check("../"))
 devtools::build(); devtools::check_built("../MOTL_0.99.0.tar.gz")
+devtools::build(vignettes = FALSE); devtools::check_built("../MOTL_0.99.0.tar.gz")
 
 ## Check for bioconductor
 BiocCheck::BiocCheck("../MOTL_0.99.0.tar.gz")

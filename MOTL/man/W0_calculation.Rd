@@ -2,22 +2,41 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{W0_calculation}
 \alias{W0_calculation}
-\title{Initialization of the weight intercept}
+\title{Initialization of the weight intercept values}
 \usage{
 W0_calculation(view, CenterTrg, Fctrzn, LrnFctrnDir)
 }
 \arguments{
-\item{view}{current view data name}
+\item{view}{a character of current view name data}
 
-\item{CenterTrg}{use (FALSE) or not (TRUE) use estimated intercepts}
+\item{CenterTrg}{if TRUE, init the weight intercept values using the weight
+values. If FALSE, load the estimated weight intercept values from the
+\code{EstimatedIntercepts.rds} file.}
 
-\item{Fctrzn}{learning factorization model object (from MOFA)}
+\item{Fctrzn}{learning factorization model object (from \code{MOFA})}
 
-\item{LrnFctrnDir}{directory where estimated intercept values are saved}
+\item{LrnFctrnDir}{directory where the extimated intercepts file is.}
 }
 \value{
-weight intercepts values of tjhe current data
+a weight intercepts values matrix of the current data
 }
 \description{
-Initialization of the weight intercept
+This function loads or calculates the weight intercept values.
+}
+\details{
+The weight intercept values can be load from the
+\code{EstimatedIntercepts.rds} file. This file can be created using the
+\code{\link{intercepts_calculation}} function.
+
+The weight intercept values can also be initialized using the weight
+matrix. The weight matrix is set to zero.
+}
+\examples{
+
+W0_mRNA = W0_calculation(view = "mRNA",
+                         CenterTrg = TRUE,
+                         Fctrzn = Fctrzn,
+                         LrnFctrnDir = LrnFctrnDir)
+
+
 }

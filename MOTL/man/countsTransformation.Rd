@@ -17,3 +17,8 @@ data.frame of the log2 transformed and filtered data
 \description{
 Log2 Transform and select top data based on variance
 }
+\examples{
+expdat_counts_fltr <- countsTransformation(expdat_count, TopD)
+
+
+}

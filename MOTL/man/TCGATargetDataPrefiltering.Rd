@@ -7,21 +7,55 @@
 TCGATargetDataPrefiltering(view, brcds_SS, SS, YTrgFull, Fctrzn)
 }
 \arguments{
-\item{view}{current view name data}
+\item{view}{a character of current view name data}
 
-\item{brcds_SS}{list of subset sample names for each subset number/view}
+\item{brcds_SS}{a list of sample names for each view. The list is named
+according views (e.g. "brcds_mRNA_SS") and contains list of dataframes
+for each view. Each dataframe contains at least one column named "brcds"
+(the one used).}
 
 \item{SS}{current subset number}
 
-\item{YTrgFull}{named list of training set data}
+\item{YTrgFull}{a named list of target set data. Names correspond to the
+defined views. The list contains \code{SummarizedExperiment} for miRNA,
+mRNA and DNAme and \code{matrix} for SNV.}
 
-\item{Fctrzn}{learning factorization model object (from MOFA)}
+\item{Fctrzn}{learning factorization model object (from \code{MOFA})}
 }
 \value{
 the subset data for current view and SS number
 }
 \description{
-Extract data for the given sample names (brcds_SS)
-Remove features with variance equal to zero
-Match features between training set and learning set
+This function performs a prefiltering analysis through the steps:
+\enumerate{
+\item Extract data for the given sample names (\code{brcds_SS})
+\item Remove features with variance equal to zero
+\item Match features between target data set and learning data set
+}
+}
+\details{
+The function return a prefiltered target dataframe for the current view.
+}
+\examples{
+
+# In the paper, several target datasets were created as subset of the
+# reference dataset R. This function was used to generate them
+# automatically.
+# If you are not doing the paper analysis, you can create the brcds_SS
+# using the following command line. Replace the "nameX" with the sample
+# names of your data.
+# You can as much as you want add dataframe on each view.
+
+brcds_SS_ex <- list("brcds_mRNA_SS" =
+                     list(data.frame("brcds" = c("name01", "name02"))),
+                   "brcds_miRNA_SS" =
+                     list(data.frame("brcds" = c("name10", "name11"))))
+
+# See the doc to create the input parameter
+
+expdat_mRNA <- TCGATargetDataPrefiltering(view = "mRNA",
+brcds_SS = brcds_SS, SS = 1, YTrgFull = YTrg_list, Fctrzn = Lrn_Fctrzn)
+expdat_mRNA[c(1:5), c(1:5)]
+
+
 }

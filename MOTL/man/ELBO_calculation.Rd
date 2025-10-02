@@ -18,9 +18,11 @@ ELBO_calculation(
 )
 }
 \arguments{
-\item{view}{current view dara name}
+\item{view}{a character of current view name data}
 
-\item{likelihoods}{list of data types}
+\item{likelihoods}{a named list of data types. The list can contain
+\code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+type. Names are the view names.}
 
 \item{Tau}{list of Tau matrices}
 
@@ -49,4 +51,14 @@ it seems in MOFA they do not allow for the centering that is done for the
 pseudo data for non gaussian data
 they used the raw uncentered data for the elbo - this seems strange
 although i guess it acts as a lower bound for the lower bound ...
+}
+\examples{
+
+view = "mRNA"
+likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+                "DNAme" = "gaussian", "SNV" = "bernoulli")
+
+ELBO_L <- ELBO_calculation(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss, PoisRateCstnt)
+
+
 }

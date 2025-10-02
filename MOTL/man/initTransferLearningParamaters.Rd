@@ -2,7 +2,7 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{initTransferLearningParamaters}
 \alias{initTransferLearningParamaters}
-\title{Transfer Learning parameters initialization}
+\title{Transfer learning parameters initialization}
 \usage{
 initTransferLearningParamaters(
   YTrg,
@@ -13,24 +13,63 @@ initTransferLearningParamaters(
 )
 }
 \arguments{
-\item{YTrg}{named list of data (data should have the same order of the columns)}
+\item{YTrg}{a named list of target set data. Names correspond to the
+defined views. The list contains \code{matrix}.}
 
-\item{views}{vector of data names}
+\item{views}{a vector of target data views (e.g. \code{c("mRNA", "miRNA")})}
 
-\item{expdat_meta_Lrn}{list of learning set factorization metadata}
+\item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 
-\item{Fctrzn}{learning factorization model object (from MOFA)}
+\item{Fctrzn}{the learning factorization model object (from \code{MOFA})}
 
-\item{likelihoods}{list of data types}
+\item{likelihoods}{a named list of data types. The list can contain
+\code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+type. Names are the view names.}
 }
 \value{
-list of initialized parameters for transfer learning (YTrg, Fctrzn_Lrn_W0, Fctrzn_Lrn_WFctrzn_Lrn_WSq, Tau, TauLn)
+a list of initialized parameters for transfer learning
+\enumerate{
+\item \code{YTrg} - the transposed named list of target data
+\item \code{Fctrzn_Lrn_W0} - the Factorized learning set weight intercepts
+with same features as YTrg
+\item \code{Fctrzn_Lrn_W} - Factorized learning set weights with same
+features as YTrg
+\item \code{Fctrzn_Lrn_WSq} - Factorized learning set squared weights with
+same features as YTrg
+\item \code{Tau} - the transposed Tau matrix with same features as YTrg
+\item \code{TauLn} - the transposed log2(Tau) matrix with same features as
+YTrg
+}
 }
 \description{
-Extract the factorized learning set weight intercepts (from MOFA)
-Extract the factorized learning set weights (from MOFA)
-Extract the factorized learning set squared weights (from MOFA)
-Extract the learning set Tau and log(Tau) (from MOFA)
-For each parameter, commun features (YTrgFtrs) with the YTrg are selected
-YTrg, Tau and TauLn matrices are transposed
+The function performs the following steps:
+\enumerate{
+\item Extract the factorized learning set weight intercepts \code{W0}
+\item Extract the factorized learning set weights \code{W}
+\item Extract the factorized learning set squared weights \code{Wsq}
+\item Extract the learning set \code{Tau} and log(Tau) \code{TauLn}
+For each extracted parameter, common features between learning and target
+data are kept. Then target data \code{YTrg}, \code{Tau} and \code{TauLn}
+are transposed.
+}
+}
+\details{
+Each parameter are extracted from the \code{Fctrzn} model created using
+\code{\link{MOFA2}}. More details.
+
+\code{YTrg} matrices should have the same columns order.
+
+Define what is each returned parameters?
+}
+\examples{
+views = c("mRNA", "miRNA", "DNAme", "SNV")
+likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+                "DNAme" = "gaussian", "SNV" = "bernoulli")
+
+TLparameter <- initTransferLearningParamaters(YTrg = YTrg,
+                                              views = views,
+                                              expdat_meta_Lrn = expdat_meta_Lrn,
+                                              Fctrzn = Fctrzn,
+                                              likelihoods = likelihoods)
+
 }

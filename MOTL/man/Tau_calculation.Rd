@@ -2,14 +2,16 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{Tau_calculation}
 \alias{Tau_calculation}
-\title{Update Tau values which only change for bernoulli data}
+\title{Update Tau values}
 \usage{
 Tau_calculation(view, likelihoods, Zeta, Tau)
 }
 \arguments{
-\item{view}{current view data name}
+\item{view}{a character of current view name data}
 
-\item{likelihoods}{list of data types}
+\item{likelihoods}{a named list of data types. The list can contain
+\code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+type. Names are the view names.}
 
 \item{Zeta}{list of Zeta matrix for the current view}
 
@@ -19,5 +21,18 @@ Tau_calculation(view, likelihoods, Zeta, Tau)
 (updated) Tau matrix for the current view data
 }
 \description{
-Update Tau values which only change for bernoulli data
+Tau values are updated using Zeta values with the
+following equation: \eqn{Tau = (1/2)*(1/Zeta[[view]])*tanh(Zeta[[view]]/2)}
+only for bernoulli data.
+}
+\examples{
+view = "mRNA"
+likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+                "DNAme" = "gaussian", "SNV" = "bernoulli")
+
+Tau <- Tau_calculation(view = view,
+                       likelihoods = likelihoods,
+                       Zeta = Zeta, Tau = Tau)
+
+
 }
