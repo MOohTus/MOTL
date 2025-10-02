@@ -1041,7 +1041,7 @@ intercepts_calculation <- function(expdat_meta,
                 # interceptMLEfit = try(as.vector(stats4::mle(nLL, start=list(interceptMLE=0))@coef[1]))
                 interceptMLEfit <- try(as.vector(mle(nLL, start = list(interceptMLE = InterceptsNaive[d]))@coef[1]))
 
-                if (class(interceptMLEfit) == "try-error") {
+                if (is(interceptMLEfit, "try-error")) {
                     InterceptsTmp <- InterceptsNaive[d]
                     InterceptsMethodTmp <- "Naive"
                 } else {
@@ -1090,7 +1090,7 @@ intercepts_calculation <- function(expdat_meta,
 
                 interceptMLEfit <- try(mle(nLL, start = list(InterceptMLE = InterceptsNaive[d]))@coef[1])
 
-                if (class(interceptMLEfit) == "try-error") {
+                if (is(interceptMLEfit, "try-error")) {
                     InterceptsTmp <- InterceptsNaive[d]
                     InterceptsMethodTmp <- "Naive"
                 } else {
