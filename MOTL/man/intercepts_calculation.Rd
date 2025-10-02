@@ -19,6 +19,21 @@ intercepts_calculation(expdat_meta, Fctrzn, FctrznDir, ExpDataDir, Seed, YTmp)
 
 \item{YTmp}{ASK_DAVID}
 }
+\value{
+a file
+}
 \description{
 ASK_DAVID
+}
+\examples{
+# example code
+intercepts_calculation(expdat_meta,
+                       Fctrzn,
+                       FctrznDir,
+                       ExpDataDir,
+                       Seed,
+                       YTmp)
+
+
+
 }

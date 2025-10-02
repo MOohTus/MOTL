@@ -19,3 +19,10 @@ calculated geomeans of the learning set
 \description{
 Retrieve the calculated geomeans of the learning set
 }
+\examples{
+
+GeoMeans_Lrn <- GeoMeans_Lrn_init(view = "mRNA",
+                                  expdat_meta_Lrn,
+                                  YTrgFtrs)
+
+}

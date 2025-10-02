@@ -20,3 +20,8 @@ Calculate geometric means for normalization if data = learning set
 Doesn't use geometric means for normalization if data = target set
 Use provided geometric means for normalization if transfer learning
 }
+\examples{
+
+expdat_counts_norm <- countsNormalization(expdat, GeoMeans)
+
+}

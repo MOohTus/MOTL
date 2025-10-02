@@ -322,6 +322,12 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
     #'
     #' @returns calculated geomeans of the learning set
     #'
+    #' @examples
+    #'
+    #' GeoMeans_Lrn <- GeoMeans_Lrn_init(view = "mRNA",
+    #'                                   expdat_meta_Lrn,
+    #'                                   YTrgFtrs)
+    #'
     #' @export
 
     if (is.element(view, c("mRNA", "miRNA"))) {
@@ -345,6 +351,10 @@ GeoMeanFun <- function(x) {
     #'
     #' @return mean of non zero values from x vector
     #'
+    #' @examples
+    #' x <- c(125,12,4545,7878,6777,454545,88979)
+    #' GeoMeans <- GeoMeanFun(x)
+    #'
     #' @export
 
     GeoMeans <- exp(sum(log(x[x > 0])) / length(x))
@@ -365,6 +375,10 @@ countsNormalization <- function(expdat, GeoMeans) {
     #' @returns list of data.frame of the counts normalized and GeoMeans calculated
     #'
     #' @import DESeq2
+    #'
+    #' @examples
+    #'
+    #' expdat_counts_norm <- countsNormalization(expdat, GeoMeans)
     #'
     #' @export
 
@@ -405,6 +419,10 @@ countsTransformation <- function(expdat_count, TopD) {
     #' @param TopD number of features to keep
     #'
     #' @returns data.frame of the log2 transformed and filtered data
+    #'
+    #' @examples
+    #' expdat_counts_fltr <- countsTransformation(expdat_count, TopD)
+    #'
     #'
     #' @export
 
@@ -931,9 +949,22 @@ intercepts_calculation <- function(expdat_meta,
     #' @param YTmp ASK_DAVID
     #' @param Seed ASK_DAVID
     #'
+    #' @return a file
+    #'
     #' @importFrom data.table fread
     #' @importFrom stats dpois, dbinom, plogis, setNames
     #' @importFrom stats4 mle
+    #'
+    #' @examples
+    #' # example code
+    #' intercepts_calculation(expdat_meta,
+    #'                        Fctrzn,
+    #'                        FctrznDir,
+    #'                        ExpDataDir,
+    #'                        Seed,
+    #'                        YTmp)
+    #'
+    #'
     #'
     #' @export
     #'
