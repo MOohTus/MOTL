@@ -151,7 +151,7 @@ test_that("TargetDataPrefiltering", {
     YTrg_list$DNAme <- assay(YTrg_list$DNAme)
     ## Change names of some rows - expected removed
     rownames(YTrg_list$mRNA)[c(2, 10)] <- "newNames"
-    rownames(YTrg_list$DNAme)[c(2, 46, 50)] <- "newNames"
+    rownames(YTrg_list$DNAme)[c(2, 28, 30)] <- "newNames"
     ##
     YTrg <- sapply(views, TargetDataPrefiltering, YTrg_list, Lrn_Fctrzn, smpls)
     expect_equal(names(YTrg), names(YTrg_list))
@@ -322,6 +322,7 @@ test_that("initTransferLearningParamaters", {
 })
 
 test_that("Tau_init", {
+    skip("SKIP BECAUSE MODEL FILE TO LARGE FOR THE PACKAGE")
     Tau <- Tau_init(views, Lrn_Fctrzn, Lrn_ModelFile)
     expect_equal(nrow(Tau$mRNA$group0), Lrn_Fctrzn@dimensions$D["mRNA"][[1]])
     expect_equal(nrow(Tau$miRNA$group0), Lrn_Fctrzn@dimensions$D["miRNA"][[1]])

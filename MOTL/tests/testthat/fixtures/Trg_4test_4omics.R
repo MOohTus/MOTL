@@ -6,8 +6,9 @@
 ## LIBRARIES
 
 ## ENVIRONMENT
-wd <- "/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/MOTL/tests/testthat/fixtures/"
-Trg_dir <- file.path(wd, "Trg_4test_4omics")
+wd <- "/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/00_Ressources/01_dataOfPackage/"
+Trg_original_dir <- file.path(wd, "00_originalData/Trg_PAAD_SKCM_Full_5000D/")
+#Trg_dir <- file.path(wd, "Trg_4test_4omics")
 Lrn_dir <- file.path(wd, "Lrn_4test_5000D")
 Lrn_FctrnDir <- file.path(Lrn_dir, "Fctrzn_50K_01TH")
 
@@ -34,7 +35,7 @@ Lrn_ftrs_DNAme <- Fctrzn@features_metadata[Fctrzn@features_metadata$view == "DNA
 Lrn_ftrs_SNV <- Fctrzn@features_metadata[Fctrzn@features_metadata$view == "SNV", "feature"]
 
 ## METADATA OF TARGET DATA
-expdat_meta <- readRDS(file.path(Trg_dir, "expdat_meta.rds"))
+expdat_meta <- readRDS(file.path(Trg_original_dir, "expdat_meta.rds"))
 smpls <- c(
     "TCGA-D9-A4Z2-01A", "TCGA-EE-A2MN-06A", "TCGA-IB-A5ST-01A",
     "TCGA-XD-AAUG-01A", "TCGA-GN-A26D-06A", "TCGA-IB-7887-01A",
@@ -44,28 +45,28 @@ smpls <- c(
 # smpls <- sample(expdat_meta$smpls, 10)
 
 ## mRNA
-expdat_mRNA <- as.matrix(read.table(file = file.path(Trg_dir, "mRNA.csv"), sep = ","))
+expdat_mRNA <- as.matrix(read.table(file = file.path(Trg_original_dir, "mRNA.csv"), sep = ","))
 rownames(expdat_mRNA) <- expdat_meta$ftrs_mRNA
 colnames(expdat_mRNA) <- expdat_meta$smpls
 expdat_mRNA_ftrs <- sample(rownames(expdat_mRNA), 500)
 expdat_mRNA_ftrs <- expdat_mRNA_ftrs[expdat_mRNA_ftrs %in% Lrn_ftrs_mRNA]
 expdat_mRNA <- expdat_mRNA[expdat_mRNA_ftrs, smpls]
 ## miRNA
-expdat_miRNA <- as.matrix(read.table(file = file.path(Trg_dir, "miRNA.csv"), sep = ","))
+expdat_miRNA <- as.matrix(read.table(file = file.path(Trg_original_dir, "miRNA.csv"), sep = ","))
 rownames(expdat_miRNA) <- expdat_meta$ftrs_miRNA
 colnames(expdat_miRNA) <- expdat_meta$smpls
 expdat_miRNA_ftrs <- sample(rownames(expdat_miRNA), 500)
 expdat_miRNA_ftrs <- expdat_miRNA_ftrs[expdat_miRNA_ftrs %in% Lrn_ftrs_miRNA]
 expdat_miRNA <- expdat_miRNA[expdat_miRNA_ftrs, smpls]
 ## DNAme
-expdat_DNAme <- as.matrix(read.table(file = file.path(Trg_dir, "DNAme.csv"), sep = ","))
+expdat_DNAme <- as.matrix(read.table(file = file.path(Trg_original_dir, "DNAme.csv"), sep = ","))
 rownames(expdat_DNAme) <- expdat_meta$ftrs_DNAme
 colnames(expdat_DNAme) <- expdat_meta$smpls
 expdat_DNAme_ftrs <- sample(rownames(expdat_DNAme), 500)
 expdat_DNAme_ftrs <- expdat_DNAme_ftrs[expdat_DNAme_ftrs %in% Lrn_ftrs_DNAme]
 expdat_DNAme <- expdat_DNAme[expdat_DNAme_ftrs, smpls]
 ## SNV
-expdat_SNV <- as.matrix(read.table(file = file.path(Trg_dir, "SNV.csv"), sep = ","))
+expdat_SNV <- as.matrix(read.table(file = file.path(Trg_original_dir, "SNV.csv"), sep = ","))
 rownames(expdat_SNV) <- expdat_meta$ftrs_SNV
 colnames(expdat_SNV) <- expdat_meta$smpls
 expdat_SNV_ftrs <- sample(rownames(expdat_SNV), 500)
@@ -137,7 +138,7 @@ Trg <- list(
 saveRDS(Trg, file = file.path(wd, "Trg_4test_4omics.rds"))
 
 ## SAVE THE INITIALIZED LRN DATA SET
-Lrn <- readRDS(file.path(Lrn_FctrnDir, "Lrn_Fctrzn.rds"))
+Lrn <- readRDS(file.path(Lrn_FctrnDir, "Lrn_Fctrzn_4omics.rds"))
 Lrn$Fctrzn_init <- Fctrzn
 saveRDS(Lrn, file = file.path(wd, "Lrn_4test_4omics.rds"))
 
