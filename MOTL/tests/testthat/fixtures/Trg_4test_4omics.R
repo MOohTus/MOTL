@@ -114,12 +114,12 @@ TL_param <- initTransferLearningParamaters(
     YTrg = YTrg_prep,
     views = views,
     expdat_meta_Lrn = Lrn_meta,
-    Fctrzn = Lrn_Fctrzn_init,
+    Fctrzn = Fctrzn,
     likelihoods = likelihoods
 )
 TL_param$ZVar <- ZVar_calculation(view = "mRNA", TL_param$Tau, TL_param$Fctrzn_Lrn_WSq)
 TL_param$ZMu <- matrix(
-    data = as.vector(colMeans(Lrn_Fctrzn_init@expectations$Z$group0)),
+    data = as.vector(colMeans(Fctrzn@expectations$Z$group0)),
     nrow = dim(TL_param$ZVar)[1], ncol = dim(TL_param$ZVar)[2], byrow = TRUE
 )
 rownames(TL_param$ZMu) <- smpls

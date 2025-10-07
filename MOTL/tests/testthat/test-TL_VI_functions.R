@@ -322,7 +322,7 @@ test_that("initTransferLearningParamaters", {
 })
 
 test_that("Tau_init", {
-    skip("SKIP BECAUSE MODEL FILE TO LARGE FOR THE PACKAGE")
+    skip("SKIP BECAUSE MODEL FILE TOO LARGE FOR THE PACKAGE")
     Tau <- Tau_init(views, Lrn_Fctrzn, Lrn_ModelFile)
     expect_equal(nrow(Tau$mRNA$group0), Lrn_Fctrzn@dimensions$D["mRNA"][[1]])
     expect_equal(nrow(Tau$miRNA$group0), Lrn_Fctrzn@dimensions$D["miRNA"][[1]])
@@ -480,7 +480,17 @@ test_that("W0_calculation_TRUE", {
 })
 
 test_that("intercepts_calculation", {
-    print("to do")
+    skip("SKIP BECAUSE DATA FILE ARE NOT STORED IN THE PACKAGE")
+    FctrznDir = test_path("fixtures/Lrn_4test_5000D/")
+    ExpDataDir = test_path("fixtures/")
+    path <- withr::local_tempfile(intercepts_calculation(expdat_meta = Lrn_meta,
+                                                         Fctrzn = Fctrzn,
+                                                         FctrznDir = FctrznDir,
+                                                         ExpDataDir = ExpDataDir,
+                                                         Seed = 1234567))
+    expect_equal(find_includes(path),
+                 test_path("fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH/",
+                           "EstimatedIntercepts.rds"))
 })
 
 test_that("Zeta_calculation", {
@@ -869,8 +879,58 @@ test_that("E_ZWSq_update", {
 
 test_that("VarExplFun", {
     print("to do")
+    likelihoods <- list("mRNA" = "gaussian",
+                        "miRNA" = "gaussian",
+                        "DNAme" = "poisson",
+                        "SNV" = "bernoulli")
+    YGauss <- YGauss_calculation(view = "mRNA",
+                                 likelihoods = likelihoods,
+                                 YTrg = YTrg,
+                                 Zeta = Zeta,
+                                 Tau = Tau,
+                                 CenterTrg = FALSE,
+                                 PoisRateCstnt = 0.0001)
+    expect_equal(YGauss, YTrg$mRNA)
+    YGauss <- YGauss_calculation(view = "DNAme",
+                                 likelihoods = likelihoods,
+                                 YTrg = YTrg,
+                                 Zeta = Zeta,
+                                 Tau = Tau,
+                                 CenterTrg = FALSE,
+                                 PoisRateCstnt = 0)
+    expect_equal(dim(YGauss), dim(YTrg$DNAme))
+    YGauss <- YGauss_calculation(view = "SNV",
+                                 likelihoods = likelihoods,
+                                 YTrg = YTrg,
+                                 Zeta = Zeta,
+                                 Tau = Tau,
+                                 CenterTrg = FALSE,
+                                 PoisRateCstnt = 0.0001)
+    expect_equal(dim(YGauss), dim(YTrg$SNV))
 })
 
 test_that("transferLearning_function", {
-    print("to do")
+    expected_names <- c("YTrg",
+                        "Fctrzn_Lrn_W0",
+                        "Fctrzn_Lrn_W",
+                        "Fctrzn_Lrn_WSq",
+                        "Tau",
+                        "TauLn" )
+    likelihoods <- c("mRNA" = "gaussian",
+                     "miRNA" = "gaussian",
+                     "DNAme" = "poisson",
+                     "SNV" = "bernoulli")
+    TL_param_exp <- initTransferLearningParamaters(
+      YTrg = YTrg_prep,
+      views = views,
+      expdat_meta_Lrn = Lrn_meta,
+      Fctrzn = Lrn_Fctrzn_init,
+      likelihoods = likelihoods)
+    expect_equal(names(TL_param_exp), expected_names)
+    expect_equal(TL_param_exp$YTrg, YTrg)
+    expect_equal(TL_param_exp$Fctrzn_Lrn_W0, Fctrzn_Lrn_W0)
+    expect_equal(TL_param_exp$Fctrzn_Lrn_W, Fctrzn_Lrn_W)
+    expect_equal(TL_param_exp$Fctrzn_Lrn_WSq, Fctrzn_Lrn_WSq)
+    expect_equal(TL_param_exp$Tau, TL_param$Tau)
+    expect_equal(TL_param_exp$TauLn, TL_param$TauLn)
 })
