@@ -90,8 +90,8 @@ a named list of results. It contains
 \enumerate{
 \item \code{YTrgSS} list of matrices of target dataset
 \item \code{YGauss} list of matrices of pseudo gaussian target dataset
-\item \code{ZMu_0}
-\item \code{ZMu} ...,
+\item \code{ZMu_0} list of ZMu intercepts matrices
+\item \code{ZMu} list of ZMu
 \item \code{Fctrzn_Lrn_W0} list of learning features mean weight matrix
 \item \code{Fctrzn_Lrn_W} list of learning weights matrix
 \item \code{ELBO} numeric value of ELBO

@@ -2,28 +2,32 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{intercepts_calculation}
 \alias{intercepts_calculation}
-\title{ASK_DAVID}
+\title{Intercepts calculation}
 \usage{
 intercepts_calculation(expdat_meta, Fctrzn, FctrznDir, ExpDataDir, Seed, YTmp)
 }
 \arguments{
-\item{expdat_meta}{learning dataset metadata}
+\item{expdat_meta}{the named list of learning dataset factorization
+metadata}
 
-\item{Fctrzn}{learning dataset factorization model}
+\item{Fctrzn}{learning factorization model object (from \code{MOFA})}
 
-\item{FctrznDir}{learning dataset factorization directory name}
+\item{FctrznDir}{the learning dataset factorization directory name}
 
-\item{ExpDataDir}{learning dataset directory name}
+\item{ExpDataDir}{the learning dataset directory name}
 
-\item{Seed}{ASK_DAVID}
+\item{Seed}{random seed number}
 
-\item{YTmp}{ASK_DAVID}
+\item{YTmp}{ASK_DAVID - REMOVE THIS INPUT}
 }
 \value{
-a file
+a file, named EstimatedIntercepts.rds and saved into
+\code{FctrznDir} directory.
 }
 \description{
-ASK_DAVID
+For Gaussian observed data, intercept is calculated for each feature.
+For Poisson and Bernoulli observed data, intercept is calculated using
+the maximum likelihood and the \code{\link{mle}} function.
 }
 \examples{
 # example code
