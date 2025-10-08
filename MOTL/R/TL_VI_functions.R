@@ -940,16 +940,22 @@ intercepts_calculation <- function(expdat_meta,
                                    Seed,
                                    YTmp) {
     #'
-    #' ASK_DAVID
+    #' Intercepts calculation
     #'
-    #' @param expdat_meta learning dataset metadata
-    #' @param Fctrzn learning dataset factorization model
-    #' @param FctrznDir learning dataset factorization directory name
-    #' @param ExpDataDir learning dataset directory name
-    #' @param YTmp ASK_DAVID
-    #' @param Seed ASK_DAVID
+    #' For Gaussian observed data, intercept is calculated for each feature.
+    #' For Poisson and Bernoulli observed data, intercept is calculated using
+    #' the maximum likelihood and the \code{\link{mle}} function.
     #'
-    #' @return a file
+    #' @param expdat_meta the named list of learning dataset factorization
+    #' metadata
+    #' @param Fctrzn learning factorization model object (from \code{MOFA})
+    #' @param FctrznDir the learning dataset factorization directory name
+    #' @param ExpDataDir the learning dataset directory name
+    #' @param YTmp ASK_DAVID - REMOVE THIS INPUT
+    #' @param Seed random seed number
+    #'
+    #' @return a file, named EstimatedIntercepts.rds and saved into
+    #' \code{FctrznDir} directory.
     #'
     #' @importFrom data.table fread
     #' @importFrom stats dpois, dbinom, plogis, setNames
@@ -1564,26 +1570,98 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
     #'
     #' Transfer Learning with Variational Inference
     #'
-    #' @param TL_param list of initialized parameters for transfer learning
-    #' @param MaxIterations maximum number of iteration
-    #' @param MinIterations minimum number of iteration
-    #' @param minFactors minimum number of factors
-    #' @param views ASK_DAVID
-    #' @param likelihoods ASK_DAVID
-    #' @param Fctrzn ASK_DAVID
-    #' @param StartDropFactor after which iteration to start dropping factors
-    #' @param FreqDropFactor how often to drop factors
-    #' @param StartELBO which iteration to start checking ELBO on
-    #' @param FreqELBO how often to assess the ELBO
-    #' @param DropFactorTH factor with lowest max variance, that is less than this, is dropped
-    #' @param ConvergenceIts ASK_DAVID
-    #' @param ConvergenceTH ASK_DAVID
-    #' @param CenterTrg Center Trg with own means or use estimated intercepts
-    #' @param PoisRateCstnt amount to add to the poison rate function to avoid errors
-    #' @param ss_start_time analyse start time (steps before transfer learning)
-    #' @param outputDir output directory name
+    #' This function performs multi-omics matrix factorization with transfer
+    #' learning. The target dataset is factorized using the latent factor values
+    #' inferred from the previous factorization of a learning dataset.
     #'
-    #' @returns list of transfer learning data
+    #'
+    #' This function is called after target dataset is prepared (using
+    #' \code{\link{TargetDataPreparation}}) and parameters initialized (using
+    #' \code{\link{initTransferLearningParamaters}}).
+    #'
+    #'
+    #' \code{TL_param} is a named list of the initialized parameters for
+    #' transfer learning. It contains :
+    #' 1. \code{YTrg}: a named list of matrices. Each matrix corresponds to
+    #' the target dataset.
+    #' 2. \code{Fctrzn_Lrn_W0}: a named list of vectors. Each vector contains
+    #' the features mean weight matrix calculated for the learning dataset using
+    #' MOFA.
+    #' 3. \code{Fctrzn_Lrn_W}: a named list of matrices. Each matrix contains
+    #' the weights matrix calculated for the learning dataset using MOFA.
+    #' 4. \code{Fctrzn_Lrn_WSq}: a named list of matrices. Each matrix contains
+    #' the squared weights matrix calculated for the learning dataset using
+    #' MOFA.
+    #' 5. \code{Tau}: a named list of matrices. Each matrix contains the Tau
+    #' values matrix calculated for the learning dataset using MOFA.
+    #' 6. \code{TauLn}: a named list of matrices. Each matrix contains the
+    #' TauLn values matrix calculated for the learning dataset using MOFA.
+    #'
+    #' Names of each list should be identical (e.g.
+    #' \code{c("mRNA", "miRNA", "DNAme", "SNV")}) and so each element
+    #' corresponds to each omic data.
+    #'
+    #' To create the \code{TL_param} variable, see the
+    #' \code{\link{initTransferLearningParamaters}} function.
+    #'
+    #' @param TL_param a named list of initialized parameters for transfer
+    #' learning. It contains target dataset, weigths and scores matrices from
+    #' matrix factorization of the learning dataset calculated using MOFA. See
+    #' the detail section for more informations.
+    #' @param MaxIterations the maximum number of iterations for the matrix
+    #' factorization convergence. After this number, the factorization is
+    #' stopped.
+    #' @param MinIterations the minimum number of iteration for the matrix
+    #' factorization convergence. Before this number, even if the function
+    #' converges, the factorization is not stopped.
+    #' @param minFactors the minimum number of factors we expected
+    #' @param views a named vector of the target dataset. It should contains
+    #' the same names used for inside the learning dataset.
+    #' @param likelihoods a named vector of the target dataset types. It can
+    #' contain \code{gaussian}, \code{poisson} or \code{bernoulli} depending of
+    #' the data type. Names are the view names.
+    #' @param Fctrzn the learning factorization model object (from \code{MOFA}).
+    #' Creating using the \code{MOFA_functions.py} python script.
+    #' @param StartDropFactor number after which iteration to start dropping
+    #' factors
+    #' @param FreqDropFactor number that corresponds to how often to drop
+    #' factors
+    #' @param StartELBO number after which iteration to start checking ELBO on
+    #' @param FreqELBO number that correspond to how often to assess the ELBO
+    #' @param DropFactorTH threshold number to drop or not factors. If factor
+    #' with lowest maximum variance is below this threshold, it's dropped.
+    #' @param ConvergenceIts number of consecutive checks in a row for which the
+    #' change in ELBO is be
+    #' @param ConvergenceTH threshold number of change in ELBO
+    #' @param CenterTrg if TRUE, center the target dataset during processing, if
+    #' FALSE, leave target dataset uncentered and use estimated learning dataset
+    #' intercepts.
+    #' @param PoisRateCstnt amount number added to the Poisson rate function
+    #' to avoid error. By default is equal to 0.0001. It's used in the pseudo
+    #' gaussian values calculation \code{YGauss}, see
+    #' \code{\link{YGauss_calculation}} and ELBO calculation, see
+    #' \code{\link{ELBO_calculation}}.
+    #' @param ss_start_time time recorded before the preprocessing step starts.
+    #' Generated using \code{\link{Sys.time}} function. By default is NULL.
+    #' @param outputDir output directory name where to save results. By default
+    #' results are saved in the current directory.
+    #'
+    #' @returns a named list of results. It contains
+    #' 1. \code{YTrgSS} list of matrices of target dataset
+    #' 2. \code{YGauss} list of matrices of pseudo gaussian target dataset
+    #' 3. \code{ZMu_0} list of ZMu intercepts matrices
+    #' 4. \code{ZMu} list of ZMu
+    #' 5. \code{Fctrzn_Lrn_W0} list of learning features mean weight matrix
+    #' 6. \code{Fctrzn_Lrn_W} list of learning weights matrix
+    #' 7. \code{ELBO} numeric value of ELBO
+    #' 8. \code{VarExpl} variance explained by each target dataset
+    #' 9. \code{ss_start_time} time when start the analysis (i.e. before the
+    #' preprocessing step)
+    #' 10. \code{ss_fit_start_time} time when start the transfer learning
+    #' analysis
+    #' 11. \code{ss_end_time} time when finish the transfer learning.
+    #'
+    #' Results are also saved into \code{TL_data.rds} file.
     #'
     #' @examples
     #'
