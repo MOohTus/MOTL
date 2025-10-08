@@ -19,7 +19,7 @@ YTrg_prep <- Trg$YTrg_prep
 
 ## PARAMETERS
 CenterTrg <- FALSE
-views <- c("mRNA", "miRNA", "DNAme", "SNV")
+views <- c("mRNA" = "mRNA", "miRNA" = "miRNA", "DNAme" = "DNAme", "SNV" = "SNV")
 smpls <- colnames(YTrg_list$mRNA)
 likelihoods <- Lrn_Fctrzn@model_options$likelihoods
 PoisRateCstnt <- 0.0001

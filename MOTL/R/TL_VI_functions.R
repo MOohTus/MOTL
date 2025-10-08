@@ -178,14 +178,16 @@ TCGATargetDataPreparation <- function(views,
 
     print("Feature prefiltering")
 
+    names(views) <- views
+
     ## Feature variance prefiltering and feature harmonization
-    YTrgSSFull <- sapply(views, function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
+    YTrgSSFull <- lapply(views, function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
         YTrgSS <- TCGATargetDataPrefiltering(view, brcds_SS, SS, YTrgFull, Fctrzn)
         return(YTrgSS)
     }, brcds_SS, SS, YTrgFull, Fctrzn)
 
     ## Reshape data
-    YTrgSSFull <- sapply(views, function(view, YTrgSSFull, smpls) {
+    YTrgSSFull <- lapply(views, function(view, YTrgSSFull, smpls) {
         YTrgSS <- YTrgSSFull[[view]]
         if (is.element(view, c("mRNA", "miRNA", "DNAme"))) {
             YTrgSS <- assay(YTrgSS)
@@ -200,7 +202,7 @@ TCGATargetDataPreparation <- function(views,
 
     ## Normalization and transformation
     print("Normalization and transformation")
-    YTrgSSFull <- sapply(
+    YTrgSSFull <- lapply(
         views,
         preprocessCountsData,
         YTrgSSFull,
@@ -563,13 +565,15 @@ TargetDataPreparation <- function(views,
     #'
     #' @export
 
+    names(views) <- views
+
     ## Feature variance prefiltering and feature harmonization
     print("Feature prefiltering")
-    YTrg <- sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
+    YTrg <- lapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
 
     ## Normalization and transformation
     print("Normalization and transformation")
-    YTrg <- sapply(
+    YTrg <- lapply(
         views,
         preprocessCountsData,
         YTrg,
@@ -641,12 +645,14 @@ initTransferLearningParamaters <- function(YTrg,
     #' @export
     #'
 
+    names(views) <- views
+
     ## Feature names in each data
     YTrgFtrs <- lapply(YTrg, rownames)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX ZERO
     print("Factorized learning set weight intercepts")
-    Fctrzn_Lrn_W0 <- sapply(views, function(view, Fctrzn, YTrgFtrs) {
+    Fctrzn_Lrn_W0 <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_W0 <- Fctrzn@expectations[["W0"]][[view]]
         FtrsKeep <- is.element(names(Fctrzn_Lrn_W0), YTrgFtrs[[view]])
         Fctrzn_Lrn_W0 <- Fctrzn_Lrn_W0[FtrsKeep]
@@ -656,7 +662,7 @@ initTransferLearningParamaters <- function(YTrg,
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX
     print("Factorized learning set weights")
-    Fctrzn_Lrn_W <- sapply(views, function(view, Fctrzn, YTrgFtrs) {
+    Fctrzn_Lrn_W <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_W <- Fctrzn@expectations[["W"]][[view]]
         FtrsKeep <- is.element(rownames(Fctrzn_Lrn_W), YTrgFtrs[[view]])
         Fctrzn_Lrn_W <- Fctrzn_Lrn_W[FtrsKeep, ]
@@ -666,7 +672,7 @@ initTransferLearningParamaters <- function(YTrg,
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX SQUARED
     print("Factorized learning set squared weights")
-    Fctrzn_Lrn_WSq <- sapply(views, function(view, Fctrzn, YTrgFtrs) {
+    Fctrzn_Lrn_WSq <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_WSq <- Fctrzn@expectations[["WSq"]][[view]]
         FtrsKeep <- is.element(rownames(Fctrzn_Lrn_WSq), YTrgFtrs[[view]])
         Fctrzn_Lrn_WSq <- Fctrzn_Lrn_WSq[FtrsKeep, ]
@@ -676,7 +682,7 @@ initTransferLearningParamaters <- function(YTrg,
 
     ## TAU PARAMETER
     print("Tau")
-    Tau <- sapply(views, function(view, Fctrzn, YTrg, YTrgFtrs) {
+    Tau <- lapply(views, function(view, Fctrzn, YTrg, YTrgFtrs) {
         Tau <- Fctrzn@expectations[["Tau"]][[view]]$group0
         FtrsKeep <- is.element(rownames(Tau), YTrgFtrs[[view]])
         Tau <- Tau[FtrsKeep, ]
@@ -693,7 +699,7 @@ initTransferLearningParamaters <- function(YTrg,
 
     ## LOG TAU PARAMETER
     print("LOG Tau")
-    TauLn <- sapply(views, function(view,
+    TauLn <- lapply(views, function(view,
                                     likelihoods,
                                     Fctrzn,
                                     YTrg,
@@ -1545,14 +1551,16 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     #'
     #' @export
 
-    SS_tmp <- sapply(views, function(view, YGauss, ZMu_0, Fctrzn_Lrn_W0) {
+    names(views) <- views
+
+    SS_tmp <- lapply(views, function(view, YGauss, ZMu_0, Fctrzn_Lrn_W0) {
         SS_tmp <- sum((YGauss[[view]] - (matrix(ZMu_0, ncol = 1) %*% t(Fctrzn_Lrn_W0[[view]])))^2, na.rm = TRUE)
         return(SS_tmp)
     }, YGauss, ZMu_0, Fctrzn_Lrn_W0, simplify = FALSE)
 
-    VarExpl <- sapply(views, function(view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp) {
+    VarExpl <- lapply(views, function(view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp) {
         factorNames <- colnames(ZMu)
-        var_expl_tmp <- sapply(factorNames, function(factorName, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp) {
+        var_expl_tmp <- lapply(factorNames, function(factorName, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp) {
             RSS_tmp <- sum((YGauss[[view]] - (cbind(ZMu_0, ZMu[, factorName]) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]][, factorName]))))^2, na.rm = TRUE)
             var_expl_tmp <- 1 - (RSS_tmp / SS_tmp[[view]])
             return(var_expl_tmp)
@@ -1733,10 +1741,10 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
 
                 ## recalculate expectations based on new number of factors
                 ## explanation of these formulae are further down the script
-                E_ZE_W <- sapply(views, E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-                E_Z_SqE_W_Sq <- sapply(views, E_Z_SqE_W_Sq_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-                E_ZSqE_WSq <- sapply(views, E_ZSqE_WSq_update, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-                E_ZWSq <- sapply(views, E_ZWSq_update, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+                E_ZE_W <- lapply(views, E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+                E_Z_SqE_W_Sq <- lapply(views, E_Z_SqE_W_Sq_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+                E_ZSqE_WSq <- lapply(views, E_ZSqE_WSq_update, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+                E_ZWSq <- lapply(views, E_ZWSq_update, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
             }
         }
 
@@ -1744,13 +1752,13 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
             print("Zeta, Tau and YGauss")
 
             ## Zeta values used for non-gaussian data
-            Zeta <- sapply(views, Zeta_calculation, likelihoods, E_ZWSq, E_ZE_W)
+            Zeta <- lapply(views, Zeta_calculation, likelihoods, E_ZWSq, E_ZE_W)
 
             ## Update Tau values which only change for bernoulli data
-            Tau <- sapply(views, Tau_calculation, likelihoods, Zeta, Tau)
+            Tau <- lapply(views, Tau_calculation, likelihoods, Zeta, Tau)
 
             ## Initialise / update Pseudo Y values - called YGauss here
-            YGauss <- sapply(views, YGauss_calculation, likelihoods, YTrgSS, Zeta, Tau, CenterTrg)
+            YGauss <- lapply(views, YGauss_calculation, likelihoods, YTrgSS, Zeta, Tau, CenterTrg)
         }
 
         ## Z variances using initialised / updated tau values and W^2 values
@@ -1797,10 +1805,10 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
         ## E_ZWSq_nd = (A + B)_nd = (square(ZMu%*%t(W)) - square(ZMu)%*%square(t(W)) + ZMuSq%*%t(WSq))_nd
 
         print("Expected")
-        E_ZE_W <- sapply(views, E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-        E_Z_SqE_W_Sq <- sapply(views, E_Z_SqE_W_Sq_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-        E_ZSqE_WSq <- sapply(views, E_ZSqE_WSq_update, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-        E_ZWSq <- sapply(views, E_ZWSq_update, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+        E_ZE_W <- lapply(views, E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+        E_Z_SqE_W_Sq <- lapply(views, E_Z_SqE_W_Sq_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+        E_ZSqE_WSq <- lapply(views, E_ZSqE_WSq_update, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+        E_ZWSq <- lapply(views, E_ZWSq_update, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 
         ## Calculate and check the ELBO
 
