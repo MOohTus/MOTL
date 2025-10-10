@@ -65,7 +65,7 @@ test_that("TCGATargetDataPreparation", {
         transformation = FALSE,
         Lrn_meta
     )
-    expect_equal(names(Trg_exp), views)
+    expect_equal(names(Trg_exp), names(views))
     expect_equal(Trg_exp, YTrg_prep)
 })
 
@@ -85,7 +85,7 @@ test_that("GeoMeans_Lrn_init", {
     # YTrg_list$mRNA <- assay(YTrg_list$mRNA)
     # YTrg_list$miRNA <- assay(YTrg_list$miRNA)
     # YTrg_list$DNAme <- assay(YTrg_list$DNAme)
-    # YTrg_prep <- sapply(views, TargetDataPrefiltering, YTrg_list, Lrn_Fctrzn, smpls)
+    # YTrg_prep <- lapply(views, TargetDataPrefiltering, YTrg_list, Lrn_Fctrzn, smpls)
     GeoMeans <- GeoMeans_Lrn_init("mRNA", Lrn_meta, rownames(YTrg_prep$mRNA))
     expect_equal(length(GeoMeans), length(rownames(YTrg_prep$mRNA)))
     expect_in(GeoMeans, Lrn_meta$GeoMeans_mRNA)
@@ -151,9 +151,9 @@ test_that("TargetDataPrefiltering", {
     YTrg_list$DNAme <- assay(YTrg_list$DNAme)
     ## Change names of some rows - expected removed
     rownames(YTrg_list$mRNA)[c(2, 10)] <- "newNames"
-    rownames(YTrg_list$DNAme)[c(2, 46, 50)] <- "newNames"
+    rownames(YTrg_list$DNAme)[c(2, 28, 30)] <- "newNames"
     ##
-    YTrg <- sapply(views, TargetDataPrefiltering, YTrg_list, Lrn_Fctrzn, smpls)
+    YTrg <- lapply(views, TargetDataPrefiltering, YTrg_list, Lrn_Fctrzn, smpls)
     expect_equal(names(YTrg), names(YTrg_list))
     expect_equal(nrow(YTrg$mRNA), nrow(YTrg_list$mRNA) - 2)
     expect_equal(nrow(YTrg$miRNA), sum(rowVars(YTrg_list$miRNA) > 0))
@@ -171,7 +171,7 @@ test_that("TargetDataPrefiltering", {
 
 test_that("preprocessCountsData_SIMPLE", {
     ## NO TRANSFORMATION NO NORMALIZATION
-    YTrg <- sapply(
+    YTrg <- lapply(
         views,
         preprocessCountsData,
         YTrg_prep,
@@ -187,9 +187,9 @@ test_that("preprocessCountsData_SIMPLE", {
 })
 
 test_that("preprocessCountsData_TRANS", {
-    # YTrg_pre = sapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
+    # YTrg_pre = lapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
     ## TRANSFORMATION NO NORMALIZATION
-    YTrg <- sapply(
+    YTrg <- lapply(
         views,
         preprocessCountsData,
         YTrg_prep,
@@ -270,7 +270,7 @@ test_that("TargetDataPreparation", {
         normalization = FALSE,
         transformation = FALSE
     )
-    expect_equal(names(expdat_prep), views)
+    expect_equal(names(expdat_prep), names(views))
     expect_equal(expdat_prep, YTrg_prep)
 })
 
@@ -322,6 +322,7 @@ test_that("initTransferLearningParamaters", {
 })
 
 test_that("Tau_init", {
+    skip("SKIP BECAUSE MODEL FILE TOO LARGE FOR THE PACKAGE")
     Tau <- Tau_init(views, Lrn_Fctrzn, Lrn_ModelFile)
     expect_equal(nrow(Tau$mRNA$group0), Lrn_Fctrzn@dimensions$D["mRNA"][[1]])
     expect_equal(nrow(Tau$miRNA$group0), Lrn_Fctrzn@dimensions$D["miRNA"][[1]])
@@ -332,7 +333,7 @@ test_that("Tau_init", {
 ##
 test_that("TauLn_calculation_TRUE", {
     ## LrnSimple = TRUE / DON'T USE LrnFctrnDir TAU FILES
-    TauLn <- sapply(views,
+    TauLn <- lapply(views,
         TauLn_calculation,
         likelihoods,
         Lrn_Fctrzn_init,
@@ -396,7 +397,7 @@ test_that("TauLn_calculation_FALSE", {
 
 test_that("WSq_calculation_TRUE", {
     ## LrnSimple = TRUE / DON'T USE LrnFctrnDir W FILES
-    WSq <- sapply(views,
+    WSq <- lapply(views,
         WSq_calculation,
         Lrn_Fctrzn_init,
         Lrn_ModelDir,
@@ -415,7 +416,7 @@ test_that("WSq_calculation_TRUE", {
 test_that("WSq_calculation_FALSE", {
     # skip_issue_2_solve("W files contain 84 samples and model contains 91 samples ... wrong files")
     ## LrnSimple = FALSE / USE LrnFctrnDir W FILES
-    # WSq = sapply(views, WSq_calculation, Lrn_Fctrzn_init, Lrn_ModelDir, LrnSimple = FALSE)
+    # WSq = lapply(views, WSq_calculation, Lrn_Fctrzn_init, Lrn_ModelDir, LrnSimple = FALSE)
     mRNA <- WSq_calculation(
         view = "mRNA",
         Lrn_Fctrzn_init,
@@ -448,7 +449,7 @@ test_that("WSq_calculation_FALSE", {
 
 test_that("W0_calculation_FALSE", {
     ## CenterTrg = FALSE
-    W0 <- sapply(views,
+    W0 <- lapply(views,
         W0_calculation,
         CenterTrg = FALSE,
         Lrn_Fctrzn_init,
@@ -462,7 +463,7 @@ test_that("W0_calculation_FALSE", {
 
 test_that("W0_calculation_TRUE", {
     ## CenterTrg = TRUE
-    W0 <- sapply(views,
+    W0 <- lapply(views,
         W0_calculation,
         CenterTrg = TRUE,
         Lrn_Fctrzn_init,
@@ -479,7 +480,17 @@ test_that("W0_calculation_TRUE", {
 })
 
 test_that("intercepts_calculation", {
-    print("to do")
+    skip("SKIP BECAUSE DATA FILE ARE NOT STORED IN THE PACKAGE")
+    FctrznDir = test_path("fixtures/Lrn_4test_5000D/")
+    ExpDataDir = test_path("fixtures/")
+    path <- withr::local_tempfile(intercepts_calculation(expdat_meta = Lrn_meta,
+                                                         Fctrzn = Fctrzn,
+                                                         FctrznDir = FctrznDir,
+                                                         ExpDataDir = ExpDataDir,
+                                                         Seed = 1234567))
+    expect_equal(find_includes(path),
+                 test_path("fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH/",
+                           "EstimatedIntercepts.rds"))
 })
 
 test_that("Zeta_calculation", {
@@ -561,48 +572,49 @@ test_that("Tau_calculation", {
 })
 
 test_that("YGauss_calculation", {
+    views = c("mRNA" = "mRNA", "miRNA" = "miRNA")
     likelihoods <- list("mRNA" = "gaussian", "miRNA" = "bernoulli")
-    E_ZE_W <- sapply(
-        c("mRNA", "miRNA"),
+    E_ZE_W <- lapply(
+        views,
         E_ZE_W_update,
         TL_param$ZMu_0,
         TL_param$ZMu,
         TL_param$Fctrzn_Lrn_W0,
         TL_param$Fctrzn_Lrn_W
     )
-    E_Z_SqE_W_Sq <- sapply(
-        c("mRNA", "miRNA"),
+    E_Z_SqE_W_Sq <- lapply(
+        views,
         E_Z_SqE_W_Sq_update,
         TL_param$ZMu_0,
         TL_param$ZMu,
         TL_param$Fctrzn_Lrn_W0,
         TL_param$Fctrzn_Lrn_W
     )
-    E_ZSqE_WSq <- sapply(
-        c("mRNA", "miRNA"),
+    E_ZSqE_WSq <- lapply(
+        views,
         E_ZSqE_WSq_update,
         TL_param$ZMu_0,
         TL_param$ZMuSq,
         TL_param$Fctrzn_Lrn_W0,
         TL_param$Fctrzn_Lrn_WSq
     )
-    E_ZWSq <- sapply(
-        c("mRNA", "miRNA"),
+    E_ZWSq <- lapply(
+        views,
         E_ZWSq_update,
         E_ZE_W,
         TL_param$ZMuSq,
         E_Z_SqE_W_Sq,
         E_ZSqE_WSq
     )
-    Zeta <- sapply(
-        c("mRNA", "miRNA"),
+    Zeta <- lapply(
+        views,
         Zeta_calculation,
         likelihoods,
         E_ZWSq,
         E_ZE_W
     )
-    Tau_m <- sapply(
-        c("mRNA", "miRNA"),
+    Tau_m <- lapply(
+        views,
         Tau_calculation,
         likelihoods,
         Zeta,
@@ -709,7 +721,7 @@ test_that("ELBO_calculation", {
         "DNAme" = "poisson",
         "SNV" = "bernoulli"
     )
-    E_ZE_W <- sapply(
+    E_ZE_W <- lapply(
         views,
         E_ZE_W_update,
         TL_param$ZMu_0,
@@ -717,7 +729,7 @@ test_that("ELBO_calculation", {
         TL_param$Fctrzn_Lrn_W0,
         TL_param$Fctrzn_Lrn_W
     )
-    E_Z_SqE_W_Sq <- sapply(
+    E_Z_SqE_W_Sq <- lapply(
         views,
         E_Z_SqE_W_Sq_update,
         TL_param$ZMu_0,
@@ -725,7 +737,7 @@ test_that("ELBO_calculation", {
         TL_param$Fctrzn_Lrn_W0,
         TL_param$Fctrzn_Lrn_W
     )
-    E_ZSqE_WSq <- sapply(
+    E_ZSqE_WSq <- lapply(
         views,
         E_ZSqE_WSq_update,
         TL_param$ZMu_0,
@@ -733,7 +745,7 @@ test_that("ELBO_calculation", {
         TL_param$Fctrzn_Lrn_W0,
         TL_param$Fctrzn_Lrn_WSq
     )
-    E_ZWSq <- sapply(
+    E_ZWSq <- lapply(
         views,
         E_ZWSq_update,
         E_ZE_W,
@@ -741,9 +753,9 @@ test_that("ELBO_calculation", {
         E_Z_SqE_W_Sq,
         E_ZSqE_WSq
     )
-    Zeta <- sapply(views, Zeta_calculation, likelihoods, E_ZWSq, E_ZE_W)
-    Tau_m <- sapply(views, Tau_calculation, likelihoods, Zeta, TL_param$Tau)
-    YGauss <- sapply(
+    Zeta <- lapply(views, Zeta_calculation, likelihoods, E_ZWSq, E_ZE_W)
+    Tau_m <- lapply(views, Tau_calculation, likelihoods, Zeta, TL_param$Tau)
+    YGauss <- lapply(
         views,
         YGauss_calculation,
         likelihoods,
@@ -868,8 +880,58 @@ test_that("E_ZWSq_update", {
 
 test_that("VarExplFun", {
     print("to do")
+    likelihoods <- list("mRNA" = "gaussian",
+                        "miRNA" = "gaussian",
+                        "DNAme" = "poisson",
+                        "SNV" = "bernoulli")
+    YGauss <- YGauss_calculation(view = "mRNA",
+                                 likelihoods = likelihoods,
+                                 YTrg = YTrg,
+                                 Zeta = Zeta,
+                                 Tau = Tau,
+                                 CenterTrg = FALSE,
+                                 PoisRateCstnt = 0.0001)
+    expect_equal(YGauss, YTrg$mRNA)
+    YGauss <- YGauss_calculation(view = "DNAme",
+                                 likelihoods = likelihoods,
+                                 YTrg = YTrg,
+                                 Zeta = Zeta,
+                                 Tau = Tau,
+                                 CenterTrg = FALSE,
+                                 PoisRateCstnt = 0)
+    expect_equal(dim(YGauss), dim(YTrg$DNAme))
+    YGauss <- YGauss_calculation(view = "SNV",
+                                 likelihoods = likelihoods,
+                                 YTrg = YTrg,
+                                 Zeta = Zeta,
+                                 Tau = Tau,
+                                 CenterTrg = FALSE,
+                                 PoisRateCstnt = 0.0001)
+    expect_equal(dim(YGauss), dim(YTrg$SNV))
 })
 
 test_that("transferLearning_function", {
-    print("to do")
+    expected_names <- c("YTrg",
+                        "Fctrzn_Lrn_W0",
+                        "Fctrzn_Lrn_W",
+                        "Fctrzn_Lrn_WSq",
+                        "Tau",
+                        "TauLn" )
+    likelihoods <- c("mRNA" = "gaussian",
+                     "miRNA" = "gaussian",
+                     "DNAme" = "poisson",
+                     "SNV" = "bernoulli")
+    TL_param_exp <- initTransferLearningParamaters(
+      YTrg = YTrg_prep,
+      views = views,
+      expdat_meta_Lrn = Lrn_meta,
+      Fctrzn = Lrn_Fctrzn_init,
+      likelihoods = likelihoods)
+    expect_equal(names(TL_param_exp), expected_names)
+    expect_equal(TL_param_exp$YTrg, YTrg)
+    expect_equal(TL_param_exp$Fctrzn_Lrn_W0, Fctrzn_Lrn_W0)
+    expect_equal(TL_param_exp$Fctrzn_Lrn_W, Fctrzn_Lrn_W)
+    expect_equal(TL_param_exp$Fctrzn_Lrn_WSq, Fctrzn_Lrn_WSq)
+    expect_equal(TL_param_exp$Tau, TL_param$Tau)
+    expect_equal(TL_param_exp$TauLn, TL_param$TauLn)
 })

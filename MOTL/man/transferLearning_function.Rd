@@ -26,47 +26,120 @@ transferLearning_function(
 )
 }
 \arguments{
-\item{TL_param}{list of initialized parameters for transfer learning}
+\item{TL_param}{a named list of initialized parameters for transfer
+learning. It contains target dataset, weigths and scores matrices from
+matrix factorization of the learning dataset calculated using MOFA. See
+the detail section for more informations.}
 
-\item{MaxIterations}{maximum number of iteration}
+\item{MaxIterations}{the maximum number of iterations for the matrix
+factorization convergence. After this number, the factorization is
+stopped.}
 
-\item{MinIterations}{minimum number of iteration}
+\item{MinIterations}{the minimum number of iteration for the matrix
+factorization convergence. Before this number, even if the function
+converges, the factorization is not stopped.}
 
-\item{minFactors}{minimum number of factors}
+\item{minFactors}{the minimum number of factors we expected}
 
-\item{views}{ASK_DAVID}
+\item{views}{a named vector of the target dataset. It should contains
+the same names used for inside the learning dataset.}
 
-\item{likelihoods}{ASK_DAVID}
+\item{likelihoods}{a named vector of the target dataset types. It can
+contain \code{gaussian}, \code{poisson} or \code{bernoulli} depending of
+the data type. Names are the view names.}
 
-\item{Fctrzn}{ASK_DAVID}
+\item{Fctrzn}{the learning factorization model object (from \code{MOFA}).
+Creating using the \code{MOFA_functions.py} python script.}
 
-\item{StartDropFactor}{after which iteration to start dropping factors}
+\item{StartDropFactor}{number after which iteration to start dropping
+factors}
 
-\item{FreqDropFactor}{how often to drop factors}
+\item{FreqDropFactor}{number that corresponds to how often to drop
+factors}
 
-\item{StartELBO}{which iteration to start checking ELBO on}
+\item{StartELBO}{number after which iteration to start checking ELBO on}
 
-\item{FreqELBO}{how often to assess the ELBO}
+\item{FreqELBO}{number that correspond to how often to assess the ELBO}
 
-\item{DropFactorTH}{factor with lowest max variance, that is less than this, is dropped}
+\item{DropFactorTH}{threshold number to drop or not factors. If factor
+with lowest maximum variance is below this threshold, it's dropped.}
 
-\item{ConvergenceIts}{ASK_DAVID}
+\item{ConvergenceIts}{number of consecutive checks in a row for which the
+change in ELBO is be}
 
-\item{ConvergenceTH}{ASK_DAVID}
+\item{ConvergenceTH}{threshold number of change in ELBO}
 
-\item{CenterTrg}{Center Trg with own means or use estimated intercepts}
+\item{CenterTrg}{if TRUE, center the target dataset during processing, if
+FALSE, leave target dataset uncentered and use estimated learning dataset
+intercepts.}
 
-\item{PoisRateCstnt}{amount to add to the poison rate function to avoid errors}
+\item{PoisRateCstnt}{amount number added to the Poisson rate function
+to avoid error. By default is equal to 0.0001. It's used in the pseudo
+gaussian values calculation \code{YGauss}, see
+\code{\link{YGauss_calculation}} and ELBO calculation, see
+\code{\link{ELBO_calculation}}.}
 
-\item{ss_start_time}{analyse start time (steps before transfer learning)}
+\item{ss_start_time}{time recorded before the preprocessing step starts.
+Generated using \code{\link{Sys.time}} function. By default is NULL.}
 
-\item{outputDir}{output directory name}
+\item{outputDir}{output directory name where to save results. By default
+results are saved in the current directory.}
 }
 \value{
-list of transfer learning data
+a named list of results. It contains
+\enumerate{
+\item \code{YTrgSS} list of matrices of target dataset
+\item \code{YGauss} list of matrices of pseudo gaussian target dataset
+\item \code{ZMu_0} list of ZMu intercepts matrices
+\item \code{ZMu} list of ZMu
+\item \code{Fctrzn_Lrn_W0} list of learning features mean weight matrix
+\item \code{Fctrzn_Lrn_W} list of learning weights matrix
+\item \code{ELBO} numeric value of ELBO
+\item \code{VarExpl} variance explained by each target dataset
+\item \code{ss_start_time} time when start the analysis (i.e. before the
+preprocessing step)
+\item \code{ss_fit_start_time} time when start the transfer learning
+analysis
+\item \code{ss_end_time} time when finish the transfer learning.
+}
+
+Results are also saved into \code{TL_data.rds} file.
 }
 \description{
-Transfer Learning with Variational Inference
+This function performs multi-omics matrix factorization with transfer
+learning. The target dataset is factorized using the latent factor values
+inferred from the previous factorization of a learning dataset.
+}
+\details{
+This function is called after target dataset is prepared (using
+\code{\link{TargetDataPreparation}}) and parameters initialized (using
+\code{\link{initTransferLearningParamaters}}).
+
+\code{TL_param} is a named list of the initialized parameters for
+transfer learning. It contains :
+\enumerate{
+\item \code{YTrg}: a named list of matrices. Each matrix corresponds to
+the target dataset.
+\item \code{Fctrzn_Lrn_W0}: a named list of vectors. Each vector contains
+the features mean weight matrix calculated for the learning dataset using
+MOFA.
+\item \code{Fctrzn_Lrn_W}: a named list of matrices. Each matrix contains
+the weights matrix calculated for the learning dataset using MOFA.
+\item \code{Fctrzn_Lrn_WSq}: a named list of matrices. Each matrix contains
+the squared weights matrix calculated for the learning dataset using
+MOFA.
+\item \code{Tau}: a named list of matrices. Each matrix contains the Tau
+values matrix calculated for the learning dataset using MOFA.
+\item \code{TauLn}: a named list of matrices. Each matrix contains the
+TauLn values matrix calculated for the learning dataset using MOFA.
+}
+
+Names of each list should be identical (e.g.
+\code{c("mRNA", "miRNA", "DNAme", "SNV")}) and so each element
+corresponds to each omic data.
+
+To create the \code{TL_param} variable, see the
+\code{\link{initTransferLearningParamaters}} function.
 }
 \examples{
 

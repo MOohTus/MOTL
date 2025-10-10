@@ -19,13 +19,37 @@ YTrg_prep <- Trg$YTrg_prep
 
 ## PARAMETERS
 CenterTrg <- FALSE
-views <- c("mRNA", "miRNA", "DNAme", "SNV")
+views <- c("mRNA" = "mRNA", "miRNA" = "miRNA", "DNAme" = "DNAme", "SNV" = "SNV")
 smpls <- colnames(YTrg_list$mRNA)
 likelihoods <- Lrn_Fctrzn@model_options$likelihoods
 PoisRateCstnt <- 0.0001
 
 ## TRANSFER LEARNING INIT
 TL_param <- readRDS(test_path("fixtures", "TL_param_4test_4omics.rds"))
+
+YTrg <- TL_param$YTrg
+Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
+ZMu_0 <- TL_param$ZMu_0
+ZMu <- TL_param$ZMu
+ZMuSq <- TL_param$ZMuSq
+Tau <- TL_param$Tau
+TauLn <- TL_param$TauLn
+
+## Expectation calculation for each omics
+E_ZE_W <- sapply(views, E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+E_Z_SqE_W_Sq <- sapply(views, E_Z_SqE_W_Sq_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+E_ZSqE_WSq <- sapply(views, E_ZSqE_WSq_update, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+E_ZWSq <- sapply(views, E_ZWSq_update, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+
+## Zeta calculation for each omics
+Zeta <- sapply(views, Zeta_calculation, likelihoods, E_ZWSq, E_ZE_W)
+
+## Tau calculation for each omics
+Tau <- sapply(views, Tau_calculation, likelihoods, Zeta, Tau)
+
+
 
 # ##
 # TL_param <- readRDS(test_path("fixtures", "TL_param.rds"))
@@ -51,6 +75,13 @@ ftrs_wov <- unlist(lapply(strsplit(ftrs, "[.]"), function(x) {
 }))
 df <- data.frame(row.names = ftrs_wov, "sample1" = seq(1:100))
 Lrndat <- data.frame(row.names = Lrn_meta$ftrs_mRNA, "view" = rep("mRNA", length(Lrn_meta$ftrs_mRNA)))
+
+
+
+
+
+
+
 
 
 
