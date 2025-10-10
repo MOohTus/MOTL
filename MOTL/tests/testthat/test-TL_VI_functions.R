@@ -1,7 +1,3 @@
-skip_issue_2_solve <- function(message) {
-    skip(paste0("ISSUE 2 SOLVE - ASK_DAVID - ", message))
-}
-
 test_that("TCGATargetDataPrefiltering", {
     YTrg_mRNA <- TCGATargetDataPrefiltering(
         view = "mRNA",

@@ -53,13 +53,13 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     #'
     #' @export
 
-    print(view)
+    ## print(view)
 
     ## select samples and subset the YTrg
     brcds <- brcds_SS[[paste0("brcds_", view, "_SS")]][[SS]]
     SmplsKeep <- is.element(colnames(YTrgFull[[view]]), brcds$brcds)
     YTrgSS <- YTrgFull[[view]][, SmplsKeep]
-    print(paste0("YTrgSS dimensions: ", dim(YTrgSS)))
+    ## print(paste0("YTrgSS dimensions: ", dim(YTrgSS)))
 
     ## prefiltering, only condition is that variance >0
     if (is.element(view, c("mRNA", "DNAme", "miRNA"))) {
@@ -69,7 +69,7 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     }
     FtrsKeep[is.na(FtrsKeep)] <- FALSE
     YTrgSS <- YTrgSS[FtrsKeep, ]
-    print(paste0("YTrgSS dimensions after prefiltering: ", dim(YTrgSS)))
+    ## print(paste0("YTrgSS dimensions after prefiltering: ", dim(YTrgSS)))
 
     ## harmonize features between Trg SS and Lrn data
     FtrsLrn <- Fctrzn@features_metadata$feature[Fctrzn@features_metadata$view == view]
@@ -176,7 +176,7 @@ TCGATargetDataPreparation <- function(views,
     #'
     #' @export
 
-    print("Feature prefiltering")
+    ## print("Feature prefiltering")
 
     names(views) <- views
 
@@ -201,7 +201,7 @@ TCGATargetDataPreparation <- function(views,
     }, YTrgSSFull, smpls)
 
     ## Normalization and transformation
-    print("Normalization and transformation")
+    ## print("Normalization and transformation")
     YTrgSSFull <- lapply(
         views,
         preprocessCountsData,
@@ -299,7 +299,7 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     FtrsKeep <- rowVars(YTrg, na.rm = TRUE) > 0
     FtrsKeep[is.na(FtrsKeep)] <- FALSE
     YTrg <- YTrg[FtrsKeep, ]
-    print(paste0("YTrg dimensions after prefiltering: ", dim(YTrg)))
+    ## print(paste0("YTrg dimensions after prefiltering: ", dim(YTrg)))
 
     ## harmonize features between Trg and Lrn data
     FtrsLrn <- Fctrzn@features_metadata$feature[Fctrzn@features_metadata$view == view]
@@ -401,8 +401,8 @@ countsNormalization <- function(expdat, GeoMeans) {
         expdat_dds_norm <- estimateSizeFactors(expdat_dds)
         GeoMeans <- NULL
     } else {
-        print("GeoMeans parameter should be 'Trg' or 'Lrn' or a numeric value")
-        stop()
+        ## print("GeoMeans parameter should be 'Trg' or 'Lrn' or a numeric value")
+        stop("GeoMeans parameter should be 'Trg' or 'Lrn' or a numeric value")
     }
 
     ## Extract normalized counts
@@ -481,33 +481,38 @@ preprocessCountsData <- function(view,
     YTrg <- YTrg_list[[view]]
 
     if (view %in% c("mRNA", "miRNA")) {
-        print(view)
+        ## print(view)
 
         ## Normalization
         ## if Lrn, retreive the learning set geomeans and normalize with it
         ## if Trg, normalize without geomeans
         if (is.character(normalization)) {
             if (normalization == "Lrn") {
-                print("Normalize with the Learning set GeoMeans")
+                ## print("Normalize with the Learning set GeoMeans")
+                message("Normalize with the Learning set GeoMeans")
                 GeoMeans <- GeoMeans_Lrn_init(view, expdat_meta_Lrn, rownames(YTrg))
             }
             if (normalization == "Trg") {
-                print("Normalize without GeoMeans")
+                ## print("Normalize without GeoMeans")
+                message("Normalize without GeoMeans")
                 GeoMeans <- normalization
             }
             YTrg <- SummarizedExperiment(assays = list(YTrg))
             YTrg <- countsNormalization(expdat = YTrg, GeoMeans = GeoMeans)
             YTrg <- YTrg$counts
         } else {
-            print("No normalization")
+            ## print("No normalization")
+            message("No normalization")
         }
 
         ## Transformation
         if (transformation) {
-            print("Log transform data")
+            ## print("Log transform data")
+            message("Log transform data")
             YTrg <- countsTransformation(expdat_count = YTrg, TopD = nrow(YTrg))
         } else {
-            print("No transformation")
+            ## print("No transformation")
+            message("No transformation")
         }
     }
 
@@ -568,11 +573,13 @@ TargetDataPreparation <- function(views,
     names(views) <- views
 
     ## Feature variance prefiltering and feature harmonization
-    print("Feature prefiltering")
+    ## print("Feature prefiltering")
+    message("Feature prefiltering")
     YTrg <- lapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
 
     ## Normalization and transformation
-    print("Normalization and transformation")
+    ## print("Normalization and transformation")
+    message("Normalization and transformation")
     YTrg <- lapply(
         views,
         preprocessCountsData,
@@ -651,7 +658,8 @@ initTransferLearningParamaters <- function(YTrg,
     YTrgFtrs <- lapply(YTrg, rownames)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX ZERO
-    print("Factorized learning set weight intercepts")
+    ## print("Factorized learning set weight intercepts")
+    message("Factorized learning set weight intercepts")
     Fctrzn_Lrn_W0 <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_W0 <- Fctrzn@expectations[["W0"]][[view]]
         FtrsKeep <- is.element(names(Fctrzn_Lrn_W0), YTrgFtrs[[view]])
@@ -661,7 +669,8 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrgFtrs)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX
-    print("Factorized learning set weights")
+    ## print("Factorized learning set weights")
+    message("Factorized learning set weights")
     Fctrzn_Lrn_W <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_W <- Fctrzn@expectations[["W"]][[view]]
         FtrsKeep <- is.element(rownames(Fctrzn_Lrn_W), YTrgFtrs[[view]])
@@ -671,7 +680,8 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrgFtrs)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX SQUARED
-    print("Factorized learning set squared weights")
+    ## print("Factorized learning set squared weights")
+    message("Factorized learning set squared weights")
     Fctrzn_Lrn_WSq <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_WSq <- Fctrzn@expectations[["WSq"]][[view]]
         FtrsKeep <- is.element(rownames(Fctrzn_Lrn_WSq), YTrgFtrs[[view]])
@@ -681,7 +691,8 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrgFtrs)
 
     ## TAU PARAMETER
-    print("Tau")
+    ## print("Tau")
+    message("Tau")
     Tau <- lapply(views, function(view, Fctrzn, YTrg, YTrgFtrs) {
         Tau <- Fctrzn@expectations[["Tau"]][[view]]$group0
         FtrsKeep <- is.element(rownames(Tau), YTrgFtrs[[view]])
@@ -698,7 +709,8 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrg, YTrgFtrs)
 
     ## LOG TAU PARAMETER
-    print("LOG Tau")
+    ## print("LOG Tau")
+    message("LOG Tau")
     TauLn <- lapply(views, function(view,
                                     likelihoods,
                                     Fctrzn,
@@ -981,7 +993,8 @@ intercepts_calculation <- function(expdat_meta,
     #' @export
     #'
 
-    print("Estimation of the intercept")
+    ## print("Estimation of the intercept")
+    message("Estimation of the intercept")
 
     fit_start_time <- Sys.time()
 
@@ -1002,7 +1015,7 @@ intercepts_calculation <- function(expdat_meta,
                                               YTmp,
                                               expdat_meta,
                                               Fctrzn) {
-        print(view)
+        ## print(view)
 
         likelihood <- likelihoods[which(names(likelihoods) == view)]
         DTmp <- D[which(names(D) == view)]
@@ -1159,7 +1172,8 @@ intercepts_calculation <- function(expdat_meta,
         file.path(FctrznDir, "EstimatedIntercepts.rds")
     )
 
-    print("finished")
+    ## print("finished")
+    message("finished")
 }
 
 ## --------------------------------------------------------------
@@ -1708,7 +1722,8 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
         # r2[g][m, k] = 1.0 - Res / SS as per paper
         BegK <- dim(Fctrzn_Lrn_W[[1]])[2]
         if ((BegK > minFactors) & (It > 1) & (It > StartDropFactor) & (((It - StartDropFactor - 1) %% FreqDropFactor) == 0)) {
-            print("Drop factors")
+            ## print("Drop factors")
+            message("Drop factors")
 
             VarExpl <- VarExplFun(views = views, YGauss = YGauss, ZMu_0 = ZMu_0, Fctrzn_Lrn_W0 = Fctrzn_Lrn_W0, ZMu = ZMu, Fctrzn_Lrn_W = Fctrzn_Lrn_W)
 
@@ -1749,7 +1764,8 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
         }
 
         if (It > 0) {
-            print("Zeta, Tau and YGauss")
+            ## print("Zeta, Tau and YGauss")
+            message("Zeta, Tau, YGauss")
 
             ## Zeta values used for non-gaussian data
             Zeta <- lapply(views, Zeta_calculation, likelihoods, E_ZWSq, E_ZE_W)
@@ -1762,13 +1778,15 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
         }
 
         ## Z variances using initialised / updated tau values and W^2 values
-        print("Zeta")
+        ## print("Zeta")
+        message("Zeta")
         ZVar <- Reduce("+", lapply(views, ZVar_calculation, Tau, Fctrzn_Lrn_WSq))
         ZVar <- 1 / (ZVar + 1)
 
         ## Initialize or update ZMu values
         if (It == 0) {
-            print("Init Z")
+            ## print("Init Z")
+            message("Init Z")
             # initialise with means of learning set Z
             ZMu <- matrix(
                 data = as.vector(colMeans(Fctrzn@expectations$Z$group0)),
@@ -1781,7 +1799,8 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
             # vector of 1s to act as multiplier of W intercept term
             ZMu_0 <- rep(1, dim(ZVar)[1])
         } else {
-            print("update Z")
+            ## print("update Z")
+            message("update Z")
             # variational updates
             for (k in seq_len(dim(ZMu)[2])) {
                 ZMu_tmp <- Reduce("+", lapply(views, ZMu_calculation, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss))
@@ -1792,7 +1811,8 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
         PrintMessage <- paste0(PrintMessage, " K=", dim(ZMu)[2])
 
         ## Z^2 values
-        print("Z squared")
+        ## print("Z squared")
+        message("Z squared")
         ZMuSq <- ZVar + ZMu^2
 
         ## Some pre calculations - results used in various parts: E_ZE_W and ZZWW
@@ -1804,7 +1824,8 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
         ## And B_nd = \sum_{k} E[(z_{n,k})^2]E[(w_{d,k})^2]
         ## E_ZWSq_nd = (A + B)_nd = (square(ZMu%*%t(W)) - square(ZMu)%*%square(t(W)) + ZMuSq%*%t(WSq))_nd
 
-        print("Expected")
+        ## print("Expected")
+        message("Expected")
         E_ZE_W <- lapply(views, E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
         E_Z_SqE_W_Sq <- lapply(views, E_Z_SqE_W_Sq_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
         E_ZSqE_WSq <- lapply(views, E_ZSqE_WSq_update, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
@@ -1813,7 +1834,8 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
         ## Calculate and check the ELBO
 
         if ((It > 0) & (It >= StartELBO) & (((It - StartELBO) %% FreqELBO) == 0)) {
-            print("ELBO")
+            ## print("ELBO")
+            message("ELBO")
 
             ELBO_L <- do.call(sum, lapply(X = views, FUN = ELBO_calculation, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrgSS, YGauss))
 
@@ -1837,11 +1859,13 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
             }
         }
 
-        print(PrintMessage)
+        ## print(PrintMessage)
+        message(PrintMessage)
 
         ## can the algorithm be stopped?
         if ((It >= 2) & (It >= MinIterations) & (convergence_token >= ConvergenceIts)) {
-            print("converged")
+            ## print("converged")
+            message("converged")
             break
         }
     }
