@@ -24,7 +24,7 @@ Zeta matrix for the current data view
 For the current data view, calculate the Zeta matrix \code{Zeta}.
 }
 \details{
-For bernoulli data, \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}.
+For bernoulli data, \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
 
 For other data type, \eqn{Zeta_nd = E[\sum_{k} z_{n,k} w_{d,k}]}.
 So\eqn{Zeta = ZMu \%*\% t(W)}
@@ -34,22 +34,27 @@ E_ZWSq is calculated using the \code{\link{E_ZWSq_update}} function.
 E_ZE_W is calculated using the \code{\link{E_ZE_W_update}} function.
 
 Zeta values used for non-gaussian data
-for poisson \eqn{Zeta_nd = E\link[=\\sum_{k} z_{n,k} w_{d,k}]{\sum_{k} z_{n,k} w_{d,k}} so Zeta = ZMu \%*\% t(W)}
+for poisson
+\eqn{Zeta_nd = E\link[=\\sum_{k} z_{n,k} w_{d,k}]{\sum_{k} z_{n,k} w_{d,k}} so Zeta = ZMu \%*\% t(W)}
 for bernoulli \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
 }
 \examples{
-view = "mRNA"
-likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+view <- "mRNA"
+likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
-E_ZE_W = E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-E_Z_SqE_W_Sq = E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-E_ZSqE_WSq = E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-E_ZWSq = E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+E_ZE_W <-
+    E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+E_Z_SqE_W_Sq <-
+    E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+E_ZSqE_WSq <-
+    E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+E_ZWSq <-
+    E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 
 Zeta <- Zeta_calculation(view = "mRNA",
-                         likelihoods = likelihoods,
-                         E_ZWSq = E_ZWSq,
-                         E_ZE_W = E_ZE_W)
+                        likelihoods = likelihoods,
+                        E_ZWSq = E_ZWSq,
+                        E_ZE_W = E_ZE_W)
 
 
 }

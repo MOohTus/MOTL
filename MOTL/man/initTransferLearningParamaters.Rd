@@ -16,7 +16,8 @@ initTransferLearningParamaters(
 \item{YTrg}{a named list of target set data. Names correspond to the
 defined views. The list contains \code{matrix}.}
 
-\item{views}{a vector of target data views (e.g. \code{c("mRNA", "miRNA")})}
+\item{views}{a vector of target data views (e.g.
+\code{c("mRNA", "miRNA")})}
 
 \item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 
@@ -66,10 +67,11 @@ views = c("mRNA", "miRNA", "DNAme", "SNV")
 likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
 
-TLparameter <- initTransferLearningParamaters(YTrg = YTrg,
-                                              views = views,
-                                              expdat_meta_Lrn = expdat_meta_Lrn,
-                                              Fctrzn = Fctrzn,
-                                              likelihoods = likelihoods)
+TLparameter <-
+    initTransferLearningParamaters(YTrg = YTrg,
+                                    views = views,
+                                    expdat_meta_Lrn = expdat_meta_Lrn,
+                                    Fctrzn = Fctrzn,
+                                    likelihoods = likelihoods)
 
 }

@@ -63,8 +63,8 @@ not retrieved in the learning dataset. These steps are performed using
 \code{\link{TCGATargetDataPrefiltering}} function.
 
 The mRNA, miRNA et DNAme data are stored into \code{SummarizedExperiment}
-object. For the next step, data have to be stored into a \code{matrix}. SNV
-data are already a matrix.
+object. For the next step, data have to be stored into a \code{matrix}.
+SNV data are already a matrix.
 Then, samples are ordered in the same way between views.
 
 Finally, counts data (e.g. mRNA and miRNA) can be normalized and/or
@@ -73,13 +73,13 @@ transformed using \code{\link{preprocessCountsData}} function.
 \item if \code{normalization = FALSE}: counts data are not normalized
 \item if \code{normalization = "Lrn"}: counts data are normalized using
 the learning dataset geomeans calculated
-\item if \code{normalization = "Trg"}: counts data are normalized without the
-learning dataset geomeans.
+\item if \code{normalization = "Trg"}: counts data are normalized without
+the learning dataset geomeans.
 }
 
 Normalization is performed in the \code{\link{countsNormalization}}
-function using \code{\link{estimateSizeFactors}} from \code{\link{DESeq2}}
-package. And transformation is perform using
+function using \code{\link{estimateSizeFactors}} from
+\code{\link{DESeq2}} package. And transformation is perform using
 \code{\link{countsTransformation}} with a log2 transformation.
 
 Look \code{\link{GeoMeans_Lrn_init}} and \code{\link{GeoMeanFun}} to see
@@ -88,7 +88,15 @@ how learning GeoMeans are calculated.
 \examples{
 # see to create input data
 
-YTrg_prep <- TCGATargetDataPreparation(views, YTrgFull, brcds_SS, SS, Fctrzn, smpls, normalization = "Lrn", expdat_meta_Lrn, transformation = TRUE)
+YTrg_prep <- TCGATargetDataPreparation(views,
+                                        YTrgFull,
+                                        brcds_SS,
+                                        SS,
+                                        Fctrzn,
+                                        smpls,
+                                        normalization = "Lrn",
+                                        expdat_meta_Lrn,
+                                        transformation = TRUE)
 YTrg_prep$mRNA[c(1:5), c(1:5)]
 YTrg_prep$DNAme[c(1:5), c(1:5)]
 
@@ -100,14 +108,15 @@ YTrg_prep$DNAme[c(1:5), c(1:5)]
 # names of your data.
 # You can as much as you want add dataframe on each view.
 
-brcds_SS_ex <- list("brcds_mRNA_SS" =
-                     list(data.frame("brcds" = c("name01", "name02"))),
-                   "brcds_miRNA_SS" =
-                     list(data.frame("brcds" = c("name10", "name11"))))
+brcds_SS_ex <-
+        list("brcds_mRNA_SS" =
+            list(data.frame("brcds" = c("name01", "name02"))),
+        "brcds_miRNA_SS" =
+            list(data.frame("brcds" = c("name10", "name11"))))
 
 # The SS parameter corresponds to the index of the subset you want to
-# prepare for a specific view. It's generated automatically if you used the
-# workflow describe in the github paper
+# prepare for a specific view. It's generated automatically if you used
+# the workflow describe in the github paper
 # \link{https://github.com/david-hirst/MOTL/blob/main/TCGAStudy/00_TCGAstudy_ReadMe.md}
 
 }

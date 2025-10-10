@@ -9,9 +9,9 @@ W0_calculation(view, CenterTrg, Fctrzn, LrnFctrnDir)
 \arguments{
 \item{view}{a character of current view name data}
 
-\item{CenterTrg}{if TRUE, init the weight intercept values using the weight
-values. If FALSE, load the estimated weight intercept values from the
-\code{EstimatedIntercepts.rds} file.}
+\item{CenterTrg}{if TRUE, init the weight intercept values using the
+weight values. If FALSE, load the estimated weight intercept values from
+the \code{EstimatedIntercepts.rds} file.}
 
 \item{Fctrzn}{learning factorization model object (from \code{MOFA})}
 
@@ -34,9 +34,9 @@ matrix. The weight matrix is set to zero.
 \examples{
 
 W0_mRNA = W0_calculation(view = "mRNA",
-                         CenterTrg = TRUE,
-                         Fctrzn = Fctrzn,
-                         LrnFctrnDir = LrnFctrnDir)
+                            CenterTrg = TRUE,
+                            Fctrzn = Fctrzn,
+                            LrnFctrnDir = LrnFctrnDir)
 
 
 }

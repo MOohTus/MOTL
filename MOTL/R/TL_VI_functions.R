@@ -39,10 +39,11 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     #' # names of your data.
     #' # You can as much as you want add dataframe on each view.
     #'
-    #' brcds_SS_ex <- list("brcds_mRNA_SS" =
-    #'                      list(data.frame("brcds" = c("name01", "name02"))),
-    #'                    "brcds_miRNA_SS" =
-    #'                      list(data.frame("brcds" = c("name10", "name11"))))
+    #' brcds_SS_ex <-
+    #'         list("brcds_mRNA_SS" =
+    #'             list(data.frame("brcds" = c("name01", "name02"))),
+    #'         "brcds_miRNA_SS" =
+    #'             list(data.frame("brcds" = c("name10", "name11"))))
     #'
     #' # See the doc to create the input parameter
     #'
@@ -72,7 +73,8 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     ## print(paste0("YTrgSS dimensions after prefiltering: ", dim(YTrgSS)))
 
     ## harmonize features between Trg SS and Lrn data
-    FtrsLrn <- Fctrzn@features_metadata$feature[Fctrzn@features_metadata$view == view]
+    features_metadata <- Fctrzn@features_metadata
+    FtrsLrn <- features_metadata$feature[features_metadata$view == view]
     FtrsCommon <- FtrsLrn[is.element(FtrsLrn, rownames(YTrgSS))]
     FtrsKeep <- is.element(rownames(YTrgSS), FtrsCommon)
     YTrgSS <- YTrgSS[FtrsKeep, ]
@@ -82,14 +84,14 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
 }
 
 TCGATargetDataPreparation <- function(views,
-                                      YTrgFull,
-                                      brcds_SS,
-                                      SS,
-                                      Fctrzn,
-                                      smpls,
-                                      normalization = "Lrn",
-                                      expdat_meta_Lrn,
-                                      transformation = TRUE) {
+                                    YTrgFull,
+                                    brcds_SS,
+                                    SS,
+                                    Fctrzn,
+                                    smpls,
+                                    normalization = "Lrn",
+                                    expdat_meta_Lrn,
+                                    transformation = TRUE) {
     #'
     #' Prepare TCGA target dataset for transfer learning
     #'
@@ -106,25 +108,25 @@ TCGATargetDataPreparation <- function(views,
     #' \code{\link{TCGATargetDataPrefiltering}} function.
     #'
     #' The mRNA, miRNA et DNAme data are stored into \code{SummarizedExperiment}
-    #' object. For the next step, data have to be stored into a \code{matrix}. SNV
-    #' data are already a matrix.
+    #' object. For the next step, data have to be stored into a \code{matrix}.
+    #' SNV data are already a matrix.
     #' Then, samples are ordered in the same way between views.
     #'
     #' Finally, counts data (e.g. mRNA and miRNA) can be normalized and/or
     #' transformed using \code{\link{preprocessCountsData}} function.
-    #'  - if \code{normalization = FALSE}: counts data are not normalized
-    #'  - if \code{normalization = "Lrn"}: counts data are normalized using
-    #'  the learning dataset geomeans calculated
-    #'  - if \code{normalization = "Trg"}: counts data are normalized without the
-    #'  learning dataset geomeans.
+    #' - if \code{normalization = FALSE}: counts data are not normalized
+    #' - if \code{normalization = "Lrn"}: counts data are normalized using
+    #' the learning dataset geomeans calculated
+    #' - if \code{normalization = "Trg"}: counts data are normalized without
+    #' the learning dataset geomeans.
     #'
-    #'  Normalization is performed in the \code{\link{countsNormalization}}
-    #'  function using \code{\link{estimateSizeFactors}} from \code{\link{DESeq2}}
-    #'  package. And transformation is perform using
-    #'  \code{\link{countsTransformation}} with a log2 transformation.
+    #' Normalization is performed in the \code{\link{countsNormalization}}
+    #' function using \code{\link{estimateSizeFactors}} from
+    #' \code{\link{DESeq2}} package. And transformation is perform using
+    #' \code{\link{countsTransformation}} with a log2 transformation.
     #'
-    #'  Look \code{\link{GeoMeans_Lrn_init}} and \code{\link{GeoMeanFun}} to see
-    #'  how learning GeoMeans are calculated.
+    #' Look \code{\link{GeoMeans_Lrn_init}} and \code{\link{GeoMeanFun}} to see
+    #' how learning GeoMeans are calculated.
     #'
     #' @param views a list of target data views (e.g. \code{c("mRNA", "miRNA")})
     #' @param YTrgFull a named list of target set data. Names correspond to the
@@ -152,7 +154,15 @@ TCGATargetDataPreparation <- function(views,
     #' @examples
     #' # see to create input data
     #'
-    #' YTrg_prep <- TCGATargetDataPreparation(views, YTrgFull, brcds_SS, SS, Fctrzn, smpls, normalization = "Lrn", expdat_meta_Lrn, transformation = TRUE)
+    #' YTrg_prep <- TCGATargetDataPreparation(views,
+    #'                                         YTrgFull,
+    #'                                         brcds_SS,
+    #'                                         SS,
+    #'                                         Fctrzn,
+    #'                                         smpls,
+    #'                                         normalization = "Lrn",
+    #'                                         expdat_meta_Lrn,
+    #'                                         transformation = TRUE)
     #' YTrg_prep$mRNA[c(1:5), c(1:5)]
     #' YTrg_prep$DNAme[c(1:5), c(1:5)]
     #'
@@ -164,14 +174,15 @@ TCGATargetDataPreparation <- function(views,
     #' # names of your data.
     #' # You can as much as you want add dataframe on each view.
     #'
-    #' brcds_SS_ex <- list("brcds_mRNA_SS" =
-    #'                      list(data.frame("brcds" = c("name01", "name02"))),
-    #'                    "brcds_miRNA_SS" =
-    #'                      list(data.frame("brcds" = c("name10", "name11"))))
+    #' brcds_SS_ex <-
+    #'         list("brcds_mRNA_SS" =
+    #'             list(data.frame("brcds" = c("name01", "name02"))),
+    #'         "brcds_miRNA_SS" =
+    #'             list(data.frame("brcds" = c("name10", "name11"))))
     #'
     #' # The SS parameter corresponds to the index of the subset you want to
-    #' # prepare for a specific view. It's generated automatically if you used the
-    #' # workflow describe in the github paper
+    #' # prepare for a specific view. It's generated automatically if you used
+    #' # the workflow describe in the github paper
     #' # \link{https://github.com/david-hirst/MOTL/blob/main/TCGAStudy/00_TCGAstudy_ReadMe.md}
     #'
     #' @export
@@ -181,9 +192,14 @@ TCGATargetDataPreparation <- function(views,
     names(views) <- views
 
     ## Feature variance prefiltering and feature harmonization
-    YTrgSSFull <- lapply(views, function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
-        YTrgSS <- TCGATargetDataPrefiltering(view, brcds_SS, SS, YTrgFull, Fctrzn)
-        return(YTrgSS)
+    YTrgSSFull <-
+        lapply(views, function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
+            YTrgSS <- TCGATargetDataPrefiltering(view,
+                                                brcds_SS,
+                                                SS,
+                                                YTrgFull,
+                                                Fctrzn)
+            return(YTrgSS)
     }, brcds_SS, SS, YTrgFull, Fctrzn)
 
     ## Reshape data
@@ -226,10 +242,10 @@ mRNA_addVersion <- function(expdat, Lrndat) {
     #' Format mRNA features to match with learning dataset
     #'
     #'
-    #' Get mRNA ensembl ID version from learning dataset (e.g. ENSG00000122133.17)
-    #' and attach to the corresponding mRNA ensembl ID in the target dataset.
-    #' Feature names need to be similar between target dataset and learning
-    #' dataset.
+    #' Get mRNA ensembl ID version from learning dataset
+    #' (e.g. ENSG00000122133.17) and attach to the corresponding mRNA ensembl
+    #' ID in the target dataset. Feature names need to be similar between
+    #' target dataset and learning dataset.
     #'
     #'
     #' @param expdat the mRNA matrix from the target dataset with genes in rows.
@@ -245,8 +261,14 @@ mRNA_addVersion <- function(expdat, Lrndat) {
     #' @import dplyr
     #'
     #' @examples
-    #' Lrndat <- data.frame("view" = c("mRNA", "mRNA", "mRNA"), row.names = c("ENSG00000122133.17", "ENSG00000122194.19", "ENSG00000119411.11"))
-    #' expdat <- data.frame("sample1" = c(1, 52, 4), row.names = c("ENSG00000122133", "ENSG00000122194", "ENSG00000119411"))
+    #' Lrn_names <-
+    #'         c("ENSG00000122133.17", "ENSG00000122194.9", "ENSG00000119411.1")
+    #' Lrn_views <- c("mRNA", "mRNA", "mRNA")
+    #' expdat_names <-
+    #'         c("ENSG00000122133", "ENSG00000122194", "ENSG00000119411")
+    #'
+    #' Lrndat <- data.frame("view" = Lrn_views, row.names = Lrn_names)
+    #' expdat <- data.frame("sample1" = c(1, 52, 4), row.names = expdat_names)
     #' expdat_prep <- mRNA_addVersion(expdat, Lrndat)
     #' expdat
     #' expdat_prep
@@ -276,13 +298,13 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     #' 3. Order columns according the order of samples (i.e. \code{smpls})
     #'
     #' @param view current view data name (e.g. "mRNA", or "DNAme")
-    #' @param YTrg_list a named list of target data. Names correspond to the views
-    #' defined and the corresponding data are saved into \code{matrix}.
+    #' @param YTrg_list a named list of target data. Names correspond to the
+    #' views defined and the corresponding data are saved into \code{matrix}.
     #' @param Fctrzn the learning factorization model object (from \code{MOFA})
     #' @param smpls an ordered vector of sample names
     #'
-    #' @returns a matrix that contains the prepared data for the current view with
-    #' the sample ordered.
+    #' @returns a matrix that contains the prepared data for the current view
+    #' with the sample ordered.
     #'
     #' @importFrom matrixStats rowVars
     #'
@@ -302,7 +324,8 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     ## print(paste0("YTrg dimensions after prefiltering: ", dim(YTrg)))
 
     ## harmonize features between Trg and Lrn data
-    FtrsLrn <- Fctrzn@features_metadata$feature[Fctrzn@features_metadata$view == view]
+    features_metadata <- Fctrzn@features_metadata
+    FtrsLrn <- features_metadata$feature[features_metadata$view == view]
     FtrsCommon <- FtrsLrn[is.element(FtrsLrn, rownames(YTrg))]
     FtrsKeep <- is.element(rownames(YTrg), FtrsCommon)
     YTrg <- YTrg[FtrsKeep, ]
@@ -326,9 +349,8 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
     #'
     #' @examples
     #'
-    #' GeoMeans_Lrn <- GeoMeans_Lrn_init(view = "mRNA",
-    #'                                   expdat_meta_Lrn,
-    #'                                   YTrgFtrs)
+    #' GeoMeans_Lrn <-
+    #'         GeoMeans_Lrn_init(view = "mRNA", expdat_meta_Lrn, YTrgFtrs)
     #'
     #' @export
 
@@ -374,7 +396,8 @@ countsNormalization <- function(expdat, GeoMeans) {
     #' @param expdat SE object of experimental data (could be miRNA or mRNA)
     #' @param GeoMeans "Trg", "Lrn" or vector of numerics
     #'
-    #' @returns list of data.frame of the counts normalized and GeoMeans calculated
+    #' @returns list of data.frame of the counts normalized and GeoMeans
+    #' calculated
     #'
     #' @import DESeq2
     #'
@@ -392,21 +415,23 @@ countsNormalization <- function(expdat, GeoMeans) {
         expdat_dds_norm <- estimateSizeFactors(expdat_dds, geoMeans = GeoMeans)
         GeoMeans <- NULL
     } else if (GeoMeans == "Lrn") {
-        ## calculate geometric means to use for normalization of both learning and target sets
+        ## calculate geometric means to use for normalization of
+        ## both learning and target sets
         GeoMeans <- apply(counts(expdat_dds), 1, GeoMeanFun)
         ## normalization
-        expdat_dds_norm <- estimateSizeFactors(expdat_dds, geoMeans = as.vector(GeoMeans))
+        expdat_dds_norm <-
+            estimateSizeFactors(expdat_dds, geoMeans = as.vector(GeoMeans))
     } else if (GeoMeans == "Trg") {
         ## estimate size factors
         expdat_dds_norm <- estimateSizeFactors(expdat_dds)
         GeoMeans <- NULL
     } else {
-        ## print("GeoMeans parameter should be 'Trg' or 'Lrn' or a numeric value")
         stop("GeoMeans parameter should be 'Trg' or 'Lrn' or a numeric value")
     }
 
     ## Extract normalized counts
-    expdat_counts_norm <- list("counts" = counts(expdat_dds_norm, normalized = TRUE))
+    expdat_counts_norm <-
+        list("counts" = counts(expdat_dds_norm, normalized = TRUE))
 
     ## Save GeoMeans
     expdat_counts_norm$GeoMeans <- GeoMeans
@@ -430,8 +455,9 @@ countsTransformation <- function(expdat_count, TopD) {
 
     ## log transform and filter to keep only most variable
     expdat_counts_log <- log2(expdat_count + 1)
-    FtrsKeep <- base::rank(-rowVars(expdat_counts_log, na.rm = TRUE, useNames = FALSE),
-        ties.method = "first"
+    FtrsKeep <-
+        base::rank(-rowVars(expdat_counts_log, na.rm = TRUE, useNames = FALSE),
+            ties.method = "first"
     ) <= TopD
     expdat_counts_fltr <- expdat_counts_log[FtrsKeep, ]
     return(expdat_counts_fltr)
@@ -439,10 +465,10 @@ countsTransformation <- function(expdat_count, TopD) {
 
 
 preprocessCountsData <- function(view,
-                                 YTrg_list,
-                                 normalization = FALSE,
-                                 expdat_meta_Lrn,
-                                 transformation = FALSE) {
+                                YTrg_list,
+                                normalization = FALSE,
+                                expdat_meta_Lrn,
+                                transformation = FALSE) {
     #'
     #' Preprocess counts data
     #'
@@ -470,9 +496,9 @@ preprocessCountsData <- function(view,
     #'
     #' @examples
     #' mRNA <- preprocessCountsData(view = "mRNA", YTrg_list = YTrg_list,
-    #'                              normalization = "Trg",
-    #'                              expdat_meta_Lrn = expdat_meta_Lrn,
-    #'                              transformation = TRUE)
+    #'                            normalization = "Trg",
+    #'                            expdat_meta_Lrn = expdat_meta_Lrn,
+    #'                            transformation = TRUE)
     #'
     #'
     #' @export
@@ -490,7 +516,8 @@ preprocessCountsData <- function(view,
             if (normalization == "Lrn") {
                 ## print("Normalize with the Learning set GeoMeans")
                 message("Normalize with the Learning set GeoMeans")
-                GeoMeans <- GeoMeans_Lrn_init(view, expdat_meta_Lrn, rownames(YTrg))
+                GeoMeans <-
+                    GeoMeans_Lrn_init(view, expdat_meta_Lrn, rownames(YTrg))
             }
             if (normalization == "Trg") {
                 ## print("Normalize without GeoMeans")
@@ -521,12 +548,12 @@ preprocessCountsData <- function(view,
 }
 
 TargetDataPreparation <- function(views,
-                                  YTrg_list,
-                                  Fctrzn,
-                                  smpls,
-                                  expdat_meta_Lrn,
-                                  normalization = FALSE,
-                                  transformation = FALSE) {
+                                    YTrg_list,
+                                    Fctrzn,
+                                    smpls,
+                                    expdat_meta_Lrn,
+                                    normalization = FALSE,
+                                    transformation = FALSE) {
     #'
     #' Target data preparation for transfer learning
     #'
@@ -538,7 +565,8 @@ TargetDataPreparation <- function(views,
     #' Preparation of data consists on removing features with variance equal to
     #' zero, features harmonization between target and learning data and column
     #' ordering between views. Preparation is perform using the
-    #' \code{\link{TargetDataPrefiltering}} function. See the doc for more details.
+    #' \code{\link{TargetDataPrefiltering}} function. See the doc for more
+    #' details.
     #'
     #' It could be possible to normalize and or transform counts data using the
     #' \code{\link{preprocessCountsData}} function. Normalization can be done
@@ -561,11 +589,11 @@ TargetDataPreparation <- function(views,
     #'
     #' @examples
     #' YTrg_prep <- TargetDataPreparation(views = c("mRNA", "miRNA", "DNAme"),
-    #'                                    YTrg_list = YTrg_list,
-    #'                                    Fctrzn = Fctrzn, smpls = smpls,
-    #'                                    expdat_meta_Lrn = expdat_meta_Lrn,
-    #'                                    normalization = FALSE,
-    #'                                    transformation = FALSE)
+    #'                                     YTrg_list = YTrg_list,
+    #'                                     Fctrzn = Fctrzn, smpls = smpls,
+    #'                                     expdat_meta_Lrn = expdat_meta_Lrn,
+    #'                                     normalization = FALSE,
+    #'                                     transformation = FALSE)
     #'
     #'
     #' @export
@@ -594,10 +622,10 @@ TargetDataPreparation <- function(views,
 }
 
 initTransferLearningParamaters <- function(YTrg,
-                                           views,
-                                           expdat_meta_Lrn,
-                                           Fctrzn,
-                                           likelihoods) {
+                                            views,
+                                            expdat_meta_Lrn,
+                                            Fctrzn,
+                                            likelihoods) {
     #'
     #' Transfer learning parameters initialization
     #'
@@ -619,7 +647,8 @@ initTransferLearningParamaters <- function(YTrg,
     #'
     #' @param YTrg a named list of target set data. Names correspond to the
     #' defined views. The list contains \code{matrix}.
-    #' @param views a vector of target data views (e.g. \code{c("mRNA", "miRNA")})
+    #' @param views a vector of target data views (e.g.
+    #' \code{c("mRNA", "miRNA")})
     #' @param expdat_meta_Lrn the list of learning set factorization metadata
     #' @param Fctrzn the learning factorization model object (from \code{MOFA})
     #' @param likelihoods a named list of data types. The list can contain
@@ -643,11 +672,12 @@ initTransferLearningParamaters <- function(YTrg,
     #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
     #'
-    #' TLparameter <- initTransferLearningParamaters(YTrg = YTrg,
-    #'                                               views = views,
-    #'                                               expdat_meta_Lrn = expdat_meta_Lrn,
-    #'                                               Fctrzn = Fctrzn,
-    #'                                               likelihoods = likelihoods)
+    #' TLparameter <-
+    #'     initTransferLearningParamaters(YTrg = YTrg,
+    #'                                     views = views,
+    #'                                     expdat_meta_Lrn = expdat_meta_Lrn,
+    #'                                     Fctrzn = Fctrzn,
+    #'                                     likelihoods = likelihoods)
     #'
     #' @export
     #'
@@ -664,7 +694,8 @@ initTransferLearningParamaters <- function(YTrg,
         Fctrzn_Lrn_W0 <- Fctrzn@expectations[["W0"]][[view]]
         FtrsKeep <- is.element(names(Fctrzn_Lrn_W0), YTrgFtrs[[view]])
         Fctrzn_Lrn_W0 <- Fctrzn_Lrn_W0[FtrsKeep]
-        Fctrzn_Lrn_W0 <- Fctrzn_Lrn_W0[match(YTrgFtrs[[view]], names(Fctrzn_Lrn_W0))]
+        Fctrzn_Lrn_W0 <-
+            Fctrzn_Lrn_W0[match(YTrgFtrs[[view]], names(Fctrzn_Lrn_W0))]
         return(Fctrzn_Lrn_W0)
     }, Fctrzn, YTrgFtrs)
 
@@ -675,7 +706,8 @@ initTransferLearningParamaters <- function(YTrg,
         Fctrzn_Lrn_W <- Fctrzn@expectations[["W"]][[view]]
         FtrsKeep <- is.element(rownames(Fctrzn_Lrn_W), YTrgFtrs[[view]])
         Fctrzn_Lrn_W <- Fctrzn_Lrn_W[FtrsKeep, ]
-        Fctrzn_Lrn_W <- Fctrzn_Lrn_W[match(YTrgFtrs[[view]], rownames(Fctrzn_Lrn_W)), ]
+        Fctrzn_Lrn_W <-
+            Fctrzn_Lrn_W[match(YTrgFtrs[[view]], rownames(Fctrzn_Lrn_W)), ]
         return(Fctrzn_Lrn_W)
     }, Fctrzn, YTrgFtrs)
 
@@ -686,7 +718,8 @@ initTransferLearningParamaters <- function(YTrg,
         Fctrzn_Lrn_WSq <- Fctrzn@expectations[["WSq"]][[view]]
         FtrsKeep <- is.element(rownames(Fctrzn_Lrn_WSq), YTrgFtrs[[view]])
         Fctrzn_Lrn_WSq <- Fctrzn_Lrn_WSq[FtrsKeep, ]
-        Fctrzn_Lrn_WSq <- Fctrzn_Lrn_WSq[match(YTrgFtrs[[view]], rownames(Fctrzn_Lrn_WSq)), ]
+        Fctrzn_Lrn_WSq <-
+          Fctrzn_Lrn_WSq[match(YTrgFtrs[[view]], rownames(Fctrzn_Lrn_WSq)), ]
         return(Fctrzn_Lrn_WSq)
     }, Fctrzn, YTrgFtrs)
 
@@ -760,13 +793,14 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #' Extract the Tau matrix from the MOFA object \code{Fctrzn} for each view.
     #' More explanation about Tau.
     #'
-    #' @param viewsLrn the list of learning data views. For TCGA learning data it
-    #' will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).
+    #' @param viewsLrn the list of learning data views. For TCGA learning data
+    #' it will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).
     #' @param Fctrzn the learning factorization from \code{\link{MOFA2}}.
     #' @param InputModel the factorization model object of learning set
     #' \code{\link{MOFA2}}
     #'
-    #' @returns a named list of Tau matrices. Names correspond to the view names.
+    #' @returns a named list of Tau matrices. Names correspond to the view
+    #' names.
     #'
     #' @importFrom rhdf5 h5read
     #'
@@ -776,8 +810,8 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #' Fctrzn <- load_model(file = InputModel)
     #'
     #' Tau_list <- Tau_init(viewsLrn = viewsLrn,
-    #'                      Fctrzn = Fctrzn,
-    #'                      InputModel = InputModel)
+    #'                     Fctrzn = Fctrzn,
+    #'                     InputModel = InputModel)
     #'
     #' @export
 
@@ -788,7 +822,8 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     ## For each view, transfer rownames into the corresponding Tau matrix
     for (i in seq_len(length(viewsLrn))) {
         view <- viewsLrn[i]
-        rownames(Tau[[view]]$group0) <- rownames(Fctrzn@expectations[["W"]][[view]])
+        rownames(Tau[[view]]$group0) <-
+            rownames(Fctrzn@expectations[["W"]][[view]])
     }
 
     # Return a named list of Tau matrix
@@ -798,10 +833,10 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
 ## MT - maybe change name into TauLn_init ?
 ## MT - view = viewsLrn ?
 TauLn_calculation <- function(view,
-                              likelihoodsLrn,
-                              Fctrzn,
-                              LrnFctrnDir,
-                              LrnSimple = TRUE) {
+                                likelihoodsLrn,
+                                Fctrzn,
+                                LrnFctrnDir,
+                                LrnSimple = TRUE) {
     #'
     #' Initialization of the log(Tau) values
     #'
@@ -821,8 +856,8 @@ TauLn_calculation <- function(view,
     #' @param LrnSimple if TRUE, initialization uses the Tau values. If FALSE,
     #' imports values from a .csv file.
     #' @param Fctrzn learning factorization model object (from \code{MOFA})
-    #' @param LrnFctrnDir directory where log(Tau) values are saved. Files should
-    #' be named like \code{"TauLn_mRNA.csv"}.
+    #' @param LrnFctrnDir directory where log(Tau) values are saved. Files
+    #' should be named like \code{"TauLn_mRNA.csv"}.
     #'
     #' @returns the log(Tau) matrix for the current view
     #'
@@ -834,9 +869,9 @@ TauLn_calculation <- function(view,
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
     #'
     #' TauLn_mRNA = TauLn_calculation(view = "mRNA",
-    #'                                likelihoodsLrn = likelihoods,
-    #'                                Fctrzn = Fctrzn,
-    #'                                LrnFctrnDir = LrnFctrnDir)
+    #'                                 likelihoodsLrn = likelihoods,
+    #'                                 Fctrzn = Fctrzn,
+    #'                                 LrnFctrnDir = LrnFctrnDir)
     #'
     #'
     #' @export
@@ -865,17 +900,17 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     #' This function load or calculate the squares weight values.
     #'
     #' The squared weight values can be load from a .csv file. This file can be
-    #' created during the factorization of the learning data. See the documentation
-    #' to learn how to create this file. The file name should follow this format:
-    #' \code{WSq_mRNA.csv}.
+    #' created during the factorization of the learning data. See the
+    #' documentation to learn how to create this file. The file name should
+    #' follow this format: \code{WSq_mRNA.csv}.
     #'
     #' The squared weight valued can also be calculated using the weight values
-    #' calculated during the factorization of the learning data. These values are
-    #' saved in the \code{Fctrzn} variable. See the documentation.
+    #' calculated during the factorization of the learning data. These values
+    #' are saved in the \code{Fctrzn} variable. See the documentation.
     #'
     #' "factors were ordered in the same way as for other latent variables
-    #' if any factors are dropped due to being inactive, they are at the end of the dataset
-    #' so can filter based on dimension of W" <-- keep ?
+    #' if any factors are dropped due to being inactive, they are at the end of
+    #' the dataset so can filter based on dimension of W" <-- keep ?
     #'
     #' @param view a character of current view name data
     #' @param LrnSimple if TRUE, calculates the squared weight values \code{WSq}
@@ -891,9 +926,9 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     #' @examples
     #'
     #' WSq_mRNA = WSq_calculation(view = "mRNA",
-    #'                              Fctrzn = Fctrzn,
-    #'                              LrnFctrnDir = LrnFctrnDir,
-    #'                              LrnSimple = TRUE)
+    #'                             Fctrzn = Fctrzn,
+    #'                             LrnFctrnDir = LrnFctrnDir,
+    #'                             LrnSimple = TRUE)
     #'
     #'
     #' @export
@@ -901,8 +936,11 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     if (LrnSimple) {
         WSq <- (Fctrzn@expectations[["W"]][[view]])^2
     } else {
-        WSq <- read.csv(file.path(LrnFctrnDir, paste0("WSq_", view, ".csv")), header = FALSE)
-        WSq <- as.matrix(WSq)[, seq_len(dim(Fctrzn@expectations[["W"]][[view]])[2])]
+        WSq <-
+            read.csv(file.path(LrnFctrnDir, paste0("WSq_", view, ".csv")),
+                    header = FALSE)
+        WSq <-
+            as.matrix(WSq)[, seq_len(dim(Fctrzn@expectations[["W"]][[view]])[2])]
         rownames(WSq) <- rownames(Fctrzn@expectations[["W"]][[view]])
     }
     return(WSq)
@@ -923,9 +961,9 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     #' matrix. The weight matrix is set to zero.
     #'
     #' @param view a character of current view name data
-    #' @param CenterTrg if TRUE, init the weight intercept values using the weight
-    #' values. If FALSE, load the estimated weight intercept values from the
-    #' \code{EstimatedIntercepts.rds} file.
+    #' @param CenterTrg if TRUE, init the weight intercept values using the
+    #' weight values. If FALSE, load the estimated weight intercept values from
+    #' the \code{EstimatedIntercepts.rds} file.
     #' @param Fctrzn learning factorization model object (from \code{MOFA})
     #' @param LrnFctrnDir directory where the extimated intercepts file is.
     #'
@@ -934,9 +972,9 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     #' @examples
     #'
     #' W0_mRNA = W0_calculation(view = "mRNA",
-    #'                          CenterTrg = TRUE,
-    #'                          Fctrzn = Fctrzn,
-    #'                          LrnFctrnDir = LrnFctrnDir)
+    #'                             CenterTrg = TRUE,
+    #'                             Fctrzn = Fctrzn,
+    #'                             LrnFctrnDir = LrnFctrnDir)
     #'
     #'
     #' @export
@@ -944,7 +982,8 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     if (CenterTrg) {
         W0 <- Fctrzn@expectations[["W"]][[view]][, 1] * 0
     } else {
-        EstInts <- base::readRDS(file.path(LrnFctrnDir, "EstimatedIntercepts.rds"))
+        EstInts <-
+            base::readRDS(file.path(LrnFctrnDir, "EstimatedIntercepts.rds"))
         EstInts <- EstInts$Intercepts
         W0 <- EstInts[[view]]
     }
@@ -952,11 +991,11 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
 }
 
 intercepts_calculation <- function(expdat_meta,
-                                   Fctrzn,
-                                   FctrznDir,
-                                   ExpDataDir,
-                                   Seed,
-                                   YTmp) {
+                                    Fctrzn,
+                                    FctrznDir,
+                                    ExpDataDir,
+                                    Seed,
+                                    YTmp) {
     #'
     #' Intercepts calculation
     #'
@@ -980,15 +1019,13 @@ intercepts_calculation <- function(expdat_meta,
     #' @importFrom stats4 mle
     #'
     #' @examples
-    #' # example code
+    #' #
     #' intercepts_calculation(expdat_meta,
-    #'                        Fctrzn,
-    #'                        FctrznDir,
-    #'                        ExpDataDir,
-    #'                        Seed,
-    #'                        YTmp)
-    #'
-    #'
+    #'                         Fctrzn,
+    #'                         FctrznDir,
+    #'                         ExpDataDir,
+    #'                         Seed,
+    #'                         YTmp)
     #'
     #' @export
     #'
@@ -1010,24 +1047,27 @@ intercepts_calculation <- function(expdat_meta,
     # for other data will try mle with a naive estimator as backup
 
     intercepts_list <- lapply(views, function(view,
-                                              likelihoods,
-                                              D,
-                                              YTmp,
-                                              expdat_meta,
-                                              Fctrzn) {
+                                                likelihoods,
+                                                D,
+                                                YTmp,
+                                                expdat_meta,
+                                                Fctrzn) {
         ## print(view)
 
         likelihood <- likelihoods[which(names(likelihoods) == view)]
         DTmp <- D[which(names(D) == view)]
 
         # YTmp <- read.table(file = file.path(ExpDataDir, paste0(view,'.csv')), sep = ",")
-        YTmp <- as.data.frame(fread(file = file.path(ExpDataDir, paste0(view, ".csv")), sep = ","))
+        YTmpFileName <- file.path(ExpDataDir, paste0(view, ".csv"))
+        YTmp <- as.data.frame(fread(file = YTmpFileName, sep = ","))
         YTmp <- t(as.matrix(YTmp))
         rownames(YTmp) <- expdat_meta$smpls
-        colnames(YTmp) <- expdat_meta[[which(names(expdat_meta) == paste0("ftrs_", view))]]
+        colnames(YTmp) <-
+            expdat_meta[[which(names(expdat_meta) == paste0("ftrs_", view))]]
 
-        ZWTmp <- Fctrzn@expectations$Z$group0 %*%
-            t(Fctrzn@expectations$W[[which(names(Fctrzn@expectations$W) == view)]])
+        expectations <- Fctrzn@expectations
+        ZWTmp <- expectations$Z$group0 %*%
+            t(expectations$W[[which(names(expectations$W) == view)]])
 
         # mean(colnames(YTmp)==colnames(ZWTmp))
         # mean(rownames(YTmp)==rownames(ZWTmp))
@@ -1083,18 +1123,22 @@ intercepts_calculation <- function(expdat_meta,
                 return(intercept)
             }, YTmp, ZWTmp))
 
-            Intercepts <- setNames(Intercepts_df$intercept, row.names(Intercepts_df))
-            InterceptsMethod <- setNames(Intercepts_df$Method, row.names(Intercepts_df))
+            Intercepts <-
+                setNames(Intercepts_df$intercept, row.names(Intercepts_df))
+            InterceptsMethod <-
+                setNames(Intercepts_df$Method, row.names(Intercepts_df))
         } else if (likelihood == "bernoulli") {
             ## naive intercept based on approximation to feature means of ZW
-            InterceptsNaive <- log(colMeans(YTmp, na.rm = TRUE) / (1 - colMeans(YTmp, na.rm = TRUE)))
+            InterceptsNaive <-
+                log(colMeans(YTmp, na.rm = TRUE) / (1 - colMeans(YTmp, na.rm = TRUE)))
 
             ## mle estimate of intercept for ZW
             ## if optimiser fails for a feature will return the naive estimate
 
             # DTmp <- 10
 
-            Intercepts_df <- do.call(rbind, lapply(seq_len(DTmp), function(d, YTmp, ZWTmp) {
+            Intercepts_df <-
+                do.call(rbind, lapply(seq_len(DTmp), function(d, YTmp, ZWTmp) {
                 ## compute for each feature vector
 
                 YTmp_d <- YTmp[, d]
@@ -1113,7 +1157,8 @@ intercepts_calculation <- function(expdat_meta,
 
                 ## try to solve it and use the result otherwise use the naive estimate
 
-                interceptMLEfit <- try(mle(nLL, start = list(InterceptMLE = InterceptsNaive[d]))@coef[1])
+                interceptMLEfit <-
+                  try(mle(nLL, start = list(InterceptMLE = InterceptsNaive[d]))@coef[1])
 
                 if (is(interceptMLEfit, "try-error")) {
                     InterceptsTmp <- InterceptsNaive[d]
@@ -1187,7 +1232,7 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     #'
     #' For the current data view, calculate the Zeta matrix \code{Zeta}.
     #'
-    #' For bernoulli data, \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}.
+    #' For bernoulli data, \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
     #'
     #' For other data type, \eqn{Zeta_nd = E[\sum_{k} z_{n,k} w_{d,k}]}.
     #' So\eqn{Zeta = ZMu %*% t(W)}
@@ -1197,7 +1242,8 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     #' E_ZE_W is calculated using the \code{\link{E_ZE_W_update}} function.
     #'
     #' Zeta values used for non-gaussian data
-    #' for poisson \eqn{Zeta_nd = E[\sum_{k} z_{n,k} w_{d,k}] so Zeta = ZMu %*% t(W)}
+    #' for poisson
+    #' \eqn{Zeta_nd = E[\sum_{k} z_{n,k} w_{d,k}] so Zeta = ZMu %*% t(W)}
     #' for bernoulli \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
     #'
     #' @param view a character of current view name data (e.g. \code{mRNA})
@@ -1210,18 +1256,22 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     #' @returns Zeta matrix for the current data view
     #'
     #' @examples
-    #' view = "mRNA"
-    #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+    #' view <- "mRNA"
+    #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
-    #' E_ZE_W = E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-    #' E_Z_SqE_W_Sq = E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-    #' E_ZSqE_WSq = E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-    #' E_ZWSq = E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+    #' E_ZE_W <-
+    #'     E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+    #' E_Z_SqE_W_Sq <-
+    #'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+    #' E_ZSqE_WSq <-
+    #'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+    #' E_ZWSq <-
+    #'     E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
     #'
     #' Zeta <- Zeta_calculation(view = "mRNA",
-    #'                          likelihoods = likelihoods,
-    #'                          E_ZWSq = E_ZWSq,
-    #'                          E_ZE_W = E_ZE_W)
+    #'                         likelihoods = likelihoods,
+    #'                         E_ZWSq = E_ZWSq,
+    #'                         E_ZE_W = E_ZE_W)
     #'
     #'
     #' @export
@@ -1240,7 +1290,8 @@ Tau_calculation <- function(view, likelihoods, Zeta, Tau) {
     #' Update Tau values
     #'
     #' Tau values are updated using Zeta values with the
-    #' following equation: \eqn{Tau = (1/2)*(1/Zeta[[view]])*tanh(Zeta[[view]]/2)}
+    #' following equation:
+    #' \eqn{Tau = (1/2)*(1/Zeta[[view]])*tanh(Zeta[[view]]/2)}
     #' only for bernoulli data.
     #'
     #' @param view a character of current view name data
@@ -1258,8 +1309,8 @@ Tau_calculation <- function(view, likelihoods, Zeta, Tau) {
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
     #'
     #' Tau <- Tau_calculation(view = view,
-    #'                        likelihoods = likelihoods,
-    #'                        Zeta = Zeta, Tau = Tau)
+    #'                         likelihoods = likelihoods,
+    #'                         Zeta = Zeta, Tau = Tau)
     #'
     #'
     #' @export
@@ -1272,14 +1323,21 @@ Tau_calculation <- function(view, likelihoods, Zeta, Tau) {
     return(Tau)
 }
 
-YGauss_calculation <- function(view, likelihoods, YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt) {
+YGauss_calculation <- function(view,
+                                likelihoods,
+                                YTrg,
+                                Zeta,
+                                Tau,
+                                CenterTrg,
+                                PoisRateCstnt) {
     #'
     #' Initialize or update pseudo Y values (YGauss)
     #'
     #' For gaussian data this is just the (centered) Y values which are fixed
-    #' For non gaussian these are transformed y values that change after each update of z
-    #' the y pseudo values are centered at each step if the centering option is selected
-    #' For gaussian data this is done for It>=0, for others it is It>0
+    #' For non gaussian these are transformed y values that change after each
+    #' update of z the y pseudo values are centered at each step if the
+    #' centering option is selected.
+    #'  For gaussian data this is done for It>=0, for others it is It>0
     #'
     #' @param view a character of current view name data
     #' @param likelihoods a named list of data types. The list can contain
@@ -1288,7 +1346,8 @@ YGauss_calculation <- function(view, likelihoods, YTrg, Zeta, Tau, CenterTrg, Po
     #' @param YTrg current data matrix
     #' @param Zeta list of Zeta matrices
     #' @param Tau list of Tau matrices
-    #' @param CenterTrg if FALSE, use (FALSE) or not (TRUE) use estimated intercepts ??
+    #' @param CenterTrg if FALSE, use (FALSE) or not (TRUE) use estimated
+    #' intercepts ??
     #' @param PoisRateCstnt ASK_DAVID
     #'
     #' @returns pseudo Y values for the current view
@@ -1301,14 +1360,15 @@ YGauss_calculation <- function(view, likelihoods, YTrg, Zeta, Tau, CenterTrg, Po
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
     #'
     #' YGauss <- YGauss_calculation(view = view,
-    #'                              likelihoods = likelihoods,
-    #'                              YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
+    #'                                likelihoods = likelihoods,
+    #'                                YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
     #'
     #'
     #' @export
 
     if (likelihoods[[view]] == "poisson") {
-        YGauss <- Zeta[[view]] - plogis(Zeta[[view]]) * (1 - YTrg[[view]] / (log(1 + exp(Zeta[[view]])) + PoisRateCstnt)) / Tau[[view]]
+        YGauss <- Zeta[[view]] - plogis(Zeta[[view]]) *
+            (1 - YTrg[[view]] / (log(1 + exp(Zeta[[view]])) + PoisRateCstnt)) / Tau[[view]]
     } else if (likelihoods[[view]] == "bernoulli") {
         YGauss <- (2 * YTrg[[view]] - 1) / (2 * Tau[[view]])
     } else {
@@ -1316,7 +1376,8 @@ YGauss_calculation <- function(view, likelihoods, YTrg, Zeta, Tau, CenterTrg, Po
     }
 
     if (CenterTrg) {
-        YGauss <- sweep(YGauss, 2, as.vector(colMeans(YGauss, na.rm = TRUE)), "-")
+        YGauss <-
+            sweep(YGauss, 2, as.vector(colMeans(YGauss, na.rm = TRUE)), "-")
     }
 
     return(YGauss)
@@ -1345,14 +1406,16 @@ ZVar_calculation <- function(view, Tau, Fctrzn_Lrn_WSq) {
     return(ZVar_m)
 }
 
-ZMu_calculation <- function(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss) {
+ZMu_calculation <-
+  function(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss) {
     #'
     #' Z mu calculation for the current data
     #'
     #' @param view a character of current view name data
     #' @param k feature index in the current data
     #' @param Fctrzn_Lrn_W list of Factorized learning set weight matrices
-    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept matrices
+    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
+    #' matrices
     #' @param Tau list of Tau matrices
     #' @param ZMu_0 list of ZMu intercepts matrices
     #' @param ZMu list of ZMu matrices
@@ -1362,14 +1425,24 @@ ZMu_calculation <- function(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZM
     #'
     #' @examples
     #'
-    #' ZMu <- ZMu_calculation(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss)
-    #'
+    #' ZMu <- ZMu_calculation(view,
+    #'                         k,
+    #'                         Fctrzn_Lrn_W,
+    #'                         Fctrzn_Lrn_W0,
+    #'                         Tau,
+    #'                         ZMu_0,
+    #'                         ZMu,
+    #'                         YGauss)
     #'
     #' @export
 
-    ZMu_tmp1 <- matrix(Fctrzn_Lrn_W[[view]][, k], nrow = dim(Tau[[view]])[1], ncol = dim(Tau[[view]])[2], byrow = TRUE)
+    ZMu_tmp1 <- matrix(Fctrzn_Lrn_W[[view]][, k],
+                        nrow = dim(Tau[[view]])[1],
+                        ncol = dim(Tau[[view]])[2],
+                        byrow = TRUE)
     ZMu_tmp1 <- Tau[[view]] * ZMu_tmp1
-    ZMu_tmp2 <- cbind(ZMu_0, ZMu[, -k]) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]][, -k]))
+    ZMu_tmp2 <- cbind(ZMu_0, ZMu[, -k]) %*%
+        t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]][, -k]))
     ZMu_tmp2 <- YGauss[[view]] - ZMu_tmp2
     ZMu_tmp3 <- ZMu_tmp1 * ZMu_tmp2
     ZMu_tmp3 <- rowSums(ZMu_tmp3, na.rm = TRUE)
@@ -1377,7 +1450,9 @@ ZMu_calculation <- function(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZM
     return(ZMu_tmp3)
 }
 
-ELBO_calculation <- function(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss, PoisRateCstnt) {
+ELBO_calculation <-
+    function(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss,
+            PoisRateCstnt) {
     #'
     #' Calculate the ELBO value for the current view/iterations
     #'
@@ -1412,7 +1487,9 @@ ELBO_calculation <- function(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta
     #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
     #'
-    #' ELBO_L <- ELBO_calculation(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss, PoisRateCstnt)
+    #' ELBO_L <-
+    #'     ELBO_calculation(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W,
+    #'                         Zeta, YTrg, YGauss, PoisRateCstnt)
     #'
     #'
     #' @export
@@ -1460,7 +1537,8 @@ E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #' @param view current view name
     #' @param ZMu_0 list of ZMu intercept matrices
     #' @param ZMu list of ZMu matrices
-    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept matrices
+    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
+    #' matrices
     #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
     #'
     #' @returns ASK_DAVID
@@ -1472,7 +1550,8 @@ E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
     #' @export
 
-    E_ZE_W <- cbind(ZMu_0, ZMu) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]]))
+    E_ZE_W <-
+        cbind(ZMu_0, ZMu) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]]))
     return(E_ZE_W)
 }
 
@@ -1483,42 +1562,52 @@ E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #' @param view current view name
     #' @param ZMu_0 list of ZMu intercept matrices
     #' @param ZMu list of ZMu matrices
-    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept matrices
+    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
+    #' matrices
     #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
     #'
     #' @returns ASK_DAVID
     #'
     #' @examples
     #'
-    #' E_Z_SqE_W_Sq <- E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+    #' E_Z_SqE_W_Sq <-
+    #'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
     #'
     #'
     #' @export
 
-    E_Z_SqE_W_Sq <- (cbind(ZMu_0, ZMu)^2) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]])^2)
+    E_Z_SqE_W_Sq <-
+        (cbind(ZMu_0, ZMu)^2) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]])^2)
+
     return(E_Z_SqE_W_Sq)
 }
 
-E_ZSqE_WSq_update <- function(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq) {
+E_ZSqE_WSq_update <-
+    function(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq) {
     #'
     #' Calculate
     #'
     #' @param view current view name
     #' @param ZMu_0 list of ZMu intercept matrices
     #' @param ZMuSq list of ZMu squared matrices
-    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept matrices
-    #' @param Fctrzn_Lrn_WSq  list of factorized learning set weight squared matrices
+    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
+    #' matrices
+    #' @param Fctrzn_Lrn_WSq  list of factorized learning set weight squared
+    #' matrices
     #'
     #' @returns ASK_DAVID
     #'
     #' @examples
     #'
-    #' E_ZSqE_WSq <- E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+    #' E_ZSqE_WSq <-
+    #'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
     #'
     #'
     #' @export
 
-    E_ZSqE_WSq <- cbind(ZMu_0^2, ZMuSq) %*% t(cbind(Fctrzn_Lrn_W0[[view]]^2, Fctrzn_Lrn_WSq[[view]]))
+    E_ZSqE_WSq <-
+        cbind(ZMu_0^2, ZMuSq) %*% t(cbind(Fctrzn_Lrn_W0[[view]]^2, Fctrzn_Lrn_WSq[[view]]))
+
     return(E_ZSqE_WSq)
 }
 
@@ -1553,14 +1642,16 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     #' @param YGauss list of pseudo Y value matrices
     #' @param ZMu_0 list of ZMu intercept matrices
     #' @param ZMu list of ZMu matrices
-    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept matrices
+    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
+    #' matrices
     #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
     #'
     #' @returns variance explained matrix
     #'
     #' @examples
     #'
-    #' VarExpl <- VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
+    #' VarExpl <-
+    #'     VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
     #'
     #'
     #' @export
@@ -1585,10 +1676,13 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     return(VarExpl)
 }
 
-transferLearning_function <- function(TL_param, MaxIterations, MinIterations, minFactors,
-                                      views, likelihoods, Fctrzn,
-                                      StartDropFactor, FreqDropFactor, StartELBO, FreqELBO, DropFactorTH, ConvergenceIts, ConvergenceTH,
-                                      CenterTrg, PoisRateCstnt = 0.0001, ss_start_time = NULL, outputDir = "./") {
+transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
+                                      minFactors, views, likelihoods, Fctrzn,
+                                      StartDropFactor, FreqDropFactor,
+                                      StartELBO, FreqELBO, DropFactorTH,
+                                      ConvergenceIts, ConvergenceTH,
+                                      CenterTrg, PoisRateCstnt = 0.0001,
+                                      ss_start_time = NULL, outputDir = "./") {
     #'
     #' Transfer Learning with Variational Inference
     #'
@@ -1687,12 +1781,16 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
     #'
     #' @examples
     #'
-    #' TL_data <- transferLearning_function(TL_param, MaxIterations, MinIterations, minFactors,
-    #'                                      views, likelihoods, Fctrzn,
-    #'                                      StartDropFactor, FreqDropFactor, StartELBO,
-    #'                                      FreqELBO, DropFactorTH, ConvergenceIts, ConvergenceTH,
-    #'                                      CenterTrg, PoisRateCstnt = 0.0001,
-    #'                                      ss_start_time = NULL, outputDir = "./")
+    #' TL_data <- transferLearning_function(TL_param, MaxIterations,
+    #'                                     MinIterations, minFactors,
+    #'                                     views, likelihoods, Fctrzn,
+    #'                                     StartDropFactor, FreqDropFactor,
+    #'                                     StartELBO, FreqELBO,
+    #'                                     DropFactorTH, ConvergenceIts,
+    #'                                     ConvergenceTH,
+    #'                                     CenterTrg, PoisRateCstnt = 0.0001,
+    #'                                     ss_start_time = NULL,
+    #'                                     outputDir = "./")
     #'
     #'
     #' @export
@@ -1733,14 +1831,14 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations, mi
             # }, YGauss, ZMu_0, Fctrzn_Lrn_W0, simplify = FALSE)
 
             # VarExpl = sapply(views, function(view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp){
-            #   factorNames = colnames(ZMu)
-            #   var_expl_tmp = sapply(factorNames, function(factorName, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp){
-            #     RSS_tmp = sum((YGauss[[view]] - (cbind(ZMu_0,ZMu[,factorName]) %*% t(cbind(Fctrzn_Lrn_W0[[view]],Fctrzn_Lrn_W[[view]][,factorName]))))^2, na.rm=TRUE)
-            #     var_expl_tmp = 1-(RSS_tmp/SS_tmp[[view]])
+            #     factorNames = colnames(ZMu)
+            #     var_expl_tmp = sapply(factorNames, function(factorName, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp){
+            #       RSS_tmp = sum((YGauss[[view]] - (cbind(ZMu_0,ZMu[,factorName]) %*% t(cbind(Fctrzn_Lrn_W0[[view]],Fctrzn_Lrn_W[[view]][,factorName]))))^2, na.rm=TRUE)
+            #       var_expl_tmp = 1-(RSS_tmp/SS_tmp[[view]])
+            #       return(var_expl_tmp)
+            #       }, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp)
             #     return(var_expl_tmp)
-            #     }, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp)
-            #   return(var_expl_tmp)
-            #   }, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp)
+            #     }, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp)
 
             var_expl_max <- apply(VarExpl, 1, max)
 

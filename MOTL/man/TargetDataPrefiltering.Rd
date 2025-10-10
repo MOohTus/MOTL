@@ -9,16 +9,16 @@ TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
 \arguments{
 \item{view}{current view data name (e.g. "mRNA", or "DNAme")}
 
-\item{YTrg_list}{a named list of target data. Names correspond to the views
-defined and the corresponding data are saved into \code{matrix}.}
+\item{YTrg_list}{a named list of target data. Names correspond to the
+views defined and the corresponding data are saved into \code{matrix}.}
 
 \item{Fctrzn}{the learning factorization model object (from \code{MOFA})}
 
 \item{smpls}{an ordered vector of sample names}
 }
 \value{
-a matrix that contains the prepared data for the current view with
-the sample ordered.
+a matrix that contains the prepared data for the current view
+with the sample ordered.
 }
 \description{
 The function performs the following steps:

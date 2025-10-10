@@ -58,7 +58,9 @@ view = "mRNA"
 likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
 
-ELBO_L <- ELBO_calculation(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss, PoisRateCstnt)
+ELBO_L <-
+    ELBO_calculation(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W,
+                        Zeta, YTrg, YGauss, PoisRateCstnt)
 
 
 }

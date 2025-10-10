@@ -13,9 +13,11 @@ E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
 
 \item{ZMuSq}{list of ZMu squared matrices}
 
-\item{Fctrzn_Lrn_W0}{list of factorized learning set weight intercept matrices}
+\item{Fctrzn_Lrn_W0}{list of factorized learning set weight intercept
+matrices}
 
-\item{Fctrzn_Lrn_WSq}{list of factorized learning set weight squared matrices}
+\item{Fctrzn_Lrn_WSq}{list of factorized learning set weight squared
+matrices}
 }
 \value{
 ASK_DAVID
@@ -25,7 +27,8 @@ Calculate
 }
 \examples{
 
-E_ZSqE_WSq <- E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+E_ZSqE_WSq <-
+    E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
 
 
 }

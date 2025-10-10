@@ -46,10 +46,11 @@ The function return a prefiltered target dataframe for the current view.
 # names of your data.
 # You can as much as you want add dataframe on each view.
 
-brcds_SS_ex <- list("brcds_mRNA_SS" =
-                     list(data.frame("brcds" = c("name01", "name02"))),
-                   "brcds_miRNA_SS" =
-                     list(data.frame("brcds" = c("name10", "name11"))))
+brcds_SS_ex <-
+        list("brcds_mRNA_SS" =
+            list(data.frame("brcds" = c("name01", "name02"))),
+        "brcds_miRNA_SS" =
+            list(data.frame("brcds" = c("name10", "name11"))))
 
 # See the doc to create the input parameter
 

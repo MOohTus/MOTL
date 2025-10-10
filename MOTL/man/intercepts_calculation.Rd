@@ -30,14 +30,12 @@ For Poisson and Bernoulli observed data, intercept is calculated using
 the maximum likelihood and the \code{\link{mle}} function.
 }
 \examples{
-# example code
+#
 intercepts_calculation(expdat_meta,
-                       Fctrzn,
-                       FctrznDir,
-                       ExpDataDir,
-                       Seed,
-                       YTmp)
-
-
+                        Fctrzn,
+                        FctrznDir,
+                        ExpDataDir,
+                        Seed,
+                        YTmp)
 
 }

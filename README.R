@@ -36,7 +36,6 @@ usethis::use_vignette("Vignette")
 ## ROXYGEN TO DOCUMENT
 ## LOAD COMPLETE PACKAGE
 devtools::document(); devtools::load_all()
-
 ## BUILD and CHECK PACKAGE (devtools::check("../"))
 devtools::build(); devtools::check_built("../MOTL_0.99.0.tar.gz")
 devtools::build(vignettes = FALSE); devtools::check_built("../MOTL_0.99.0.tar.gz")

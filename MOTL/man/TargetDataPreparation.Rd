@@ -48,7 +48,8 @@ The function follows these steps:
 Preparation of data consists on removing features with variance equal to
 zero, features harmonization between target and learning data and column
 ordering between views. Preparation is perform using the
-\code{\link{TargetDataPrefiltering}} function. See the doc for more details.
+\code{\link{TargetDataPrefiltering}} function. See the doc for more
+details.
 
 It could be possible to normalize and or transform counts data using the
 \code{\link{preprocessCountsData}} function. Normalization can be done
@@ -56,11 +57,11 @@ using GeoMeans and transformation is a log2 transformation of the counts.
 }
 \examples{
 YTrg_prep <- TargetDataPreparation(views = c("mRNA", "miRNA", "DNAme"),
-                                   YTrg_list = YTrg_list,
-                                   Fctrzn = Fctrzn, smpls = smpls,
-                                   expdat_meta_Lrn = expdat_meta_Lrn,
-                                   normalization = FALSE,
-                                   transformation = FALSE)
+                                    YTrg_list = YTrg_list,
+                                    Fctrzn = Fctrzn, smpls = smpls,
+                                    expdat_meta_Lrn = expdat_meta_Lrn,
+                                    normalization = FALSE,
+                                    transformation = FALSE)
 
 
 }

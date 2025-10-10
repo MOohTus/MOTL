@@ -13,7 +13,8 @@ VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
 
 \item{ZMu_0}{list of ZMu intercept matrices}
 
-\item{Fctrzn_Lrn_W0}{list of factorized learning set weight intercept matrices}
+\item{Fctrzn_Lrn_W0}{list of factorized learning set weight intercept
+matrices}
 
 \item{ZMu}{list of ZMu matrices}
 
@@ -27,7 +28,8 @@ Calculate the variance explained by each factor for eah view
 }
 \examples{
 
-VarExpl <- VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
+VarExpl <-
+    VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
 
 
 }

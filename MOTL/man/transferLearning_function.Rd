@@ -143,12 +143,16 @@ To create the \code{TL_param} variable, see the
 }
 \examples{
 
-TL_data <- transferLearning_function(TL_param, MaxIterations, MinIterations, minFactors,
-                                     views, likelihoods, Fctrzn,
-                                     StartDropFactor, FreqDropFactor, StartELBO,
-                                     FreqELBO, DropFactorTH, ConvergenceIts, ConvergenceTH,
-                                     CenterTrg, PoisRateCstnt = 0.0001,
-                                     ss_start_time = NULL, outputDir = "./")
+TL_data <- transferLearning_function(TL_param, MaxIterations,
+                                    MinIterations, minFactors,
+                                    views, likelihoods, Fctrzn,
+                                    StartDropFactor, FreqDropFactor,
+                                    StartELBO, FreqELBO,
+                                    DropFactorTH, ConvergenceIts,
+                                    ConvergenceTH,
+                                    CenterTrg, PoisRateCstnt = 0.0001,
+                                    ss_start_time = NULL,
+                                    outputDir = "./")
 
 
 }

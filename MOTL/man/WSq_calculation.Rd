@@ -25,24 +25,24 @@ This function load or calculate the squares weight values.
 }
 \details{
 The squared weight values can be load from a .csv file. This file can be
-created during the factorization of the learning data. See the documentation
-to learn how to create this file. The file name should follow this format:
-\code{WSq_mRNA.csv}.
+created during the factorization of the learning data. See the
+documentation to learn how to create this file. The file name should
+follow this format: \code{WSq_mRNA.csv}.
 
 The squared weight valued can also be calculated using the weight values
-calculated during the factorization of the learning data. These values are
-saved in the \code{Fctrzn} variable. See the documentation.
+calculated during the factorization of the learning data. These values
+are saved in the \code{Fctrzn} variable. See the documentation.
 
 "factors were ordered in the same way as for other latent variables
-if any factors are dropped due to being inactive, they are at the end of the dataset
-so can filter based on dimension of W" <-- keep ?
+if any factors are dropped due to being inactive, they are at the end of
+the dataset so can filter based on dimension of W" <-- keep ?
 }
 \examples{
 
 WSq_mRNA = WSq_calculation(view = "mRNA",
-                             Fctrzn = Fctrzn,
-                             LrnFctrnDir = LrnFctrnDir,
-                             LrnSimple = TRUE)
+                            Fctrzn = Fctrzn,
+                            LrnFctrnDir = LrnFctrnDir,
+                            LrnSimple = TRUE)
 
 
 }

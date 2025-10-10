@@ -272,18 +272,12 @@ test_that("TargetDataPreparation", {
 
 test_that("initTransferLearningParamaters", {
     YTrgFtrs <- lapply(YTrg_prep, rownames)
-    TL_param <- initTransferLearningParamaters(YTrg_prep, views, Lrn_meta, Lrn_Fctrzn_init, likelihoods)
-    expect_equal(
-        names(TL_param),
-        c(
-            "YTrg",
-            "Fctrzn_Lrn_W0",
-            "Fctrzn_Lrn_W",
-            "Fctrzn_Lrn_WSq",
-            "Tau",
-            "TauLn"
-        )
-    )
+    TL_param <- initTransferLearningParamaters(YTrg_prep,
+                                               views,
+                                               Lrn_meta,
+                                               Lrn_Fctrzn_init,
+                                               likelihoods)
+    expect_equal(names(TL_param), c("YTrg", "Fctrzn_Lrn_W0", "Fctrzn_Lrn_W","Fctrzn_Lrn_WSq", "Tau", "TauLn"))
     expect_equal(names(TL_param$Fctrzn_Lrn_W0$mRNA), YTrgFtrs$mRNA)
     expect_equal(names(TL_param$Fctrzn_Lrn_W0$miRNA), YTrgFtrs$miRNA)
     expect_equal(names(TL_param$Fctrzn_Lrn_W0$DNAme), YTrgFtrs$DNAme)
@@ -328,6 +322,9 @@ test_that("Tau_init", {
 
 ##
 test_that("TauLn_calculation_TRUE", {
+    ## PARAMS
+    D_exp <- Lrn_Fctrzn_init@dimensions$D
+    Tau_exp <- Lrn_Fctrzn_init@expectations$Tau
     ## LrnSimple = TRUE / DON'T USE LrnFctrnDir TAU FILES
     TauLn <- lapply(views,
         TauLn_calculation,
@@ -336,21 +333,12 @@ test_that("TauLn_calculation_TRUE", {
         Lrn_ModelDir,
         LrnSimple = TRUE
     )
-    expect_equal(length(TauLn$mRNA), Lrn_Fctrzn_init@dimensions$D["mRNA"][[1]])
-    expect_equal(
-        TauLn$mRNA,
-        log(Lrn_Fctrzn_init@expectations$Tau$mRNA$group0[, 1])
-    )
-    expect_equal(length(TauLn$miRNA), Lrn_Fctrzn_init@dimensions$D["miRNA"][[1]])
-    expect_equal(
-        TauLn$miRNA,
-        log(Lrn_Fctrzn_init@expectations$Tau$miRNA$group0[, 1])
-    )
-    expect_equal(length(TauLn$DNAme), Lrn_Fctrzn_init@dimensions$D["DNAme"][[1]])
-    expect_equal(
-        TauLn$DNAme,
-        log(Lrn_Fctrzn_init@expectations$Tau$DNAme$group0[, 1])
-    )
+    expect_equal(length(TauLn$mRNA), D_exp["mRNA"][[1]])
+    expect_equal(TauLn$mRNA, log(Tau_exp$mRNA$group0[, 1]))
+    expect_equal(length(TauLn$miRNA), D_exp["miRNA"][[1]])
+    expect_equal(TauLn$miRNA, log(Tau_exp$miRNA$group0[, 1]))
+    expect_equal(length(TauLn$DNAme), D_exp["DNAme"][[1]])
+    expect_equal(TauLn$DNAme, log(Tau_exp$DNAme$group0[, 1]))
     expect_equal(TauLn$SNV, numeric())
 })
 
@@ -518,7 +506,11 @@ test_that("Zeta_calculation", {
             TL_param$Fctrzn_Lrn_WSq
         )
     )
-    E_ZWSq <- list("mRNA" = E_ZWSq_update(view = "mRNA", E_ZE_W, TL_param$ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq))
+    E_ZWSq <- list("mRNA" = E_ZWSq_update(view = "mRNA",
+                                          E_ZE_W,
+                                          TL_param$ZMuSq,
+                                          E_Z_SqE_W_Sq,
+                                          E_ZSqE_WSq))
     E_ZWSq$miRNA <- E_ZWSq$mRNA
     E_ZE_W$miRNA <- E_ZE_W$mRNA
     zeta <- Zeta_calculation(view = "mRNA", likelihoods, E_ZWSq, E_ZE_W)
@@ -556,10 +548,17 @@ test_that("Tau_calculation", {
             TL_param$Fctrzn_Lrn_WSq
         )
     )
-    E_ZWSq <- list("mRNA" = E_ZWSq_update(view = "mRNA", E_ZE_W, TL_param$ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq))
+    E_ZWSq <- list("mRNA" = E_ZWSq_update(view = "mRNA",
+                                          E_ZE_W,
+                                          TL_param$ZMuSq,
+                                          E_Z_SqE_W_Sq,
+                                          E_ZSqE_WSq))
     E_ZWSq$miRNA <- E_ZWSq$mRNA
     E_ZE_W$miRNA <- E_ZE_W$mRNA
-    Zeta <- list("mRNA" = Zeta_calculation(view = "mRNA", likelihoods, E_ZWSq, E_ZE_W))
+    Zeta <- list("mRNA" = Zeta_calculation(view = "mRNA",
+                                           likelihoods,
+                                           E_ZWSq,
+                                           E_ZE_W))
     Zeta$miRNA <- Zeta$mRNA
     Tau_m <- Tau_calculation(view = "mRNA", likelihoods, Zeta, TL_param$Tau)
     expect_equal(Tau_m, TL_param$Tau$mRNA)
@@ -869,7 +868,11 @@ test_that("E_ZWSq_update", {
             TL_param$Fctrzn_Lrn_WSq
         )
     )
-    E_ZWSq <- E_ZWSq_update(view = "mRNA", E_ZE_W, TL_param$ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+    E_ZWSq <- E_ZWSq_update(view = "mRNA",
+                            E_ZE_W,
+                            TL_param$ZMuSq,
+                            E_Z_SqE_W_Sq,
+                            E_ZSqE_WSq)
     expect_equal(dim(E_ZWSq), dim(E_Z_SqE_W_Sq$mRNA))
     expect_equal(dim(E_ZWSq), dim(E_ZSqE_WSq$mRNA))
 })
