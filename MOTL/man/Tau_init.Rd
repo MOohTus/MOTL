@@ -7,8 +7,8 @@
 Tau_init(viewsLrn, Fctrzn, InputModel)
 }
 \arguments{
-\item{viewsLrn}{the list of learning data views. For TCGA learning data it
-will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).}
+\item{viewsLrn}{the list of learning data views. For TCGA learning data
+it will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).}
 
 \item{Fctrzn}{the learning factorization from \code{\link{MOFA2}}.}
 
@@ -16,7 +16,8 @@ will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).}
 \code{\link{MOFA2}}}
 }
 \value{
-a named list of Tau matrices. Names correspond to the view names.
+a named list of Tau matrices. Names correspond to the view
+names.
 }
 \description{
 Extract the Tau matrix from the MOFA object \code{Fctrzn} for each view.
@@ -28,7 +29,7 @@ InputModel <- "Model.hdf5"
 Fctrzn <- load_model(file = InputModel)
 
 Tau_list <- Tau_init(viewsLrn = viewsLrn,
-                     Fctrzn = Fctrzn,
-                     InputModel = InputModel)
+                    Fctrzn = Fctrzn,
+                    InputModel = InputModel)
 
 }

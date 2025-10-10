@@ -42,9 +42,9 @@ function with log2.
 }
 \examples{
 mRNA <- preprocessCountsData(view = "mRNA", YTrg_list = YTrg_list,
-                             normalization = "Trg",
-                             expdat_meta_Lrn = expdat_meta_Lrn,
-                             transformation = TRUE)
+                           normalization = "Trg",
+                           expdat_meta_Lrn = expdat_meta_Lrn,
+                           transformation = TRUE)
 
 
 }

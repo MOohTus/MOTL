@@ -13,7 +13,8 @@ ZMu_calculation(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss)
 
 \item{Fctrzn_Lrn_W}{list of Factorized learning set weight matrices}
 
-\item{Fctrzn_Lrn_W0}{list of factorized learning set weight intercept matrices}
+\item{Fctrzn_Lrn_W0}{list of factorized learning set weight intercept
+matrices}
 
 \item{Tau}{list of Tau matrices}
 
@@ -31,7 +32,13 @@ Z mu calculation for the current data
 }
 \examples{
 
-ZMu <- ZMu_calculation(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss)
-
+ZMu <- ZMu_calculation(view,
+                        k,
+                        Fctrzn_Lrn_W,
+                        Fctrzn_Lrn_W0,
+                        Tau,
+                        ZMu_0,
+                        ZMu,
+                        YGauss)
 
 }

@@ -12,7 +12,8 @@ countsNormalization(expdat, GeoMeans)
 \item{GeoMeans}{"Trg", "Lrn" or vector of numerics}
 }
 \value{
-list of data.frame of the counts normalized and GeoMeans calculated
+list of data.frame of the counts normalized and GeoMeans
+calculated
 }
 \description{
 Normalize counts data using DESeq2 normalization.

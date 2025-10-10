@@ -20,14 +20,20 @@ contain ensembl IDs.}
 the target mRNA matrix with versions attached
 }
 \description{
-Get mRNA ensembl ID version from learning dataset (e.g. ENSG00000122133.17)
-and attach to the corresponding mRNA ensembl ID in the target dataset.
-Feature names need to be similar between target dataset and learning
-dataset.
+Get mRNA ensembl ID version from learning dataset
+(e.g. ENSG00000122133.17) and attach to the corresponding mRNA ensembl
+ID in the target dataset. Feature names need to be similar between
+target dataset and learning dataset.
 }
 \examples{
-Lrndat <- data.frame("view" = c("mRNA", "mRNA", "mRNA"), row.names = c("ENSG00000122133.17", "ENSG00000122194.19", "ENSG00000119411.11"))
-expdat <- data.frame("sample1" = c(1, 52, 4), row.names = c("ENSG00000122133", "ENSG00000122194", "ENSG00000119411"))
+Lrn_names <-
+        c("ENSG00000122133.17", "ENSG00000122194.9", "ENSG00000119411.1")
+Lrn_views <- c("mRNA", "mRNA", "mRNA")
+expdat_names <-
+        c("ENSG00000122133", "ENSG00000122194", "ENSG00000119411")
+
+Lrndat <- data.frame("view" = Lrn_views, row.names = Lrn_names)
+expdat <- data.frame("sample1" = c(1, 52, 4), row.names = expdat_names)
 expdat_prep <- mRNA_addVersion(expdat, Lrndat)
 expdat
 expdat_prep

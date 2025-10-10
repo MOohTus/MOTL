@@ -22,7 +22,8 @@ type. Names are the view names.}
 }
 \description{
 Tau values are updated using Zeta values with the
-following equation: \eqn{Tau = (1/2)*(1/Zeta[[view]])*tanh(Zeta[[view]]/2)}
+following equation:
+\eqn{Tau = (1/2)*(1/Zeta[[view]])*tanh(Zeta[[view]]/2)}
 only for bernoulli data.
 }
 \examples{
@@ -31,8 +32,8 @@ likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
 
 Tau <- Tau_calculation(view = view,
-                       likelihoods = likelihoods,
-                       Zeta = Zeta, Tau = Tau)
+                        likelihoods = likelihoods,
+                        Zeta = Zeta, Tau = Tau)
 
 
 }

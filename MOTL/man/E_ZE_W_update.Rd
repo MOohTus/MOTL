@@ -13,7 +13,8 @@ E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
 
 \item{ZMu}{list of ZMu matrices}
 
-\item{Fctrzn_Lrn_W0}{list of factorized learning set weight intercept matrices}
+\item{Fctrzn_Lrn_W0}{list of factorized learning set weight intercept
+matrices}
 
 \item{Fctrzn_Lrn_W}{list of factorized learning set weight matrices}
 }

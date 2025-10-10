@@ -27,7 +27,8 @@ type. Names are the view names.}
 
 \item{Tau}{list of Tau matrices}
 
-\item{CenterTrg}{if FALSE, use (FALSE) or not (TRUE) use estimated intercepts ??}
+\item{CenterTrg}{if FALSE, use (FALSE) or not (TRUE) use estimated
+intercepts ??}
 
 \item{PoisRateCstnt}{ASK_DAVID}
 }
@@ -36,8 +37,9 @@ pseudo Y values for the current view
 }
 \description{
 For gaussian data this is just the (centered) Y values which are fixed
-For non gaussian these are transformed y values that change after each update of z
-the y pseudo values are centered at each step if the centering option is selected
+For non gaussian these are transformed y values that change after each
+update of z the y pseudo values are centered at each step if the
+centering option is selected.
 For gaussian data this is done for It>=0, for others it is It>0
 }
 \examples{
@@ -46,8 +48,8 @@ likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
 
 YGauss <- YGauss_calculation(view = view,
-                             likelihoods = likelihoods,
-                             YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
+                               likelihoods = likelihoods,
+                               YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
 
 
 }

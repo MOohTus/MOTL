@@ -15,8 +15,8 @@ type. Names are the view names.}
 
 \item{Fctrzn}{learning factorization model object (from \code{MOFA})}
 
-\item{LrnFctrnDir}{directory where log(Tau) values are saved. Files should
-be named like \code{"TauLn_mRNA.csv"}.}
+\item{LrnFctrnDir}{directory where log(Tau) values are saved. Files
+should be named like \code{"TauLn_mRNA.csv"}.}
 
 \item{LrnSimple}{if TRUE, initialization uses the Tau values. If FALSE,
 imports values from a .csv file.}
@@ -43,9 +43,9 @@ likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
 
 TauLn_mRNA = TauLn_calculation(view = "mRNA",
-                               likelihoodsLrn = likelihoods,
-                               Fctrzn = Fctrzn,
-                               LrnFctrnDir = LrnFctrnDir)
+                                likelihoodsLrn = likelihoods,
+                                Fctrzn = Fctrzn,
+                                LrnFctrnDir = LrnFctrnDir)
 
 
 }
