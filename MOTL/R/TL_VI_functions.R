@@ -300,7 +300,7 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     #' @param view current view data name (e.g. "mRNA", or "DNAme")
     #' @param YTrg_list a named list of target data. Names correspond to the
     #' views defined and the corresponding data are saved into \code{matrix}.
-    #' @param Fctrzn the learning factorization model object (from \code{MOFA})
+    #' @param Fctrzn the learning dataset factorization model object (from \code{MOFA})
     #' @param smpls an ordered vector of sample names
     #'
     #' @returns a matrix that contains the prepared data for the current view
@@ -314,6 +314,7 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     #'
     #'
     #' @export
+
 
     YTrg <- YTrg_list[[view]]
 
@@ -339,13 +340,13 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
 
 GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
     #'
-    #' Retrieve the calculated geomeans of the learning set
+    #' Retrieve the geomeans calculated for the learning dataset during counts normalization
     #'
     #' @param view current view data name
-    #' @param expdat_meta_Lrn list of learning set factorization metadata
+    #' @param expdat_meta_Lrn list of learning dataset factorization metadata
     #' @param YTrgFtrs feature names of the current view
     #'
-    #' @returns calculated geomeans of the learning set
+    #' @returns precalculated geomeans of the learning dataset
     #'
     #' @examples
     #'
@@ -475,7 +476,7 @@ preprocessCountsData <- function(view,
     #' Counts data (i.e. mRNA and miRNA) can be normalized and/or transformed.
     #'
     #' Normalization is performed using the \code{\link{countsNormalization}}
-    #' function with or without GeoMeans.
+    #' function with precalculated GeoMeans or own GeoMeans.
     #'
     #' Transformation is performed using the \code{\link{countsTransformation}}
     #' function with log2.
@@ -484,7 +485,7 @@ preprocessCountsData <- function(view,
     #' @param YTrg_list a named list of target data. Names correspond to the
     #' defined views. The list contains matrices.
     #' @param normalization if FALSE, no normalization. If "Lrn", normalization
-    #' using the learning GeoMeans. If "Trg", normalization without learning
+    #' using the precalculated GeoMeans. If "Trg", normalization with own
     #' GeoMeans. By default, it's set to FALSE.
     #' @param expdat_meta_Lrn the list of learning set factorization metadata
     #' @param transformation if FALSE, no transformation. If TRUE, log2
@@ -627,15 +628,15 @@ initTransferLearningParamaters <- function(YTrg,
                                             Fctrzn,
                                             likelihoods) {
     #'
-    #' Transfer learning parameters initialization
+    #' Transfer learning parameters and data objects initialization
     #'
     #' The function performs the following steps:
     #' 1. Extract the factorized learning set weight intercepts \code{W0}
     #' 2. Extract the factorized learning set weights \code{W}
     #' 3. Extract the factorized learning set squared weights \code{Wsq}
     #' 4. Extract the learning set \code{Tau} and log(Tau) \code{TauLn}
-    #' For each extracted parameter, common features between learning and target
-    #' data are kept. Then target data \code{YTrg}, \code{Tau} and \code{TauLn}
+    #' For each extracted parameter, common features between learning dataset and target
+    #' dataset are kept. Then target data \code{YTrg}, \code{Tau} and \code{TauLn}
     #' are transposed.
     #'
     #' Each parameter are extracted from the \code{Fctrzn} model created using
@@ -645,12 +646,12 @@ initTransferLearningParamaters <- function(YTrg,
     #'
     #' Define what is each returned parameters?
     #'
-    #' @param YTrg a named list of target set data. Names correspond to the
-    #' defined views. The list contains \code{matrix}.
-    #' @param views a vector of target data views (e.g.
+    #' @param YTrg a named list of target dataset matrices. Names correspond to the
+    #' defined views.
+    #' @param views a vector of target dataset view names (e.g.
     #' \code{c("mRNA", "miRNA")})
     #' @param expdat_meta_Lrn the list of learning set factorization metadata
-    #' @param Fctrzn the learning factorization model object (from \code{MOFA})
+    #' @param Fctrzn the learning dataset factorization model object (from \code{MOFA})
     #' @param likelihoods a named list of data types. The list can contain
     #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
     #' type. Names are the view names.
@@ -795,7 +796,7 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #'
     #' @param viewsLrn the list of learning data views. For TCGA learning data
     #' it will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).
-    #' @param Fctrzn the learning factorization from \code{\link{MOFA2}}.
+    #' @param Fctrzn the learning dataset factorization from \code{\link{MOFA2}}.
     #' @param InputModel the factorization model object of learning set
     #' \code{\link{MOFA2}}
     #'
@@ -855,7 +856,7 @@ TauLn_calculation <- function(view,
     #' type. Names are the view names.
     #' @param LrnSimple if TRUE, initialization uses the Tau values. If FALSE,
     #' imports values from a .csv file.
-    #' @param Fctrzn learning factorization model object (from \code{MOFA})
+    #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
     #' @param LrnFctrnDir directory where log(Tau) values are saved. Files
     #' should be named like \code{"TauLn_mRNA.csv"}.
     #'
@@ -914,9 +915,9 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     #'
     #' @param view a character of current view name data
     #' @param LrnSimple if TRUE, calculates the squared weight values \code{WSq}
-    #' using the weight values \code{W}. If FALSE, load squared weight values
-    #' from a file. By default, it's set to TRUE.
-    #' @param Fctrzn learning factorization model object (from \code{MOFA})
+    #' \eqn{E[W^2]} using the weight values \code{W} \eqn{E[W]}. 
+    #' If FALSE, load squared weight values from a file. By default, it's set to TRUE.
+    #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
     #' @param LrnFctrnDir directory where \code{WSq} values are saved
     #'
     #' @returns the squared weight matrix for the current view
@@ -949,7 +950,7 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
 ## MT - maybe change name into W0_init ?
 W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     #'
-    #' Initialization of the weight intercept values
+    #' Initialization of feature weight intercept values
     #'
     #' This function loads or calculates the weight intercept values.
     #'
@@ -961,13 +962,13 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     #' matrix. The weight matrix is set to zero.
     #'
     #' @param view a character of current view name data
-    #' @param CenterTrg if TRUE, init the weight intercept values using the
-    #' weight values. If FALSE, load the estimated weight intercept values from
-    #' the \code{EstimatedIntercepts.rds} file.
-    #' @param Fctrzn learning factorization model object (from \code{MOFA})
+    #' @param CenterTrg if FALSE, use the estimated feature weight intercept from
+    #' the \code{EstimatedIntercepts.rds} file. If TRUE, don't use the  
+    #' estimated feature weight intercept. 
+    #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
     #' @param LrnFctrnDir directory where the extimated intercepts file is.
     #'
-    #' @returns a weight intercepts values matrix of the current data
+    #' @returns a feature weight intercept values matrix for the current data
     #'
     #' @examples
     #'
@@ -999,8 +1000,13 @@ intercepts_calculation <- function(expdat_meta,
     #'
     #' Intercepts calculation
     #'
-    #' For Gaussian observed data, intercept is calculated for each feature.
-    #' For Poisson and Bernoulli observed data, intercept is calculated using
+    #' Calculate feature weight intercepts for a MOFA factorization based
+    #' on MLE. These can be calculated for the learning dataset factorization
+    #' and then for the factorization of the target dataset with transfer
+    #' Learning.
+    #'
+    #' For Gaussian observed data, weight intercepts are the weight mean for each feature.
+    #' For Poisson and Bernoulli observed data, weight intercepts are calculated using
     #' the maximum likelihood and the \code{\link{mle}} function.
     #'
     #' @param expdat_meta the named list of learning dataset factorization
@@ -1250,8 +1256,8 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     #' @param likelihoods a named list of data types. The list can contain
     #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
     #' type. Names are the view names.
-    #' @param E_ZWSq ASK_DAVID
-    #' @param E_ZE_W ASK_DAVID
+    #' @param E_ZWSq \eqn{E[(ZW)^2]}
+    #' @param E_ZE_W \eqn{E[Z]E[W]}
     #'
     #' @returns Zeta matrix for the current data view
     #'
@@ -1337,7 +1343,7 @@ YGauss_calculation <- function(view,
     #' For non gaussian these are transformed y values that change after each
     #' update of z the y pseudo values are centered at each step if the
     #' centering option is selected.
-    #'  For gaussian data this is done for It>=0, for others it is It>0
+    #' For gaussian data this is done for It>=0, for others it is It>0
     #'
     #' @param view a character of current view name data
     #' @param likelihoods a named list of data types. The list can contain
@@ -1346,8 +1352,8 @@ YGauss_calculation <- function(view,
     #' @param YTrg current data matrix
     #' @param Zeta list of Zeta matrices
     #' @param Tau list of Tau matrices
-    #' @param CenterTrg if FALSE, use (FALSE) or not (TRUE) use estimated
-    #' intercepts ??
+    #' @param CenterTrg if FALSE, use the estimated feature weight intercept from
+    #' the \code{EstimatedIntercepts.rds} file. If TRUE, use the feature weight means.
     #' @param PoisRateCstnt ASK_DAVID
     #'
     #' @returns pseudo Y values for the current view
@@ -1456,13 +1462,8 @@ ELBO_calculation <-
     #'
     #' Calculate the ELBO value for the current view/iterations
     #'
-    #' likelihoods
     #' for poisson and bernoulli it is the bound which is used
     #' for gaussian it is expanded gaussian log likelihood
-    #' it seems in MOFA they do not allow for the centering that is done for the
-    #' pseudo data for non gaussian data
-    #' they used the raw uncentered data for the elbo - this seems strange
-    #' although i guess it acts as a lower bound for the lower bound ...
     #'
     #' @param view a character of current view name data
     #' @param likelihoods a named list of data types. The list can contain
@@ -1470,8 +1471,8 @@ ELBO_calculation <-
     #' type. Names are the view names.
     #' @param Tau list of Tau matrices
     #' @param TauLn list of log(Tau) matrices
-    #' @param E_ZWSq ASK_DAVID
-    #' @param E_ZE_W ASK_DAVID
+    #' @param E_ZWSq \eqn{E[(ZW)^2]}
+    #' @param E_ZE_W \eqn{E[Z]E[W]}
     #' @param Zeta list of Zeta matrices
     #' @param YTrg list of data
     #' @param YGauss list of pseudo Y value matrices
@@ -1532,7 +1533,7 @@ ELBO_calculation <-
 
 E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
-    #' Calculate
+    #' Calculate \eqn{E[Z]E[W]}
     #'
     #' @param view current view name
     #' @param ZMu_0 list of ZMu intercept matrices
@@ -1557,7 +1558,7 @@ E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
 
 E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
-    #' Calculate
+    #' Calculate \eqn{((E[Z])^2)((E[W])^2)}
     #'
     #' @param view current view name
     #' @param ZMu_0 list of ZMu intercept matrices
@@ -1585,7 +1586,7 @@ E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
 E_ZSqE_WSq_update <-
     function(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq) {
     #'
-    #' Calculate
+    #' Calculate \eqn{E[Z^2]E[W^2]}
     #'
     #' @param view current view name
     #' @param ZMu_0 list of ZMu intercept matrices
@@ -1613,7 +1614,7 @@ E_ZSqE_WSq_update <-
 
 E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
     #'
-    #' Calculate
+    #' Calculate \eqn{E[(ZW)^2]}
     #'
     #' @param view current view name
     #' @param E_ZE_W ASK_DAVID
@@ -1638,7 +1639,7 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     #'
     #' Calculate the variance explained by each factor for eah view
     #'
-    #' @param views list of view data names
+    #' @param views list of view names
     #' @param YGauss list of pseudo Y value matrices
     #' @param ZMu_0 list of ZMu intercept matrices
     #' @param ZMu list of ZMu matrices
@@ -1696,8 +1697,8 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #' \code{\link{initTransferLearningParamaters}}).
     #'
     #'
-    #' \code{TL_param} is a named list of the initialized parameters for
-    #' transfer learning. It contains :
+    #' \code{TL_param} is a named list of the initialized parameters and
+    #' data objects for transfer learning. It contains :
     #' 1. \code{YTrg}: a named list of matrices. Each matrix corresponds to
     #' the target dataset.
     #' 2. \code{Fctrzn_Lrn_W0}: a named list of vectors. Each vector contains
@@ -1720,17 +1721,17 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #' To create the \code{TL_param} variable, see the
     #' \code{\link{initTransferLearningParamaters}} function.
     #'
-    #' @param TL_param a named list of initialized parameters for transfer
-    #' learning. It contains target dataset, weigths and scores matrices from
+    #' @param TL_param a named list of initialized parameters and data objects 
+    #" for transfer learning. It contains target dataset, weigths and scores matrices from
     #' matrix factorization of the learning dataset calculated using MOFA. See
     #' the detail section for more informations.
     #' @param MaxIterations the maximum number of iterations for the matrix
     #' factorization convergence. After this number, the factorization is
     #' stopped.
-    #' @param MinIterations the minimum number of iteration for the matrix
+    #' @param MinIterations the minimum number of iterations for the matrix
     #' factorization convergence. Before this number, even if the function
     #' converges, the factorization is not stopped.
-    #' @param minFactors the minimum number of factors we expected
+    #' @param minFactors the minimum number of factors to retain
     #' @param views a named vector of the target dataset. It should contains
     #' the same names used for inside the learning dataset.
     #' @param likelihoods a named vector of the target dataset types. It can
@@ -1740,15 +1741,15 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #' Creating using the \code{MOFA_functions.py} python script.
     #' @param StartDropFactor number after which iteration to start dropping
     #' factors
-    #' @param FreqDropFactor number that corresponds to how often to drop
-    #' factors
+    #' @param FreqDropFactor number that corresponds to how often to check 
+    #' whether to drop factors
     #' @param StartELBO number after which iteration to start checking ELBO on
     #' @param FreqELBO number that correspond to how often to assess the ELBO
     #' @param DropFactorTH threshold number to drop or not factors. If factor
-    #' with lowest maximum variance is below this threshold, it's dropped.
-    #' @param ConvergenceIts number of consecutive checks in a row for which the
-    #' change in ELBO is be
-    #' @param ConvergenceTH threshold number of change in ELBO
+    #' with lowest maximum variance explained is below this threshold, it's dropped.
+    #' @param ConvergenceIts number of consecutive iterations that change in ELBO is
+    #" below threshold before convergence 
+    #' @param ConvergenceTH threshold number for change in ELBO for checking convergence
     #' @param CenterTrg if TRUE, center the target dataset during processing, if
     #' FALSE, leave target dataset uncentered and use estimated learning dataset
     #' intercepts.
