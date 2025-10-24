@@ -1003,7 +1003,7 @@ intercepts_calculation <- function(expdat_meta,
     #' Calculate feature weight intercepts for a MOFA factorization based
     #' on MLE. These can be calculated for the learning dataset factorization
     #' and then for the factorization of the target dataset with transfer
-    #' Learning.
+    #' learning.
     #'
     #' For Gaussian observed data, weight intercepts are the weight mean for each feature.
     #' For Poisson and Bernoulli observed data, weight intercepts are calculated using
@@ -1011,7 +1011,7 @@ intercepts_calculation <- function(expdat_meta,
     #'
     #' @param expdat_meta the named list of learning dataset factorization
     #' metadata
-    #' @param Fctrzn learning factorization model object (from \code{MOFA})
+    #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
     #' @param FctrznDir the learning dataset factorization directory name
     #' @param ExpDataDir the learning dataset directory name
     #' @param YTmp ASK_DAVID - REMOVE THIS INPUT
