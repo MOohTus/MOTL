@@ -369,6 +369,7 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
 GeoMeanFun <- function(x) {
     ## ASK_DAVID MT ADD DESCRIPTION
     #' Short description
+    #' ASK_DAVID
     #'
     #' Detailed description
     #'
