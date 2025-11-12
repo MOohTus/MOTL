@@ -108,7 +108,7 @@ test_that("countsNormalization_Lrn", {
     # expdat <- TargetDataPrefiltering(view = "mRNA", YTrg_list, Lrn_Fctrzn, smpls)
     expdat <- apply(YTrg_prep$mRNA, MARGIN = 2, round)
     expdat <- SummarizedExperiment(assays = expdat)
-    expdat_norm <- countsNormalization(expdat, GeoMeans = "Lrn")
+    expdat_norm <- countsNormalization(expdat, GeoMeans = "LrnGeoMeans")
     expect_equal(length(expdat_norm), 2)
     expect_equal(dim(expdat_norm$counts), dim(expdat))
     expect_equal(rownames(expdat_norm$counts), rownames(expdat))
@@ -120,8 +120,8 @@ test_that("countsNormalization_Trg", {
     # expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Lrn_Fctrzn, smpls)
     expdat <- apply(YTrg_prep$mRNA, MARGIN = 2, round)
     expdat <- SummarizedExperiment(assays = expdat)
-    expdat_norm <- countsNormalization(expdat, GeoMeans = "Trg")
-    expect_equal(length(expdat_norm), 1)
+    expdat_norm <- countsNormalization(expdat, GeoMeans = "newGeoMeans")
+    expect_equal(length(expdat_norm), 2)
     expect_equal(dim(expdat_norm$counts), dim(expdat))
     expect_equal(rownames(expdat_norm$counts), rownames(expdat))
     expect_equal(colnames(expdat_norm$counts), colnames(expdat))
@@ -214,7 +214,7 @@ test_that("preprocessCountsData_NORM_LRN", {
     expdat_norm <- preprocessCountsData(
         view = "mRNA",
         YTrg,
-        normalization = "Lrn",
+        normalization = "LrnGeoMeans",
         Lrn_meta,
         transformation = FALSE
     )
@@ -224,7 +224,7 @@ test_that("preprocessCountsData_NORM_LRN", {
     expdat_norm <- preprocessCountsData(
         view = "DNAme",
         YTrg,
-        normalization = "Lrn",
+        normalization = "LrnGeoMeans",
         Lrn_meta,
         transformation = FALSE
     )
@@ -239,7 +239,7 @@ test_that("preprocessCountsData_NORM_TRG", {
     expdat_norm <- preprocessCountsData(
         view = "mRNA",
         YTrg,
-        normalization = "Trg",
+        normalization = "newGeoMeans",
         Lrn_meta,
         transformation = FALSE
     )
@@ -249,7 +249,7 @@ test_that("preprocessCountsData_NORM_TRG", {
     expdat_norm <- preprocessCountsData(
         view = "DNAme",
         YTrg,
-        normalization = "Trg",
+        normalization = "newGeoMeans",
         Lrn_meta,
         transformation = FALSE
     )
