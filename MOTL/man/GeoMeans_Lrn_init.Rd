@@ -2,22 +2,22 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{GeoMeans_Lrn_init}
 \alias{GeoMeans_Lrn_init}
-\title{Retrieve the calculated geomeans of the learning set}
+\title{Retrieve the geomeans calculated for the learning dataset during counts normalization}
 \usage{
 GeoMeans_Lrn_init(view, expdat_meta_Lrn, YTrgFtrs)
 }
 \arguments{
 \item{view}{current view data name}
 
-\item{expdat_meta_Lrn}{list of learning set factorization metadata}
+\item{expdat_meta_Lrn}{list of learning dataset factorization metadata}
 
 \item{YTrgFtrs}{feature names of the current view}
 }
 \value{
-calculated geomeans of the learning set
+precalculated geomeans of the learning dataset
 }
 \description{
-Retrieve the calculated geomeans of the learning set
+Retrieve the geomeans calculated for the learning dataset during counts normalization
 }
 \examples{
 

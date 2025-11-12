@@ -12,7 +12,7 @@ TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
 \item{YTrg_list}{a named list of target data. Names correspond to the
 views defined and the corresponding data are saved into \code{matrix}.}
 
-\item{Fctrzn}{the learning factorization model object (from \code{MOFA})}
+\item{Fctrzn}{the learning dataset factorization model object (from \code{MOFA})}
 
 \item{smpls}{an ordered vector of sample names}
 }

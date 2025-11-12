@@ -13,7 +13,7 @@ TauLn_calculation(view, likelihoodsLrn, Fctrzn, LrnFctrnDir, LrnSimple = TRUE)
 \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
 type. Names are the view names.}
 
-\item{Fctrzn}{learning factorization model object (from \code{MOFA})}
+\item{Fctrzn}{learning dataset factorization model object (from \code{MOFA})}
 
 \item{LrnFctrnDir}{directory where log(Tau) values are saved. Files
 should be named like \code{"TauLn_mRNA.csv"}.}

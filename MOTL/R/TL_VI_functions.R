@@ -916,7 +916,7 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     #'
     #' @param view a character of current view name data
     #' @param LrnSimple if TRUE, calculates the squared weight values \code{WSq}
-    #' \eqn{E[W^2]} using the weight values \code{W} \eqn{E[W]}. 
+    #' \eqn{E[W^2]} using the weight values \code{W} \eqn{E[W]}.
     #' If FALSE, load squared weight values from a file. By default, it's set to TRUE.
     #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
     #' @param LrnFctrnDir directory where \code{WSq} values are saved
@@ -964,8 +964,8 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     #'
     #' @param view a character of current view name data
     #' @param CenterTrg if FALSE, use the estimated feature weight intercept from
-    #' the \code{EstimatedIntercepts.rds} file. If TRUE, don't use the  
-    #' estimated feature weight intercept. 
+    #' the \code{EstimatedIntercepts.rds} file. If TRUE, don't use the
+    #' estimated feature weight intercept.
     #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
     #' @param LrnFctrnDir directory where the extimated intercepts file is.
     #'
@@ -996,8 +996,7 @@ intercepts_calculation <- function(expdat_meta,
                                     Fctrzn,
                                     FctrznDir,
                                     ExpDataDir,
-                                    Seed,
-                                    YTmp) {
+                                    Seed) {
     #'
     #' Intercepts calculation
     #'
@@ -1015,7 +1014,6 @@ intercepts_calculation <- function(expdat_meta,
     #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
     #' @param FctrznDir the learning dataset factorization directory name
     #' @param ExpDataDir the learning dataset directory name
-    #' @param YTmp ASK_DAVID - REMOVE THIS INPUT
     #' @param Seed random seed number
     #'
     #' @return a file, named EstimatedIntercepts.rds and saved into
@@ -1031,8 +1029,7 @@ intercepts_calculation <- function(expdat_meta,
     #'                         Fctrzn,
     #'                         FctrznDir,
     #'                         ExpDataDir,
-    #'                         Seed,
-    #'                         YTmp)
+    #'                         Seed)
     #'
     #' @export
     #'
@@ -1722,7 +1719,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #' To create the \code{TL_param} variable, see the
     #' \code{\link{initTransferLearningParamaters}} function.
     #'
-    #' @param TL_param a named list of initialized parameters and data objects 
+    #' @param TL_param a named list of initialized parameters and data objects
     #" for transfer learning. It contains target dataset, weigths and scores matrices from
     #' matrix factorization of the learning dataset calculated using MOFA. See
     #' the detail section for more informations.
@@ -1742,14 +1739,14 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #' Creating using the \code{MOFA_functions.py} python script.
     #' @param StartDropFactor number after which iteration to start dropping
     #' factors
-    #' @param FreqDropFactor number that corresponds to how often to check 
+    #' @param FreqDropFactor number that corresponds to how often to check
     #' whether to drop factors
     #' @param StartELBO number after which iteration to start checking ELBO on
     #' @param FreqELBO number that correspond to how often to assess the ELBO
     #' @param DropFactorTH threshold number to drop or not factors. If factor
     #' with lowest maximum variance explained is below this threshold, it's dropped.
     #' @param ConvergenceIts number of consecutive iterations that change in ELBO is
-    #" below threshold before convergence 
+    #" below threshold before convergence
     #' @param ConvergenceTH threshold number for change in ELBO for checking convergence
     #' @param CenterTrg if TRUE, center the target dataset during processing, if
     #' FALSE, leave target dataset uncentered and use estimated learning dataset

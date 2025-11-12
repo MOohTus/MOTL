@@ -28,9 +28,9 @@ type. Names are the view names.}
 
 \item{TauLn}{list of log(Tau) matrices}
 
-\item{E_ZWSq}{ASK_DAVID}
+\item{E_ZWSq}{\eqn{E[(ZW)^2]}}
 
-\item{E_ZE_W}{ASK_DAVID}
+\item{E_ZE_W}{\eqn{E[Z]E[W]}}
 
 \item{Zeta}{list of Zeta matrices}
 
@@ -44,13 +44,8 @@ type. Names are the view names.}
 ASK_DAVID
 }
 \description{
-likelihoods
 for poisson and bernoulli it is the bound which is used
 for gaussian it is expanded gaussian log likelihood
-it seems in MOFA they do not allow for the centering that is done for the
-pseudo data for non gaussian data
-they used the raw uncentered data for the elbo - this seems strange
-although i guess it acts as a lower bound for the lower bound ...
 }
 \examples{
 

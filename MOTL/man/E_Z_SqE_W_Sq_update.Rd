@@ -2,7 +2,7 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{E_Z_SqE_W_Sq_update}
 \alias{E_Z_SqE_W_Sq_update}
-\title{Calculate}
+\title{Calculate \eqn{((E[Z])^2)((E[W])^2)}}
 \usage{
 E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
 }
@@ -22,7 +22,7 @@ matrices}
 ASK_DAVID
 }
 \description{
-Calculate
+Calculate \eqn{((E[Z])^2)((E[W])^2)}
 }
 \examples{
 

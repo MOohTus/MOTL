@@ -2,7 +2,8 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{GeoMeanFun}
 \alias{GeoMeanFun}
-\title{Short description}
+\title{Short description
+ASK_DAVID}
 \usage{
 GeoMeanFun(x)
 }

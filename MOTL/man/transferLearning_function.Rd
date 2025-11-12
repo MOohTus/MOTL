@@ -26,8 +26,7 @@ transferLearning_function(
 )
 }
 \arguments{
-\item{TL_param}{a named list of initialized parameters for transfer
-learning. It contains target dataset, weigths and scores matrices from
+\item{TL_param}{a named list of initialized parameters and data objects
 matrix factorization of the learning dataset calculated using MOFA. See
 the detail section for more informations.}
 
@@ -35,11 +34,11 @@ the detail section for more informations.}
 factorization convergence. After this number, the factorization is
 stopped.}
 
-\item{MinIterations}{the minimum number of iteration for the matrix
+\item{MinIterations}{the minimum number of iterations for the matrix
 factorization convergence. Before this number, even if the function
 converges, the factorization is not stopped.}
 
-\item{minFactors}{the minimum number of factors we expected}
+\item{minFactors}{the minimum number of factors to retain}
 
 \item{views}{a named vector of the target dataset. It should contains
 the same names used for inside the learning dataset.}
@@ -54,20 +53,19 @@ Creating using the \code{MOFA_functions.py} python script.}
 \item{StartDropFactor}{number after which iteration to start dropping
 factors}
 
-\item{FreqDropFactor}{number that corresponds to how often to drop
-factors}
+\item{FreqDropFactor}{number that corresponds to how often to check
+whether to drop factors}
 
 \item{StartELBO}{number after which iteration to start checking ELBO on}
 
 \item{FreqELBO}{number that correspond to how often to assess the ELBO}
 
 \item{DropFactorTH}{threshold number to drop or not factors. If factor
-with lowest maximum variance is below this threshold, it's dropped.}
+with lowest maximum variance explained is below this threshold, it's dropped.}
 
-\item{ConvergenceIts}{number of consecutive checks in a row for which the
-change in ELBO is be}
+\item{ConvergenceIts}{number of consecutive iterations that change in ELBO is}
 
-\item{ConvergenceTH}{threshold number of change in ELBO}
+\item{ConvergenceTH}{threshold number for change in ELBO for checking convergence}
 
 \item{CenterTrg}{if TRUE, center the target dataset during processing, if
 FALSE, leave target dataset uncentered and use estimated learning dataset
@@ -115,8 +113,8 @@ This function is called after target dataset is prepared (using
 \code{\link{TargetDataPreparation}}) and parameters initialized (using
 \code{\link{initTransferLearningParamaters}}).
 
-\code{TL_param} is a named list of the initialized parameters for
-transfer learning. It contains :
+\code{TL_param} is a named list of the initialized parameters and
+data objects for transfer learning. It contains :
 \enumerate{
 \item \code{YTrg}: a named list of matrices. Each matrix corresponds to
 the target dataset.

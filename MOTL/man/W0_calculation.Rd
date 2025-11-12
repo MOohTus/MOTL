@@ -2,23 +2,23 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{W0_calculation}
 \alias{W0_calculation}
-\title{Initialization of the weight intercept values}
+\title{Initialization of feature weight intercept values}
 \usage{
 W0_calculation(view, CenterTrg, Fctrzn, LrnFctrnDir)
 }
 \arguments{
 \item{view}{a character of current view name data}
 
-\item{CenterTrg}{if TRUE, init the weight intercept values using the
-weight values. If FALSE, load the estimated weight intercept values from
-the \code{EstimatedIntercepts.rds} file.}
+\item{CenterTrg}{if FALSE, use the estimated feature weight intercept from
+the \code{EstimatedIntercepts.rds} file. If TRUE, don't use the
+estimated feature weight intercept.}
 
-\item{Fctrzn}{learning factorization model object (from \code{MOFA})}
+\item{Fctrzn}{learning dataset factorization model object (from \code{MOFA})}
 
 \item{LrnFctrnDir}{directory where the extimated intercepts file is.}
 }
 \value{
-a weight intercepts values matrix of the current data
+a feature weight intercept values matrix for the current data
 }
 \description{
 This function loads or calculates the weight intercept values.

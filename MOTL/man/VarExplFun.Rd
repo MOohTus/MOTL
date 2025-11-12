@@ -7,7 +7,7 @@
 VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
 }
 \arguments{
-\item{views}{list of view data names}
+\item{views}{list of view names}
 
 \item{YGauss}{list of pseudo Y value matrices}
 

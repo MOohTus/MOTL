@@ -27,8 +27,8 @@ type. Names are the view names.}
 
 \item{Tau}{list of Tau matrices}
 
-\item{CenterTrg}{if FALSE, use (FALSE) or not (TRUE) use estimated
-intercepts ??}
+\item{CenterTrg}{if FALSE, use the estimated feature weight intercept from
+the \code{EstimatedIntercepts.rds} file. If TRUE, use the feature weight means.}
 
 \item{PoisRateCstnt}{ASK_DAVID}
 }

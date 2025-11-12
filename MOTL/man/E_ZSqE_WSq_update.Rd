@@ -2,7 +2,7 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{E_ZSqE_WSq_update}
 \alias{E_ZSqE_WSq_update}
-\title{Calculate}
+\title{Calculate \eqn{E[Z^2]E[W^2]}}
 \usage{
 E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
 }
@@ -23,7 +23,7 @@ matrices}
 ASK_DAVID
 }
 \description{
-Calculate
+Calculate \eqn{E[Z^2]E[W^2]}
 }
 \examples{
 

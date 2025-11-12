@@ -2,7 +2,7 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{E_ZE_W_update}
 \alias{E_ZE_W_update}
-\title{Calculate}
+\title{Calculate \eqn{E[Z]E[W]}}
 \usage{
 E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
 }
@@ -22,7 +22,7 @@ matrices}
 ASK_DAVID
 }
 \description{
-Calculate
+Calculate \eqn{E[Z]E[W]}
 }
 \examples{
 

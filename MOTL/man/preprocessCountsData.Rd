@@ -19,7 +19,7 @@ preprocessCountsData(
 defined views. The list contains matrices.}
 
 \item{normalization}{if FALSE, no normalization. If "Lrn", normalization
-using the learning GeoMeans. If "Trg", normalization without learning
+using the precalculated GeoMeans. If "Trg", normalization with own
 GeoMeans. By default, it's set to FALSE.}
 
 \item{expdat_meta_Lrn}{the list of learning set factorization metadata}
@@ -35,7 +35,7 @@ Counts data (i.e. mRNA and miRNA) can be normalized and/or transformed.
 }
 \details{
 Normalization is performed using the \code{\link{countsNormalization}}
-function with or without GeoMeans.
+function with precalculated GeoMeans or own GeoMeans.
 
 Transformation is performed using the \code{\link{countsTransformation}}
 function with log2.

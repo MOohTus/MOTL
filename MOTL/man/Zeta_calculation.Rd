@@ -13,9 +13,9 @@ Zeta_calculation(view, likelihoods, E_ZWSq, E_ZE_W)
 \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
 type. Names are the view names.}
 
-\item{E_ZWSq}{ASK_DAVID}
+\item{E_ZWSq}{\eqn{E[(ZW)^2]}}
 
-\item{E_ZE_W}{ASK_DAVID}
+\item{E_ZE_W}{\eqn{E[Z]E[W]}}
 }
 \value{
 Zeta matrix for the current data view

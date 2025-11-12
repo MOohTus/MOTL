@@ -2,7 +2,7 @@
 % Please edit documentation in R/TL_VI_functions.R
 \name{E_ZWSq_update}
 \alias{E_ZWSq_update}
-\title{Calculate}
+\title{Calculate \eqn{E[(ZW)^2]}}
 \usage{
 E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 }
@@ -21,7 +21,7 @@ E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 ASK_DAVID
 }
 \description{
-Calculate
+Calculate \eqn{E[(ZW)^2]}
 }
 \examples{
 
