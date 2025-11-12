@@ -18,9 +18,9 @@ preprocessCountsData(
 \item{YTrg_list}{a named list of target data. Names correspond to the
 defined views. The list contains matrices.}
 
-\item{normalization}{if FALSE, no normalization. If "Lrn", normalization
-using the precalculated GeoMeans. If "Trg", normalization with own
-GeoMeans. By default, it's set to FALSE.}
+\item{normalization}{if FALSE, no normalization. If "LrnGeoMeans",
+normalization using the precalculated GeoMeans. If "newGeoMeans",
+normalization using GeoMeans from dataset. By default, it's set to FALSE.}
 
 \item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 

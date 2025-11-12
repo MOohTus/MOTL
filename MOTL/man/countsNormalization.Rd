@@ -9,7 +9,10 @@ countsNormalization(expdat, GeoMeans)
 \arguments{
 \item{expdat}{SE object of experimental data (could be miRNA or mRNA)}
 
-\item{GeoMeans}{"Trg", "Lrn" or vector of numerics}
+\item{GeoMeans}{if it's a character, GeoMeans will be calculated for the
+\code{expdat} variable given in input (learning or target dataset).
+If it's a numerical vector, given GeoMeans will be used for
+the normalization (the ones pre-calculated from the learning dataset)}
 }
 \value{
 list of data.frame of the counts normalized and GeoMeans
@@ -20,6 +23,13 @@ Normalize counts data using DESeq2 normalization.
 Calculate geometric means for normalization if data = learning set
 Doesn't use geometric means for normalization if data = target set
 Use provided geometric means for normalization if transfer learning
+}
+\details{
+If is.numeric(GeoMeans) == TRUE, normalized with pre-calculated
+GeoMeans (from learning dataset).
+If non values are provided, GeoMeans is calculated on the input datset
+using \code{\link{GeoMeanFun}} function.
+Then, the input dataset is normalized using these GeoMeans
 }
 \examples{
 

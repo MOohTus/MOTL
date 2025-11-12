@@ -60,8 +60,18 @@ countsNormalization <- function(expdat, GeoMeans) {
   #' Doesn't use geometric means for normalization if data = target set
   #' Use provided geometric means for normalization if transfer learning
   #'
+  #' If is.numeric(GeoMeans) == TRUE, normalized with pre-calculated
+  #' GeoMeans (from learning dataset).
+  #' If non values are provided, GeoMeans is calculated on the input datset
+  #' using \code{\link{GeoMeanFun}} function.
+  #' Then, the input dataset is normalized using these GeoMeans
+  #'
+  #'
   #' @param expdat SE object of experimental data (could be miRNA or mRNA)
-  #' @param GeoMeans "Trg", "Lrn" or vector of numerics
+  #' @param GeoMeans if it's a character, GeoMeans will be calculated for the
+  #' \code{expdat} variable given in input (learning or target dataset).
+  #' If it's a numerical vector, given GeoMeans will be used for
+  #' the normalization (the ones pre-calculated from the learning dataset)
   #'
   #' @returns list of data.frame of the counts normalized and GeoMeans
   #' calculated
@@ -77,23 +87,12 @@ countsNormalization <- function(expdat, GeoMeans) {
   ## create deseq object
   expdat_dds <- DESeqDataSet(expdat, design = ~1)
 
-  if (is.numeric(GeoMeans)) {
-    ## normalization
+  if(is.numeric(GeoMeans)){
     expdat_dds_norm <- estimateSizeFactors(expdat_dds, geoMeans = GeoMeans)
     GeoMeans <- NULL
-  } else if (GeoMeans == "Lrn") {
-    ## calculate geometric means to use for normalization of
-    ## both learning and target sets
-    GeoMeans <- apply(counts(expdat_dds), 1, GeoMeanFun)
-    ## normalization
-    expdat_dds_norm <-
-      estimateSizeFactors(expdat_dds, geoMeans = as.vector(GeoMeans))
-  } else if (GeoMeans == "Trg") {
-    ## estimate size factors
-    expdat_dds_norm <- estimateSizeFactors(expdat_dds)
-    GeoMeans <- NULL
-  } else {
-    stop("GeoMeans parameter should be 'Trg' or 'Lrn' or a numeric value")
+  }else{
+    GeoMeans <- as.vector(apply(counts(expdat_dds), 1, GeoMeanFun))
+    expdat_dds_norm <- estimateSizeFactors(expdat_dds, geoMeans = GeoMeans)
   }
 
   ## Extract normalized counts
@@ -149,9 +148,9 @@ preprocessCountsData <- function(view,
   #' @param view a data view name vector (i.e. mRNA or miRNA)
   #' @param YTrg_list a named list of target data. Names correspond to the
   #' defined views. The list contains matrices.
-  #' @param normalization if FALSE, no normalization. If "Lrn", normalization
-  #' using the precalculated GeoMeans. If "Trg", normalization with own
-  #' GeoMeans. By default, it's set to FALSE.
+  #' @param normalization if FALSE, no normalization. If "LrnGeoMeans",
+  #' normalization using the precalculated GeoMeans. If "newGeoMeans",
+  #' normalization using GeoMeans from dataset. By default, it's set to FALSE.
   #' @param expdat_meta_Lrn the list of learning set factorization metadata
   #' @param transformation if FALSE, no transformation. If TRUE, log2
   #' normalization.
@@ -179,15 +178,15 @@ preprocessCountsData <- function(view,
     ## if Lrn, retreive the learning set geomeans and normalize with it
     ## if Trg, normalize without geomeans
     if (is.character(normalization)) {
-      if (normalization == "Lrn") {
+      if (normalization == "LrnGeoMeans") {
         ## print("Normalize with the Learning set GeoMeans")
-        message("Normalize with the Learning set GeoMeans")
+        message("Normalize using the pre-calculated learning dataset GeoMeans")
         GeoMeans <-
           GeoMeans_Lrn_init(view, expdat_meta_Lrn, rownames(YTrg))
       }
-      if (normalization == "Trg") {
+      if (normalization == "newGeoMeans") {
         ## print("Normalize without GeoMeans")
-        message("Normalize without GeoMeans")
+        message("Calculate GeoMeans during the normalization")
         GeoMeans <- normalization
       }
       YTrg <- SummarizedExperiment(assays = list(YTrg))
