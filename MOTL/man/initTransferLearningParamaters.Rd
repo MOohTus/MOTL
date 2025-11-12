@@ -4,13 +4,7 @@
 \alias{initTransferLearningParamaters}
 \title{Transfer learning parameters and data objects initialization}
 \usage{
-initTransferLearningParamaters(
-  YTrg,
-  views,
-  expdat_meta_Lrn,
-  Fctrzn,
-  likelihoods
-)
+initTransferLearningParamaters(YTrg, views, Fctrzn, likelihoods)
 }
 \arguments{
 \item{YTrg}{a named list of target dataset matrices. Names correspond to the
@@ -18,8 +12,6 @@ defined views.}
 
 \item{views}{a vector of target dataset view names (e.g.
 \code{c("mRNA", "miRNA")})}
-
-\item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 
 \item{Fctrzn}{the learning dataset factorization model object (from \code{MOFA})}
 
@@ -70,7 +62,6 @@ likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
 TLparameter <-
     initTransferLearningParamaters(YTrg = YTrg,
                                     views = views,
-                                    expdat_meta_Lrn = expdat_meta_Lrn,
                                     Fctrzn = Fctrzn,
                                     likelihoods = likelihoods)
 

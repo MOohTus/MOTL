@@ -4,7 +4,7 @@
 \alias{intercepts_calculation}
 \title{Intercepts calculation}
 \usage{
-intercepts_calculation(expdat_meta, Fctrzn, FctrznDir, ExpDataDir, Seed, YTmp)
+intercepts_calculation(expdat_meta, Fctrzn, FctrznDir, ExpDataDir, Seed)
 }
 \arguments{
 \item{expdat_meta}{the named list of learning dataset factorization
@@ -17,8 +17,6 @@ metadata}
 \item{ExpDataDir}{the learning dataset directory name}
 
 \item{Seed}{random seed number}
-
-\item{YTmp}{ASK_DAVID - REMOVE THIS INPUT}
 }
 \value{
 a file, named EstimatedIntercepts.rds and saved into
@@ -41,7 +39,6 @@ intercepts_calculation(expdat_meta,
                         Fctrzn,
                         FctrznDir,
                         ExpDataDir,
-                        Seed,
-                        YTmp)
+                        Seed)
 
 }

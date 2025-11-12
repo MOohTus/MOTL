@@ -274,7 +274,6 @@ test_that("initTransferLearningParamaters", {
     YTrgFtrs <- lapply(YTrg_prep, rownames)
     TL_param <- initTransferLearningParamaters(YTrg_prep,
                                                views,
-                                               Lrn_meta,
                                                Lrn_Fctrzn_init,
                                                likelihoods)
     expect_equal(names(TL_param), c("YTrg", "Fctrzn_Lrn_W0", "Fctrzn_Lrn_W","Fctrzn_Lrn_WSq", "Tau", "TauLn"))
@@ -923,7 +922,6 @@ test_that("transferLearning_function", {
     TL_param_exp <- initTransferLearningParamaters(
       YTrg = YTrg_prep,
       views = views,
-      expdat_meta_Lrn = Lrn_meta,
       Fctrzn = Lrn_Fctrzn_init,
       likelihoods = likelihoods)
     expect_equal(names(TL_param_exp), expected_names)

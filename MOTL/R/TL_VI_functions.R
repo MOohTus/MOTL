@@ -625,7 +625,6 @@ TargetDataPreparation <- function(views,
 
 initTransferLearningParamaters <- function(YTrg,
                                             views,
-                                            expdat_meta_Lrn,
                                             Fctrzn,
                                             likelihoods) {
     #'
@@ -651,7 +650,6 @@ initTransferLearningParamaters <- function(YTrg,
     #' defined views.
     #' @param views a vector of target dataset view names (e.g.
     #' \code{c("mRNA", "miRNA")})
-    #' @param expdat_meta_Lrn the list of learning set factorization metadata
     #' @param Fctrzn the learning dataset factorization model object (from \code{MOFA})
     #' @param likelihoods a named list of data types. The list can contain
     #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
@@ -677,7 +675,6 @@ initTransferLearningParamaters <- function(YTrg,
     #' TLparameter <-
     #'     initTransferLearningParamaters(YTrg = YTrg,
     #'                                     views = views,
-    #'                                     expdat_meta_Lrn = expdat_meta_Lrn,
     #'                                     Fctrzn = Fctrzn,
     #'                                     likelihoods = likelihoods)
     #'
