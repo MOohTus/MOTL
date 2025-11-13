@@ -103,19 +103,7 @@ test_that("countsTransformation", {
     expect_in(rownames(expdat_trans), rownames(mat))
 })
 
-test_that("countsNormalization_Lrn", {
-    # YTrg_list$mRNA <- assay(YTrg_list$mRNA)
-    # expdat <- TargetDataPrefiltering(view = "mRNA", YTrg_list, Lrn_Fctrzn, smpls)
-    expdat <- apply(YTrg_prep$mRNA, MARGIN = 2, round)
-    expdat <- SummarizedExperiment(assays = expdat)
-    expdat_norm <- countsNormalization(expdat, GeoMeans = "LrnGeoMeans")
-    expect_equal(length(expdat_norm), 2)
-    expect_equal(dim(expdat_norm$counts), dim(expdat))
-    expect_equal(rownames(expdat_norm$counts), rownames(expdat))
-    expect_equal(colnames(expdat_norm$counts), colnames(expdat))
-})
-
-test_that("countsNormalization_Trg", {
+test_that("countsNormalization_newGeoMeans", {
     # YTrg_list$mRNA <- assay(YTrg_list$mRNA)
     # expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Lrn_Fctrzn, smpls)
     expdat <- apply(YTrg_prep$mRNA, MARGIN = 2, round)
