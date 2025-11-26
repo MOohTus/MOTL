@@ -32,15 +32,12 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
 }
 
 GeoMeanFun <- function(x) {
-  ## ASK_DAVID MT ADD DESCRIPTION
-  #' Short description
-  #' ASK_DAVID
   #'
-  #' Detailed description
+  #' Calculate the geometric mean of a vector
   #'
   #' @param x vector of numeric values
   #'
-  #' @return mean of non zero values from x vector
+  #' @return geometric mean of vector x
   #'
   #' @examples
   #' x <- c(125,12,4545,7878,6777,454545,88979)
@@ -56,8 +53,8 @@ countsNormalization <- function(expdat, GeoMeans) {
   #' Normalize counts data
   #'
   #' Normalize counts data using DESeq2 normalization.
-  #' Calculate geometric means for normalization if data = learning set
-  #' Doesn't use geometric means for normalization if data = target set
+  #' Manually calculate and save geometric means for normalization if data = learning set
+  #' Use geometric means calculated automatically during DESeq2 normalization if data = target set
   #' Use provided geometric means for normalization if transfer learning
   #'
   #' @param expdat SE object of experimental data (could be miRNA or mRNA)
@@ -177,7 +174,7 @@ preprocessCountsData <- function(view,
 
     ## Normalization
     ## if Lrn, retreive the learning set geomeans and normalize with it
-    ## if Trg, normalize without geomeans
+    ## if Trg, normalize without using precalculated geomeans
     if (is.character(normalization)) {
       if (normalization == "Lrn") {
         ## print("Normalize with the Learning set GeoMeans")
@@ -913,9 +910,6 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
   #' calculated during the factorization of the learning data. These values
   #' are saved in the \code{Fctrzn} variable. See the documentation.
   #'
-  #' "factors were ordered in the same way as for other latent variables
-  #' if any factors are dropped due to being inactive, they are at the end of
-  #' the dataset so can filter based on dimension of W" <-- keep ?
   #'
   #' @param view a character of current view name data
   #' @param LrnSimple if TRUE, calculates the squared weight values \code{WSq}
@@ -1355,7 +1349,7 @@ YGauss_calculation <- function(view,
     #' @param Tau list of Tau matrices
     #' @param CenterTrg if FALSE, use the estimated feature weight intercept from
     #' the \code{EstimatedIntercepts.rds} file. If TRUE, use the feature weight means.
-    #' @param PoisRateCstnt ASK_DAVID
+    #' @param PoisRateCstnt small constant added when transforming Poisson data to avoid errors 
     #'
     #' @returns pseudo Y values for the current view
     #'
@@ -1424,8 +1418,8 @@ ZMu_calculation <-
     #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
     #' matrices
     #' @param Tau list of Tau matrices
-    #' @param ZMu_0 list of ZMu intercepts matrices
-    #' @param ZMu list of ZMu matrices
+    #' @param ZMu_0 vector of coefficients for weight intercepts
+    #' @param ZMu matrix of Z values
     #' @param YGauss list of pseudo Y value matrices
     #'
     #' @returns ZMu values for the current view
@@ -1477,9 +1471,9 @@ ELBO_calculation <-
     #' @param Zeta list of Zeta matrices
     #' @param YTrg list of data
     #' @param YGauss list of pseudo Y value matrices
-    #' @param PoisRateCstnt ASK_DAVID
+    #' @param PoisRateCstnt small constant added for Poisson data to avoid errors
     #'
-    #' @returns ASK_DAVID
+    #' @returns the ELBO value for the current view/iteration
     #'
     #' @importFrom stats plogis
     #'
@@ -1537,13 +1531,13 @@ E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #' Calculate \eqn{E[Z]E[W]}
     #'
     #' @param view current view name
-    #' @param ZMu_0 list of ZMu intercept matrices
-    #' @param ZMu list of ZMu matrices
+    #' @param ZMu_0 vector of coefficients for weight intercepts
+    #' @param ZMu matrix of Z values
     #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
     #' matrices
     #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
     #'
-    #' @returns ASK_DAVID
+    #' @returns \eqn{E[Z]E[W]} for current view
     #'
     #' @examples
     #'
@@ -1562,13 +1556,13 @@ E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #' Calculate \eqn{((E[Z])^2)((E[W])^2)}
     #'
     #' @param view current view name
-    #' @param ZMu_0 list of ZMu intercept matrices
-    #' @param ZMu list of ZMu matrices
+    #' @param ZMu_0 vector of coefficients for weight intercepts
+    #' @param ZMu matrix of Z values
     #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
     #' matrices
     #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
     #'
-    #' @returns ASK_DAVID
+    #' @returns \eqn{((E[Z])^2)((E[W])^2)} for current view
     #'
     #' @examples
     #'
@@ -1590,14 +1584,14 @@ E_ZSqE_WSq_update <-
     #' Calculate \eqn{E[Z^2]E[W^2]}
     #'
     #' @param view current view name
-    #' @param ZMu_0 list of ZMu intercept matrices
-    #' @param ZMuSq list of ZMu squared matrices
+    #' @param ZMu_0 vector of coefficients for weight intercepts
+    #' @param ZMu matrix of Z values
     #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
     #' matrices
     #' @param Fctrzn_Lrn_WSq  list of factorized learning set weight squared
     #' matrices
     #'
-    #' @returns ASK_DAVID
+    #' @returns \eqn{E[Z^2]E[W^2]} for current view
     #'
     #' @examples
     #'
@@ -1618,12 +1612,12 @@ E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
     #' Calculate \eqn{E[(ZW)^2]}
     #'
     #' @param view current view name
-    #' @param E_ZE_W ASK_DAVID
-    #' @param ZMuSq list of ZMu squared matrices
-    #' @param E_Z_SqE_W_Sq ASK_DAVID
-    #' @param E_ZSqE_WSq ASK_DAVID
+    #' @param E_ZE_W matrix of \eqn{E[Z]E[W]} values for current view
+    #' @param ZMuSq matrix of squared ZMu values for current view
+    #' @param E_Z_SqE_W_Sq matrix of \eqn{((E[Z])^2)((E[W])^2)} values for current view
+    #' @param E_ZSqE_WSq matrix of \eqn{E[Z^2]E[W^2]} values for current view
     #'
-    #' @returns ASK_DAVID
+    #' @returns \eqn{E[(ZW)^2]} values for current view
     #'
     #' @examples
     #'
@@ -1638,12 +1632,12 @@ E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
 
 VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     #'
-    #' Calculate the variance explained by each factor for eah view
+    #' Calculate the variance explained by each factor for each view
     #'
     #' @param views list of view names
     #' @param YGauss list of pseudo Y value matrices
-    #' @param ZMu_0 list of ZMu intercept matrices
-    #' @param ZMu list of ZMu matrices
+    #' @param ZMu_0 vector of coefficients for weight intercepts
+    #' @param ZMu matrix of Z values
     #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
     #' matrices
     #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
