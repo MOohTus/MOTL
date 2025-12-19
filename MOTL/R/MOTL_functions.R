@@ -49,13 +49,13 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     #'
     #'
     #' @export
-    
+
     if (likelihoods[[view]] == "bernoulli") {
         Zeta <- sqrt(E_ZWSq[[view]])
     } else {
         Zeta <- E_ZE_W[[view]]
     }
-    
+
     return(Zeta)
 }
 
@@ -88,7 +88,7 @@ Tau_calculation <- function(view, likelihoods, Zeta, Tau) {
     #'
     #'
     #' @export
-    
+
     if (likelihoods[[view]] == "bernoulli") {
         Tau <- (1 / 2) * (1 / Zeta[[view]]) * tanh(Zeta[[view]] / 2)
     } else {
@@ -122,7 +122,7 @@ YGauss_calculation <- function(view,
     #' @param Tau list of Tau matrices
     #' @param CenterTrg if FALSE, use the estimated feature weight intercept from
     #' the \code{EstimatedIntercepts.rds} file. If TRUE, use the feature weight means.
-    #' @param PoisRateCstnt small constant added when transforming Poisson data to avoid errors 
+    #' @param PoisRateCstnt small constant added when transforming Poisson data to avoid errors
     #'
     #' @returns pseudo Y values for the current view
     #'
@@ -139,7 +139,7 @@ YGauss_calculation <- function(view,
     #'
     #'
     #' @export
-    
+
     if (likelihoods[[view]] == "poisson") {
         YGauss <- Zeta[[view]] - plogis(Zeta[[view]]) *
             (1 - YTrg[[view]] / (log(1 + exp(Zeta[[view]])) + PoisRateCstnt)) / Tau[[view]]
@@ -148,12 +148,12 @@ YGauss_calculation <- function(view,
     } else {
         YGauss <- YTrg[[view]]
     }
-    
+
     if (CenterTrg) {
         YGauss <-
             sweep(YGauss, 2, as.vector(colMeans(YGauss, na.rm = TRUE)), "-")
     }
-    
+
     return(YGauss)
 }
 
@@ -209,7 +209,7 @@ ZMu_calculation <-
         #'                         YGauss)
         #'
         #' @export
-        
+
         ZMu_tmp1 <- matrix(Fctrzn_Lrn_W[[view]][, k],
                            nrow = dim(Tau[[view]])[1],
                            ncol = dim(Tau[[view]])[2],
@@ -220,7 +220,7 @@ ZMu_calculation <-
         ZMu_tmp2 <- YGauss[[view]] - ZMu_tmp2
         ZMu_tmp3 <- ZMu_tmp1 * ZMu_tmp2
         ZMu_tmp3 <- rowSums(ZMu_tmp3, na.rm = TRUE)
-        
+
         return(ZMu_tmp3)
     }
 
@@ -262,7 +262,7 @@ ELBO_calculation <-
         #'
         #'
         #' @export
-        
+
         if (likelihoods[[view]] == "poisson") {
             # b_nd is an upper bound for -log(p(y|x))
             # b_nd = k_nd/2 * (x_nd - zeta_nd)^2 + (x_nd - zeta_nd)f'(zeta_nd) + f(zeta_nd)
@@ -270,7 +270,7 @@ ELBO_calculation <-
             # f(a) = log(1+e^a) - ylog(log(1+e^a))
             # The elbo component is -b_nd as this is a lower bound for log(p(y|x))
             ## A CONSTANT IS ADDED TO RATE CALCULATIONS HERE AS PER MOFA CODE TO AVOID ERRORS
-            
+
             ELBO_L_tmpA <- 0.5 * Tau[[view]] * (E_ZWSq[[view]] - 2 * E_ZE_W[[view]] * Zeta[[view]] + Zeta[[view]]^2)
             ELBO_L_tmpB <- (E_ZE_W[[view]] - Zeta[[view]]) * plogis(Zeta[[view]]) * (1 - YTrg[[view]] / (log(1 + exp(Zeta[[view]])) + PoisRateCstnt))
             ELBO_L_tmpC <- (log(1 + exp(Zeta[[view]])) + PoisRateCstnt) - YTrg[[view]] * log((log(1 + exp(Zeta[[view]])) + PoisRateCstnt))
@@ -284,7 +284,7 @@ ELBO_calculation <-
             # as tau_nd = 2 * lambda(zeta_nd) this becomes
             # b_nd = log(g(zeta_nd)) + (h_nd - zeta_nd)/2 - tau_nd/2 * (x_nd^2 - zeta_nd^2)
             # here b_nd is the lower bound for log(p(y|x))
-            
+
             ELBO_L_tmpA <- log(plogis(Zeta[[view]]))
             ELBO_L_tmpB <- 0.5 * ((2 * YTrg[[view]] - 1) * E_ZE_W[[view]] - Zeta[[view]])
             ELBO_L_tmpC <- 0.5 * Tau[[view]] * (E_ZWSq[[view]] - Zeta[[view]]^2)
@@ -318,7 +318,7 @@ E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
     #'
     #' @export
-    
+
     E_ZE_W <-
         cbind(ZMu_0, ZMu) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]]))
     return(E_ZE_W)
@@ -344,10 +344,10 @@ E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
     #'
     #' @export
-    
+
     E_Z_SqE_W_Sq <-
         (cbind(ZMu_0, ZMu)^2) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]])^2)
-    
+
     return(E_Z_SqE_W_Sq)
 }
 
@@ -373,10 +373,10 @@ E_ZSqE_WSq_update <-
         #'
         #'
         #' @export
-        
+
         E_ZSqE_WSq <-
             cbind(ZMu_0^2, ZMuSq) %*% t(cbind(Fctrzn_Lrn_W0[[view]]^2, Fctrzn_Lrn_WSq[[view]]))
-        
+
         return(E_ZSqE_WSq)
     }
 
@@ -398,7 +398,7 @@ E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
     #'
     #'
     #' @export
-    
+
     E_ZWSq <- (E_ZE_W[[view]]^2) - E_Z_SqE_W_Sq[[view]] + E_ZSqE_WSq[[view]]
     return(E_ZWSq)
 }
@@ -424,24 +424,25 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     #'
     #'
     #' @export
-    
+
     names(views) <- views
-    
+
     SS_tmp <- lapply(views, function(view, YGauss, ZMu_0, Fctrzn_Lrn_W0) {
         SS_tmp <- sum((YGauss[[view]] - (matrix(ZMu_0, ncol = 1) %*% t(Fctrzn_Lrn_W0[[view]])))^2, na.rm = TRUE)
         return(SS_tmp)
-    }, YGauss, ZMu_0, Fctrzn_Lrn_W0, simplify = FALSE)
-    
-    VarExpl <- lapply(views, function(view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp) {
+    }, YGauss, ZMu_0, Fctrzn_Lrn_W0)
+
+    VarExpl <- do.call(cbind, lapply(views, function(view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp) {
         factorNames <- colnames(ZMu)
-        var_expl_tmp <- lapply(factorNames, function(factorName, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp) {
+        names(factorNames) <- factorNames
+        var_expl_tmp <- unlist(lapply(factorNames, function(factorName, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp) {
             RSS_tmp <- sum((YGauss[[view]] - (cbind(ZMu_0, ZMu[, factorName]) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]][, factorName]))))^2, na.rm = TRUE)
             var_expl_tmp <- 1 - (RSS_tmp / SS_tmp[[view]])
             return(var_expl_tmp)
-        }, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp)
+        }, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp))
         return(var_expl_tmp)
-    }, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp)
-    
+    }, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp))
+
     return(VarExpl)
 }
 
@@ -563,9 +564,9 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #'
     #'
     #' @export
-    
+
     ss_fit_start_time <- Sys.time()
-    
+
     ## RETREIVE PARAMETERS
     YTrgSS <- TL_param$YTrg
     Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
@@ -574,15 +575,16 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     Tau <- TL_param$Tau
     TauLn <- TL_param$TauLn
     smpls <- rownames(TL_param$YTrg[[1]])
-    
+    names(views) <- views
+
     ## INIT PARAMETERS
     ELBO <- numeric()
     convergence_token <- 0
-    
+
     ## FOR EACH ITERATION
     for (It in 0:MaxIterations) {
         PrintMessage <- paste0("It=", It)
-        
+
         ## Drop factors explaining variance below threshold using MOFA formula:
         # SS = np.square(Y[m][gg, :]).sum()
         # Res = np.sum((Y[m][gg, :] - Ypred) ** 2.0)
@@ -591,14 +593,14 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
         if ((BegK > minFactors) & (It > 1) & (It > StartDropFactor) & (((It - StartDropFactor - 1) %% FreqDropFactor) == 0)) {
             ## print("Drop factors")
             message("Drop factors")
-            
+
             VarExpl <- VarExplFun(views = views, YGauss = YGauss, ZMu_0 = ZMu_0, Fctrzn_Lrn_W0 = Fctrzn_Lrn_W0, ZMu = ZMu, Fctrzn_Lrn_W = Fctrzn_Lrn_W)
-            
+
             # SS_tmp <- sapply(views, function(view, YGauss, ZMu_0, Fctrzn_Lrn_W0){
             #   SS_tmp <- sum((YGauss[[view]] - (matrix(ZMu_0,ncol = 1) %*% t(Fctrzn_Lrn_W0[[view]])))^2, na.rm=TRUE)
             #   return(SS_tmp)
             # }, YGauss, ZMu_0, Fctrzn_Lrn_W0, simplify = FALSE)
-            
+
             # VarExpl = sapply(views, function(view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp){
             #     factorNames = colnames(ZMu)
             #     var_expl_tmp = sapply(factorNames, function(factorName, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp){
@@ -608,9 +610,9 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
             #       }, view, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp)
             #     return(var_expl_tmp)
             #     }, YGauss, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W, SS_tmp)
-            
+
             var_expl_max <- apply(VarExpl, 1, max)
-            
+
             ## drop factor with lowest max variance explained if below the threshold
             if (min(var_expl_max) < DropFactorTH) {
                 fctrs_to_keep <- !base::rank(var_expl_max, ties.method = "first") == 1
@@ -620,7 +622,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
                     Fctrzn_Lrn_W[[i]] <- Fctrzn_Lrn_W[[i]][, fctrs_to_keep]
                     Fctrzn_Lrn_WSq[[i]] <- Fctrzn_Lrn_WSq[[i]][, fctrs_to_keep]
                 }
-                
+
                 ## recalculate expectations based on new number of factors
                 ## explanation of these formulae are further down the script
                 E_ZE_W <- lapply(views, E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
@@ -629,27 +631,27 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
                 E_ZWSq <- lapply(views, E_ZWSq_update, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
             }
         }
-        
+
         if (It > 0) {
             ## print("Zeta, Tau and YGauss")
             message("Zeta, Tau, YGauss")
-            
+
             ## Zeta values used for non-gaussian data
             Zeta <- lapply(views, Zeta_calculation, likelihoods, E_ZWSq, E_ZE_W)
-            
+
             ## Update Tau values which only change for bernoulli data
             Tau <- lapply(views, Tau_calculation, likelihoods, Zeta, Tau)
-            
+
             ## Initialise / update Pseudo Y values - called YGauss here
             YGauss <- lapply(views, YGauss_calculation, likelihoods, YTrgSS, Zeta, Tau, CenterTrg)
         }
-        
+
         ## Z variances using initialised / updated tau values and W^2 values
         ## print("Zeta")
         message("Zeta")
         ZVar <- Reduce("+", lapply(views, ZVar_calculation, Tau, Fctrzn_Lrn_WSq))
         ZVar <- 1 / (ZVar + 1)
-        
+
         ## Initialize or update ZMu values
         if (It == 0) {
             ## print("Init Z")
@@ -662,7 +664,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
             )
             rownames(ZMu) <- smpls
             colnames(ZMu) <- colnames(Fctrzn_Lrn_W[[1]])
-            
+
             # vector of 1s to act as multiplier of W intercept term
             ZMu_0 <- rep(1, dim(ZVar)[1])
         } else {
@@ -674,14 +676,14 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
                 ZMu[, k] <- ZMu_tmp * ZVar[, k] # update factor value for subsequent calculation
             }
         }
-        
+
         PrintMessage <- paste0(PrintMessage, " K=", dim(ZMu)[2])
-        
+
         ## Z^2 values
         ## print("Z squared")
         message("Z squared")
         ZMuSq <- ZVar + ZMu^2
-        
+
         ## Some pre calculations - results used in various parts: E_ZE_W and ZZWW
         ## E_ZE_W_nd = E[\sum_{k} z_{n,k} w_{d,k}]
         ## E_ZWSq_nd = E[(\sum_{k} z_{n,k} w_{d,k})^2] = E[\sum_k \sum_j z_{n,k} w_{d,k} z_{n,j} w_{d,j}]
@@ -690,29 +692,29 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
         ## Then A_nd = \sum_{k} \sum_{j != k} E[z_{n,k}]E[w_{n,k}]E[z_{n,j}]E[w_{n,j}]
         ## And B_nd = \sum_{k} E[(z_{n,k})^2]E[(w_{d,k})^2]
         ## E_ZWSq_nd = (A + B)_nd = (square(ZMu%*%t(W)) - square(ZMu)%*%square(t(W)) + ZMuSq%*%t(WSq))_nd
-        
+
         ## print("Expected")
         message("Expected")
         E_ZE_W <- lapply(views, E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
         E_Z_SqE_W_Sq <- lapply(views, E_Z_SqE_W_Sq_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
         E_ZSqE_WSq <- lapply(views, E_ZSqE_WSq_update, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
         E_ZWSq <- lapply(views, E_ZWSq_update, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
-        
+
         ## Calculate and check the ELBO
-        
+
         if ((It > 0) & (It >= StartELBO) & (((It - StartELBO) %% FreqELBO) == 0)) {
             ## print("ELBO")
             message("ELBO")
-            
+
             ELBO_L <- do.call(sum, lapply(X = views, FUN = ELBO_calculation, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrgSS, YGauss))
-            
+
             ## The ELBO components for the variational and prior distributions for Z
             ELBO_P <- sum(0.5 * (-log(2 * pi) - ZMuSq))
             ELBO_Q <- sum(0.5 * (-1 - log(2 * pi) - log(ZVar)))
             ELBO <- c(ELBO, ELBO_L + ELBO_P - ELBO_Q)
-            
+
             PrintMessage <- paste0(PrintMessage, " ELBO=", round(ELBO[length(ELBO)], 2))
-            
+
             # Calculate and check the change in ELBO
             # I originally didn't allow negative changes in ELBO before convergence but MOFA does so I now allow it
             if (length(ELBO) >= 2) {
@@ -725,10 +727,10 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
                 PrintMessage <- paste0(PrintMessage, " ELBO_delta=", round(ELBO_delta, 8), "%")
             }
         }
-        
+
         ## print(PrintMessage)
         message(PrintMessage)
-        
+
         ## can the algorithm be stopped?
         if ((It >= 2) & (It >= MinIterations) & (convergence_token >= ConvergenceIts)) {
             ## print("converged")
@@ -736,10 +738,10 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
             break
         }
     }
-    
+
     ## Variance explained calculation with final factors
     VarExpl <- VarExplFun(views = views, YGauss = YGauss, ZMu_0 = ZMu_0, Fctrzn_Lrn_W0 = Fctrzn_Lrn_W0, ZMu = ZMu, Fctrzn_Lrn_W = Fctrzn_Lrn_W)
-    
+
     # export the data for further analysis
     ss_end_time <- Sys.time()
     TL_data <- list(
@@ -756,15 +758,15 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
         "ss_end_time" = ss_end_time
     )
     saveRDS(TL_data, file.path(outputDir, "TL_data.rds"))
-    
+
     ## delete before next subset in case i've missed something in the loop
     rm(list = c(
         "YTrgSS", "YGauss", "ZMu_0", "ZMu", "Fctrzn_Lrn_W0", "Fctrzn_Lrn_W", "ELBO", "ELBO_P", "ELBO_Q", "ELBO_L",
         "E_ZE_W", "E_Z_SqE_W_Sq", "E_ZSqE_WSq", "E_ZWSq", "ZMuSq", "Fctrzn_Lrn_WSq", "Tau", "TauLn", "ZVar", "Zeta"
     ))
-    
+
     invisible(gc())
-    
+
     return(TL_data)
 }
 

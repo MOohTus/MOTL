@@ -20,14 +20,16 @@ calculated
 }
 \description{
 Normalize counts data using DESeq2 normalization.
-Manually calculate and save geometric means for normalization if data = learning set
-Use geometric means calculated automatically during DESeq2 normalization if data = target set
-Use provided geometric means for normalization if transfer learning
+Two ways of normalization:
+\enumerate{
+\item Use the precalculated GeoMeans of the learning dataset
+\item Use calculated GeoMeans of the \code{expdat} dataset givne in input
+}
 }
 \details{
-If is.numeric(GeoMeans) == TRUE, normalized with pre-calculated
-GeoMeans (from learning dataset).
-If non values are provided, GeoMeans is calculated on the input datset
+If \code{is.numeric(GeoMeans) == TRUE}, input data are normalized with
+pre-calculated GeoMeans (from learning dataset).
+If non values are provided, GeoMeans is calculated on the input dataset
 using \code{\link{GeoMeanFun}} function.
 Then, the input dataset is normalized using these GeoMeans
 }

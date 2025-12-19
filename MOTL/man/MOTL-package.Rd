@@ -4,12 +4,17 @@
 \name{MOTL-package}
 \alias{MOTL}
 \alias{MOTL-package}
-\title{MOTL: MOTL: multi-omics matrix factorization with transfer learning}
+\title{MOTL: Multi-omics matrix factorization with transfer learning}
 \description{
 A transfer learning algorithm for multi-omics matrix factorization called MOTL (Multi-Omics Transfer Learning). MOTL is a Bayesian transfer learning method, based on MOFA. MOTL infers latent factor values for a multi-omics target dataset, consisting of a small number of samples, by incorporating latent factor values already inferred with a MOFA factorization of a large, heterogeneous, learning dataset.
 }
 \author{
-\strong{Maintainer}: David Hirst \email{david.hirst@univ-amu.fr} (\href{https://orcid.org/0000-0001-7574-5531}{ORCID})
+\strong{Maintainer}: Morgane Térézol \email{morgane.terezol@univ-amu.fr} (\href{https://orcid.org/0000-0002-4090-2573}{ORCID})
+
+Authors:
+\itemize{
+  \item David Hirst (\href{https://orcid.org/0000-0001-7574-5531}{ORCID})
+}
 
 }
 \keyword{internal}

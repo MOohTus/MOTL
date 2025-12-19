@@ -2,7 +2,7 @@
 % Please edit documentation in R/DataPreprocessing_functions.R
 \name{GeoMeanFun}
 \alias{GeoMeanFun}
-\title{Calculate the geometric mean of a vector}
+\title{Calculate the Geometric mean of a vector}
 \usage{
 GeoMeanFun(x)
 }
@@ -10,10 +10,10 @@ GeoMeanFun(x)
 \item{x}{vector of numeric values}
 }
 \value{
-geometric mean of vector x
+Geometric mean of vector x
 }
 \description{
-Calculate the geometric mean of a vector
+Calculate the Geometric mean of a vector
 }
 \examples{
 x <- c(125,12,4545,7878,6777,454545,88979)

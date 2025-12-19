@@ -1,12 +1,17 @@
 Package: MOTL
-Title: MOTL: multi-omics matrix factorization with transfer learning
+Title: Multi-omics matrix factorization with transfer learning
 Version: 0.99.0
-Authors@R: 
+Authors@R: c(
     person(given = "David",
     family = "Hirst",
-    role = c("aut", "cre"),
-    email = "david.hirst@univ-amu.fr",
-    comment = c(ORCID = "0000-0001-7574-5531"))
+    role = c("aut"),
+    comment = c(ORCID = "0000-0001-7574-5531")),
+    person(given = "Morgane", 
+    family = "Térézol", 
+    role = c("cre"), 
+    email = "morgane.terezol@univ-amu.fr", 
+    comment = c(ORCID = "0000-0002-4090-2573"))
+    )
 Description: A transfer learning algorithm for multi-omics matrix factorization called MOTL (Multi-Omics Transfer Learning). MOTL is a Bayesian transfer learning method, based on MOFA. MOTL infers latent factor values for a multi-omics target dataset, consisting of a small number of samples, by incorporating latent factor values already inferred with a MOFA factorization of a large, heterogeneous, learning dataset.
 License: GPL-3 + file LICENCE
 Encoding: UTF-8

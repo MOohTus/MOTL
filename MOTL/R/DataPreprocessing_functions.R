@@ -2,13 +2,13 @@
 
 GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
     #'
-    #' Retrieve the geomeans calculated for the learning dataset during counts normalization
+    #' Retrieve the GeoMeans calculated for the learning dataset during counts normalization
     #'
     #' @param view current view data name
     #' @param expdat_meta_Lrn list of learning dataset factorization metadata
     #' @param YTrgFtrs feature names of the current view
     #'
-    #' @returns precalculated geomeans of the learning dataset
+    #' @returns precalculated GeoMeans of the learning dataset
     #'
     #' @examples
     #'
@@ -16,7 +16,7 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
     #'         GeoMeans_Lrn_init(view = "mRNA", expdat_meta_Lrn, YTrgFtrs)
     #'
     #' @export
-    
+
     if (is.element(view, c("mRNA", "miRNA"))) {
         GeoMeans_Lrn <- expdat_meta_Lrn[[paste0("GeoMeans_", view)]]
         FtrsKeep <- is.element(names(GeoMeans_Lrn), YTrgFtrs)
@@ -30,18 +30,18 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
 
 GeoMeanFun <- function(x) {
     #'
-    #' Calculate the geometric mean of a vector
+    #' Calculate the Geometric mean of a vector
     #'
     #' @param x vector of numeric values
     #'
-    #' @return geometric mean of vector x
+    #' @return Geometric mean of vector x
     #'
     #' @examples
     #' x <- c(125,12,4545,7878,6777,454545,88979)
     #' GeoMeans <- GeoMeanFun(x)
     #'
     #' @export
-    
+
     GeoMeans <- exp(sum(log(x[x > 0])) / length(x))
     return(GeoMeans)
 }
@@ -50,13 +50,13 @@ countsNormalization <- function(expdat, GeoMeans) {
     #' Normalize counts data
     #'
     #' Normalize counts data using DESeq2 normalization.
-    #' Manually calculate and save geometric means for normalization if data = learning set
-    #' Use geometric means calculated automatically during DESeq2 normalization if data = target set
-    #' Use provided geometric means for normalization if transfer learning
+    #' Two ways of normalization:
+    #' 1. Use the precalculated GeoMeans of the learning dataset
+    #' 2. Use calculated GeoMeans of the \code{expdat} dataset givne in input
     #'
-    #' If is.numeric(GeoMeans) == TRUE, normalized with pre-calculated
-    #' GeoMeans (from learning dataset).
-    #' If non values are provided, GeoMeans is calculated on the input datset
+    #' If \code{is.numeric(GeoMeans) == TRUE}, input data are normalized with
+    #' pre-calculated GeoMeans (from learning dataset).
+    #' If non values are provided, GeoMeans is calculated on the input dataset
     #' using \code{\link{GeoMeanFun}} function.
     #' Then, the input dataset is normalized using these GeoMeans
     #'
@@ -77,10 +77,10 @@ countsNormalization <- function(expdat, GeoMeans) {
     #' expdat_counts_norm <- countsNormalization(expdat, GeoMeans)
     #'
     #' @export
-    
+
     ## create deseq object
     expdat_dds <- DESeqDataSet(expdat, design = ~1)
-    
+
     if(is.numeric(GeoMeans)){
         expdat_dds_norm <- estimateSizeFactors(expdat_dds, geoMeans = GeoMeans)
         GeoMeans <- NULL
@@ -88,14 +88,14 @@ countsNormalization <- function(expdat, GeoMeans) {
         GeoMeans <- as.vector(apply(counts(expdat_dds), 1, GeoMeanFun))
         expdat_dds_norm <- estimateSizeFactors(expdat_dds, geoMeans = GeoMeans)
     }
-    
+
     ## Extract normalized counts
     expdat_counts_norm <-
         list("counts" = counts(expdat_dds_norm, normalized = TRUE))
-    
+
     ## Save GeoMeans
     expdat_counts_norm$GeoMeans <- GeoMeans
-    
+
     return(expdat_counts_norm)
 }
 
@@ -112,7 +112,7 @@ countsTransformation <- function(expdat_count, TopD) {
     #'
     #'
     #' @export
-    
+
     ## log transform and filter to keep only most variable
     expdat_counts_log <- log2(expdat_count + 1)
     FtrsKeep <-
@@ -134,7 +134,7 @@ preprocessCountsData <- function(view,
     #' Counts data (i.e. mRNA and miRNA) can be normalized and/or transformed.
     #'
     #' Normalization is performed using the \code{\link{countsNormalization}}
-    #' function with precalculated GeoMeans or own GeoMeans.
+    #' function with precalculated GeoMeans or new calculated GeoMeans.
     #'
     #' Transformation is performed using the \code{\link{countsTransformation}}
     #' function with log2.
@@ -161,13 +161,13 @@ preprocessCountsData <- function(view,
     #'
     #'
     #' @export
-    
+
     ## Select current data
     YTrg <- YTrg_list[[view]]
-    
+
     if (view %in% c("mRNA", "miRNA")) {
         ## print(view)
-        
+
         ## Normalization
         ## if Lrn, retreive the learning set geomeans and normalize with it
         ## if Trg, normalize without using precalculated geomeans
@@ -190,7 +190,7 @@ preprocessCountsData <- function(view,
             ## print("No normalization")
             message("No normalization")
         }
-        
+
         ## Transformation
         if (transformation) {
             ## print("Log transform data")
@@ -201,7 +201,7 @@ preprocessCountsData <- function(view,
             message("No transformation")
         }
     }
-    
+
     ## Return
     return(YTrg)
 }
@@ -256,14 +256,14 @@ TargetDataPreparation <- function(views,
     #'
     #'
     #' @export
-    
+
     names(views) <- views
-    
+
     ## Feature variance prefiltering and feature harmonization
     ## print("Feature prefiltering")
     message("Feature prefiltering")
     YTrg <- lapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
-    
+
     ## Normalization and transformation
     ## print("Normalization and transformation")
     message("Normalization and transformation")
@@ -275,7 +275,7 @@ TargetDataPreparation <- function(views,
         expdat_meta_Lrn,
         transformation
     )
-    
+
     ## Return
     return(YTrg)
 }
@@ -337,12 +337,12 @@ initTransferLearningParamaters <- function(YTrg,
     #'
     #' @export
     #'
-    
+
     names(views) <- views
-    
+
     ## Feature names in each data
     YTrgFtrs <- lapply(YTrg, rownames)
-    
+
     ## FACTORIZED LEARNING WEIGHTS MATRIX ZERO
     ## print("Factorized learning set weight intercepts")
     message("Factorized learning set weight intercepts")
@@ -354,7 +354,7 @@ initTransferLearningParamaters <- function(YTrg,
             Fctrzn_Lrn_W0[match(YTrgFtrs[[view]], names(Fctrzn_Lrn_W0))]
         return(Fctrzn_Lrn_W0)
     }, Fctrzn, YTrgFtrs)
-    
+
     ## FACTORIZED LEARNING WEIGHTS MATRIX
     ## print("Factorized learning set weights")
     message("Factorized learning set weights")
@@ -366,7 +366,7 @@ initTransferLearningParamaters <- function(YTrg,
             Fctrzn_Lrn_W[match(YTrgFtrs[[view]], rownames(Fctrzn_Lrn_W)), ]
         return(Fctrzn_Lrn_W)
     }, Fctrzn, YTrgFtrs)
-    
+
     ## FACTORIZED LEARNING WEIGHTS MATRIX SQUARED
     ## print("Factorized learning set squared weights")
     message("Factorized learning set squared weights")
@@ -378,7 +378,7 @@ initTransferLearningParamaters <- function(YTrg,
             Fctrzn_Lrn_WSq[match(YTrgFtrs[[view]], rownames(Fctrzn_Lrn_WSq)), ]
         return(Fctrzn_Lrn_WSq)
     }, Fctrzn, YTrgFtrs)
-    
+
     ## TAU PARAMETER
     ## print("Tau")
     message("Tau")
@@ -396,7 +396,7 @@ initTransferLearningParamaters <- function(YTrg,
         rownames(Tau) <- rownames(YTrg[[view]])
         return(Tau)
     }, Fctrzn, YTrg, YTrgFtrs)
-    
+
     ## LOG TAU PARAMETER
     ## print("LOG Tau")
     message("LOG Tau")
@@ -422,12 +422,12 @@ initTransferLearningParamaters <- function(YTrg,
         }
         return(TauLn)
     }, likelihoods, Fctrzn, YTrg, YTrgFtrs)
-    
+
     ## transpose matrices where necessary - to make them samples x features
     YTrg <- lapply(YTrg, t)
     Tau <- lapply(Tau, t)
     TauLn <- lapply(TauLn, t)
-    
+
     ## return
     TL_param <- list(
         "YTrg" = YTrg,
@@ -496,15 +496,15 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     #'
     #'
     #' @export
-    
+
     ## print(view)
-    
+
     ## select samples and subset the YTrg
     brcds <- brcds_SS[[paste0("brcds_", view, "_SS")]][[SS]]
     SmplsKeep <- is.element(colnames(YTrgFull[[view]]), brcds$brcds)
     YTrgSS <- YTrgFull[[view]][, SmplsKeep]
     ## print(paste0("YTrgSS dimensions: ", dim(YTrgSS)))
-    
+
     ## prefiltering, only condition is that variance >0
     if (is.element(view, c("mRNA", "DNAme", "miRNA"))) {
         FtrsKeep <- rowVars(assay(YTrgSS), na.rm = TRUE) > 0
@@ -514,7 +514,7 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     FtrsKeep[is.na(FtrsKeep)] <- FALSE
     YTrgSS <- YTrgSS[FtrsKeep, ]
     ## print(paste0("YTrgSS dimensions after prefiltering: ", dim(YTrgSS)))
-    
+
     ## harmonize features between Trg SS and Lrn data
     features_metadata <- Fctrzn@features_metadata
     FtrsLrn <- features_metadata$feature[features_metadata$view == view]
@@ -522,7 +522,7 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     FtrsKeep <- is.element(rownames(YTrgSS), FtrsCommon)
     YTrgSS <- YTrgSS[FtrsKeep, ]
     YTrgSS <- YTrgSS[match(FtrsCommon, rownames(YTrgSS)), ]
-    
+
     return(YTrgSS)
 }
 
@@ -629,11 +629,11 @@ TCGATargetDataPreparation <- function(views,
     #' # \link{https://github.com/david-hirst/MOTL/blob/main/TCGAStudy/00_TCGAstudy_ReadMe.md}
     #'
     #' @export
-    
+
     ## print("Feature prefiltering")
-    
+
     names(views) <- views
-    
+
     ## Feature variance prefiltering and feature harmonization
     YTrgSSFull <-
         lapply(views, function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
@@ -644,21 +644,21 @@ TCGATargetDataPreparation <- function(views,
                                                  Fctrzn)
             return(YTrgSS)
         }, brcds_SS, SS, YTrgFull, Fctrzn)
-    
+
     ## Reshape data
     YTrgSSFull <- lapply(views, function(view, YTrgSSFull, smpls) {
         YTrgSS <- YTrgSSFull[[view]]
         if (is.element(view, c("mRNA", "miRNA", "DNAme"))) {
             YTrgSS <- assay(YTrgSS)
         }
-        
+
         ## order columns
         colnames(YTrgSS) <- substr(colnames(YTrgSS), 1, 16)
         YTrgSS <- YTrgSS[, match(smpls, colnames(YTrgSS))]
-        
+
         return(YTrgSS)
     }, YTrgSSFull, smpls)
-    
+
     ## Normalization and transformation
     ## print("Normalization and transformation")
     YTrgSSFull <- lapply(
@@ -669,7 +669,7 @@ TCGATargetDataPreparation <- function(views,
         expdat_meta_Lrn,
         transformation
     )
-    
+
     ## Return
     return(YTrgSSFull)
 }
@@ -724,7 +724,7 @@ mRNA_addVersion <- function(expdat, Lrndat) {
         as.data.frame()
     # rename target dataset features
     rownames(expdat) <- paste0(tmp$V1, ".", tmp$V2)
-    
+
     # return tidied up matrix
     return(expdat)
 }
@@ -756,15 +756,15 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     #'
     #'
     #' @export
-    
+
     YTrg <- YTrg_list[[view]]
-    
+
     ## prefiltering, only condition is that variance >0
     FtrsKeep <- rowVars(YTrg, na.rm = TRUE) > 0
     FtrsKeep[is.na(FtrsKeep)] <- FALSE
     YTrg <- YTrg[FtrsKeep, ]
     ## print(paste0("YTrg dimensions after prefiltering: ", dim(YTrg)))
-    
+
     ## harmonize features between Trg and Lrn data
     features_metadata <- Fctrzn@features_metadata
     FtrsLrn <- features_metadata$feature[features_metadata$view == view]
@@ -772,10 +772,10 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     FtrsKeep <- is.element(rownames(YTrg), FtrsCommon)
     YTrg <- YTrg[FtrsKeep, ]
     YTrg <- YTrg[match(FtrsCommon, rownames(YTrg)), ]
-    
+
     ## order columns
     YTrg <- YTrg[, match(smpls, colnames(YTrg))]
-    
+
     return(YTrg)
 }
 
@@ -812,18 +812,18 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #'                     InputModel = InputModel)
     #'
     #' @export
-    
+
     ## Extract Tau from the factorization of the learning set
     Tau <- h5read(InputModel, "expectations/Tau")
     Tau <- Tau[match(viewsLrn, names(Tau))]
-    
+
     ## For each view, transfer rownames into the corresponding Tau matrix
     for (i in seq_len(length(viewsLrn))) {
         view <- viewsLrn[i]
         rownames(Tau[[view]]$group0) <-
             rownames(Fctrzn@expectations[["W"]][[view]])
     }
-    
+
     # Return a named list of Tau matrix
     return(Tau)
 }
@@ -873,7 +873,7 @@ TauLn_calculation <- function(view,
     #'
     #'
     #' @export
-    
+
     if (likelihoodsLrn[view] == "gaussian") {
         if (LrnSimple) {
             TauLn <- log(Fctrzn@expectations[["Tau"]][[view]]$group0[, 1])
@@ -927,7 +927,7 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     #'
     #'
     #' @export
-    
+
     if (LrnSimple) {
         WSq <- (Fctrzn@expectations[["W"]][[view]])^2
     } else {
@@ -973,7 +973,7 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     #'
     #'
     #' @export
-    
+
     if (CenterTrg) {
         W0 <- Fctrzn@expectations[["W"]][[view]][, 1] * 0
     } else {
@@ -1026,23 +1026,23 @@ intercepts_calculation <- function(expdat_meta,
     #'
     #' @export
     #'
-    
+
     ## print("Estimation of the intercept")
     message("Estimation of the intercept")
-    
+
     fit_start_time <- Sys.time()
-    
+
     ## Extract data from factorization model object
     views <- Fctrzn@data_options$views
     names(views) <- views
     likelihoods <- Fctrzn@model_options$likelihoods
     M <- Fctrzn@dimensions$M
     D <- Fctrzn@dimensions$D
-    
+
     # loop through the views and estimate the intercept
     # for gaussian data its just the mean
     # for other data will try mle with a naive estimator as backup
-    
+
     intercepts_list <- lapply(views, function(view,
                                               likelihoods,
                                               D,
@@ -1050,10 +1050,10 @@ intercepts_calculation <- function(expdat_meta,
                                               expdat_meta,
                                               Fctrzn) {
         ## print(view)
-        
+
         likelihood <- likelihoods[which(names(likelihoods) == view)]
         DTmp <- D[which(names(D) == view)]
-        
+
         # YTmp <- read.table(file = file.path(ExpDataDir, paste0(view,'.csv')), sep = ",")
         YTmpFileName <- file.path(ExpDataDir, paste0(view, ".csv"))
         YTmp <- as.data.frame(fread(file = YTmpFileName, sep = ","))
@@ -1061,16 +1061,16 @@ intercepts_calculation <- function(expdat_meta,
         rownames(YTmp) <- expdat_meta$smpls
         colnames(YTmp) <-
             expdat_meta[[which(names(expdat_meta) == paste0("ftrs_", view))]]
-        
+
         expectations <- Fctrzn@expectations
         ZWTmp <- expectations$Z$group0 %*%
             t(expectations$W[[which(names(expectations$W) == view)]])
-        
+
         # mean(colnames(YTmp)==colnames(ZWTmp))
         # mean(rownames(YTmp)==rownames(ZWTmp))
-        
+
         invisible(gc())
-        
+
         if (likelihood == "gaussian") {
             InterceptsNaive <- colMeans(YTmp, na.rm = TRUE)
             Intercepts <- InterceptsNaive
@@ -1079,18 +1079,18 @@ intercepts_calculation <- function(expdat_meta,
         } else if (likelihood == "poisson") {
             ## naive intercept based on approximation to feature means of ZW
             InterceptsNaive <- as.vector(log(-1 + exp(colMeans(YTmp))))
-            
+
             ## mle estimate of intercept for ZW
             ## if optimiser fails for a feature will return the naive estimate
-            
+
             Intercepts_df <- do.call(rbind, lapply(seq_len(DTmp), function(d, YTmp, ZWTmp) {
                 ## compute for each feature vector
                 YTmp_d <- YTmp[, d]
                 YTmp_d_keep <- !is.na(YTmp_d)
                 YTmp_d <- YTmp_d[YTmp_d_keep]
-                
+
                 ZWTmp_d <- ZWTmp[YTmp_d_keep, d]
-                
+
                 ## NLL function to optimize
                 # nLL = function(interceptMLE) -sum(stats::dpois(YLrn[,d], log(1 + exp(ZWLrn[,d]+interceptMLE)), log = TRUE))
                 nLL <- function(interceptMLE) {
@@ -1098,11 +1098,11 @@ intercepts_calculation <- function(expdat_meta,
                         1 + exp(ZWTmp_d + interceptMLE)
                     ))[dpois(YTmp_d[, d], log(1 + exp(ZWTmp_d + interceptMLE))) != 0]))
                 }
-                
+
                 ## try to solve it and use the result otherwise use the naive estimate
                 # interceptMLEfit = try(as.vector(stats4::mle(nLL, start=list(interceptMLE=0))@coef[1]))
                 interceptMLEfit <- try(as.vector(mle(nLL, start = list(interceptMLE = InterceptsNaive[d]))@coef[1]))
-                
+
                 if (is(interceptMLEfit, "try-error")) {
                     InterceptsTmp <- InterceptsNaive[d]
                     InterceptsMethodTmp <- "Naive"
@@ -1110,16 +1110,16 @@ intercepts_calculation <- function(expdat_meta,
                     InterceptsTmp <- interceptMLEfit
                     InterceptsMethodTmp <- "MLE"
                 }
-                
+
                 intercept <- data.frame(
                     "intercept" = InterceptsTmp,
                     "Method" = InterceptsMethodTmp,
                     row.names = names(InterceptsNaive)[d]
                 )
-                
+
                 return(intercept)
             }, YTmp, ZWTmp))
-            
+
             Intercepts <-
                 setNames(Intercepts_df$intercept, row.names(Intercepts_df))
             InterceptsMethod <-
@@ -1128,22 +1128,22 @@ intercepts_calculation <- function(expdat_meta,
             ## naive intercept based on approximation to feature means of ZW
             InterceptsNaive <-
                 log(colMeans(YTmp, na.rm = TRUE) / (1 - colMeans(YTmp, na.rm = TRUE)))
-            
+
             ## mle estimate of intercept for ZW
             ## if optimiser fails for a feature will return the naive estimate
-            
+
             # DTmp <- 10
-            
+
             Intercepts_df <-
                 do.call(rbind, lapply(seq_len(DTmp), function(d, YTmp, ZWTmp) {
                     ## compute for each feature vector
-                    
+
                     YTmp_d <- YTmp[, d]
                     YTmp_d_keep <- !is.na(YTmp_d)
                     YTmp_d <- YTmp_d[YTmp_d_keep]
-                    
+
                     ZWTmp_d <- ZWTmp[YTmp_d_keep, d]
-                    
+
                     ## NLL function to optimize
                     nLL <- function(InterceptMLE) {
                         -sum(log(dbinom(
@@ -1151,12 +1151,12 @@ intercepts_calculation <- function(expdat_meta,
                             size = 1, plogis(ZWTmp_d + InterceptMLE)
                         )[dbinom(YTmp_d, size = 1, plogis(ZWTmp_d + InterceptMLE)) != 0]))
                     }
-                    
+
                     ## try to solve it and use the result otherwise use the naive estimate
-                    
+
                     interceptMLEfit <-
                         try(mle(nLL, start = list(InterceptMLE = InterceptsNaive[d]))@coef[1])
-                    
+
                     if (is(interceptMLEfit, "try-error")) {
                         InterceptsTmp <- InterceptsNaive[d]
                         InterceptsMethodTmp <- "Naive"
@@ -1169,10 +1169,10 @@ intercepts_calculation <- function(expdat_meta,
                         "Method" = InterceptsMethodTmp,
                         row.names = names(InterceptsNaive)[d]
                     )
-                    
+
                     return(intercept)
                 }, YTmp, ZWTmp))
-            
+
             Intercepts <- setNames(Intercepts_df$intercept, row.names(Intercepts_df))
             InterceptsMethod <- setNames(Intercepts_df$Method, row.names(Intercepts_df))
         } else {
@@ -1180,20 +1180,20 @@ intercepts_calculation <- function(expdat_meta,
             Intercepts <- numeric()
             InterceptsMethod <- character()
         }
-        
+
         intercepts_list <- list(
             "InterceptsNaive" = InterceptsNaive,
             "Intercepts" = Intercepts,
             "InterceptsMethod" = InterceptsMethod
         )
-        
+
         return(intercepts_list)
     }, likelihoods, D, YTmp, expdat_meta, Fctrzn)
-    
+
     ## save the intercepts in the relevant factorization folder
-    
+
     fit_end_time <- Sys.time()
-    
+
     EstimatedIntercepts <- list(
         "Seed" = Seed,
         "InterceptsNaive" = lapply(views, function(v, intercepts_list) {
@@ -1208,12 +1208,12 @@ intercepts_calculation <- function(expdat_meta,
         "fit_start_time" = fit_start_time,
         "fit_end_time" = fit_end_time
     )
-    
+
     saveRDS(
         EstimatedIntercepts,
         file.path(FctrznDir, "EstimatedIntercepts.rds")
     )
-    
+
     ## print("finished")
     message("finished")
 }

@@ -32,6 +32,8 @@ devtools::test()
 ## VIGNETTES
 ## https://r-pkgs.org/vignettes.html
 usethis::use_vignette("Vignette")
+devtools::build_rmd("vignettes/my-vignette.Rmd")
+usethis::use_package_doc()
 
 ## ROXYGEN TO DOCUMENT
 ## LOAD COMPLETE PACKAGE

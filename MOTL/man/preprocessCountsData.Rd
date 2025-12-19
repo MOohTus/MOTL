@@ -35,7 +35,7 @@ Counts data (i.e. mRNA and miRNA) can be normalized and/or transformed.
 }
 \details{
 Normalization is performed using the \code{\link{countsNormalization}}
-function with precalculated GeoMeans or own GeoMeans.
+function with precalculated GeoMeans or new calculated GeoMeans.
 
 Transformation is performed using the \code{\link{countsTransformation}}
 function with log2.
