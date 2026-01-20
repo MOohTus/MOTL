@@ -2,38 +2,44 @@ Package: MOTL
 Title: Multi-omics matrix factorization with transfer learning
 Version: 0.99.0
 Authors@R: c(
-    person(given = "David",
-    family = "Hirst",
-    role = c("aut"),
-    comment = c(ORCID = "0000-0001-7574-5531")),
-    person(given = "Morgane", 
-    family = "Térézol", 
-    role = c("cre"), 
-    email = "morgane.terezol@univ-amu.fr", 
-    comment = c(ORCID = "0000-0002-4090-2573"))
-    )
-Description: A transfer learning algorithm for multi-omics matrix factorization called MOTL (Multi-Omics Transfer Learning). MOTL is a Bayesian transfer learning method, based on MOFA. MOTL infers latent factor values for a multi-omics target dataset, consisting of a small number of samples, by incorporating latent factor values already inferred with a MOFA factorization of a large, heterogeneous, learning dataset.
+    person("David", "Hirst", role = "aut",
+           comment = c(ORCID = "0000-0001-7574-5531")),
+    person("Morgane", "Térézol", , "morgane.terezol@univ-amu.fr", role = "cre",
+           comment = c(ORCID = "0000-0002-4090-2573"))
+  )
+Description: A transfer learning algorithm for multi-omics matrix
+    factorization called 'MOTL' (Multi-Omics Transfer Learning). 'MOTL' is
+    a Bayesian transfer learning method, based on 'MOFA'. 'MOTL' infers
+    latent factor values for a multi-omics target dataset, consisting of a
+    small number of samples, by incorporating latent factor values already
+    inferred with a 'MOFA' factorization of a large, heterogeneous,
+    learning dataset.
 License: GPL-3 + file LICENCE
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
+URL: https://github.com/david-hirst/MOTL,
+    https://github.com/MOohTus/MOTL-pkg
+BugReports: https://github.com/david-hirst/MOTL/issues,
+    https://github.com/MOohTus/MOTL-pkg/issues
 Depends:
     R (>= 4.2.0)
+Imports: 
+    base,
+    data.table,
+    DESeq2,
+    dplyr,
+    matrixStats,
+    rhdf5,
+    stats,
+    stats4,
+    SummarizedExperiment,
+    utils
 Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
-Config/testthat/edition: 3
-VignetteBuilder: knitr
+VignetteBuilder: 
+    knitr
 biocViews: DimensionReduction, FeatureExtraction, Bayesian, Normalization
-Imports: 
-    base,
-    dplyr,
-    data.table,
-    stats,
-    stats4,
-    utils,
-    rhdf5,
-    matrixStats,
-    SummarizedExperiment,
-    DESeq2
+Config/testthat/edition: 3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3

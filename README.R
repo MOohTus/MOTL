@@ -15,9 +15,14 @@ library("BiocCheck")
 ## ACTIVATE THE PROJECT (not always necessary ...)
 setwd("/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/MOTL/")
 usethis::proj_set(".", force = TRUE)
+## SITUATION REPORT OF PROJECT PATHS
+proj_sitrep()
 
 ## IMPORT SOME PACKAGES BY HAND ...
 usethis::use_import_from("stats", c("dpois", "dbinom"))
+
+## TO IGNORE FILES WHEN CREATE THE BUNDLE
+usethis::use_build_ignore("file")
 
 ## UNIT TEST
 ## https://r-pkgs.org/testing-basics.html
@@ -35,10 +40,14 @@ usethis::use_vignette("Vignette")
 devtools::build_rmd("vignettes/my-vignette.Rmd")
 usethis::use_package_doc()
 
+## TIDY DESCRIPTION FILE
+usethis::use_tidy_description()
+
 ## ROXYGEN TO DOCUMENT
 ## LOAD COMPLETE PACKAGE
 devtools::document(); devtools::load_all()
 ## BUILD and CHECK PACKAGE (devtools::check("../"))
+devtools::check()
 devtools::build(); devtools::check_built("../MOTL_0.99.0.tar.gz")
 devtools::build(vignettes = FALSE); devtools::check_built("../MOTL_0.99.0.tar.gz")
 
