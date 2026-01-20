@@ -24,10 +24,10 @@ Zeta matrix for the current data view
 For the current data view, calculate the Zeta matrix \code{Zeta}.
 }
 \details{
-For bernoulli data, \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
+For bernoulli data, \eqn{Zeta_{nd} = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
 
-For other data type, \eqn{Zeta_nd = E[\sum_{k} z_{n,k} w_{d,k}]}.
-So\eqn{Zeta = ZMu \%*\% t(W)}
+For other data type, \eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]}.
+So \eqn{Zeta = ZMu \%*\% t(W)}
 
 E_ZWSq is calculated using the \code{\link{E_ZWSq_update}} function.
 
@@ -35,8 +35,8 @@ E_ZE_W is calculated using the \code{\link{E_ZE_W_update}} function.
 
 Zeta values used for non-gaussian data
 for poisson
-\eqn{Zeta_nd = E\link[=\\sum_{k} z_{n,k} w_{d,k}]{\sum_{k} z_{n,k} w_{d,k}} so Zeta = ZMu \%*\% t(W)}
-for bernoulli \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
+\eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]} so \eqn{Zeta = ZMu \%*\% t(W)}
+for bernoulli \eqn{Zeta_{nd} = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
 }
 \examples{
 view <- "mRNA"

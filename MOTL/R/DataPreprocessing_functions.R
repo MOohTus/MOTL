@@ -151,8 +151,6 @@ preprocessCountsData <- function(view,
     #'
     #' @returns Preprocessed counts data for the current view
     #'
-    #' @importFrom SummarizedExperiment SummarizedExperiment
-    #'
     #' @examples
     #' mRNA <- preprocessCountsData(view = "mRNA", YTrg_list = YTrg_list,
     #'                            normalization = "Trg",
@@ -183,7 +181,7 @@ preprocessCountsData <- function(view,
                 message("Calculate GeoMeans during the normalization")
                 GeoMeans <- normalization
             }
-            YTrg <- SummarizedExperiment(assays = list(YTrg))
+            YTrg <- SummarizedExperiment::SummarizedExperiment(assays = list(YTrg))
             YTrg <- countsNormalization(expdat = YTrg, GeoMeans = GeoMeans)
             YTrg <- YTrg$counts
         } else {
@@ -469,9 +467,6 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     #'
     #' @returns the subset data for current view and SS number
     #'
-    #' @importFrom matrixStats rowVars
-    #' @importFrom SummarizedExperiment assay
-    #'
     #' @examples
     #'
     #' # In the paper, several target datasets were created as subset of the
@@ -507,9 +502,10 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
 
     ## prefiltering, only condition is that variance >0
     if (is.element(view, c("mRNA", "DNAme", "miRNA"))) {
-        FtrsKeep <- rowVars(assay(YTrgSS), na.rm = TRUE) > 0
+        FtrsKeep <- matrixStats::rowVars(SummarizedExperiment::assay(YTrgSS),
+                                         na.rm = TRUE) > 0
     } else {
-        FtrsKeep <- rowVars(YTrgSS, na.rm = TRUE) > 0
+        FtrsKeep <- matrixStats::rowVars(YTrgSS, na.rm = TRUE) > 0
     }
     FtrsKeep[is.na(FtrsKeep)] <- FALSE
     YTrgSS <- YTrgSS[FtrsKeep, ]
@@ -592,8 +588,6 @@ TCGATargetDataPreparation <- function(views,
     #'
     #' @returns list of prepared subset data for the current subset number
     #'
-    #' @importFrom SummarizedExperiment assay
-    #'
     #' @examples
     #' # see to create input data
     #'
@@ -649,7 +643,7 @@ TCGATargetDataPreparation <- function(views,
     YTrgSSFull <- lapply(views, function(view, YTrgSSFull, smpls) {
         YTrgSS <- YTrgSSFull[[view]]
         if (is.element(view, c("mRNA", "miRNA", "DNAme"))) {
-            YTrgSS <- assay(YTrgSS)
+            YTrgSS <- SummarizedExperiment::assay(YTrgSS)
         }
 
         ## order columns
@@ -748,8 +742,6 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     #' @returns a matrix that contains the prepared data for the current view
     #' with the sample ordered.
     #'
-    #' @importFrom matrixStats rowVars
-    #'
     #' @examples
     #' #
     #' TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
@@ -760,7 +752,7 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     YTrg <- YTrg_list[[view]]
 
     ## prefiltering, only condition is that variance >0
-    FtrsKeep <- rowVars(YTrg, na.rm = TRUE) > 0
+    FtrsKeep <- matrixStats::rowVars(YTrg, na.rm = TRUE) > 0
     FtrsKeep[is.na(FtrsKeep)] <- FALSE
     YTrg <- YTrg[FtrsKeep, ]
     ## print(paste0("YTrg dimensions after prefiltering: ", dim(YTrg)))
@@ -800,8 +792,6 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #' @returns a named list of Tau matrices. Names correspond to the view
     #' names.
     #'
-    #' @importFrom rhdf5 h5read
-    #'
     #' @examples
     #' viewsLrn = c("mRNA", "miRNA", "DNAme", "SNV")
     #' InputModel <- "Model.hdf5"
@@ -814,7 +804,7 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #' @export
 
     ## Extract Tau from the factorization of the learning set
-    Tau <- h5read(InputModel, "expectations/Tau")
+    Tau <- rhdf5::h5read(InputModel, "expectations/Tau")
     Tau <- Tau[match(viewsLrn, names(Tau))]
 
     ## For each view, transfer rownames into the corresponding Tau matrix
@@ -859,8 +849,6 @@ TauLn_calculation <- function(view,
     #'
     #' @returns the log(Tau) matrix for the current view
     #'
-    #' @importFrom utils read.csv
-    #'
     #' @examples
     #'
     #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
@@ -878,7 +866,7 @@ TauLn_calculation <- function(view,
         if (LrnSimple) {
             TauLn <- log(Fctrzn@expectations[["Tau"]][[view]]$group0[, 1])
         } else {
-            TauLn <- as.vector(read.csv(file.path(
+            TauLn <- as.vector(utils::read.csv(file.path(
                 LrnFctrnDir, paste0("TauLn_", view, ".csv")
             ), header = FALSE)$V1)
             names(TauLn) <- rownames(Fctrzn@expectations[["W"]][[view]])
@@ -916,8 +904,6 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     #'
     #' @returns the squared weight matrix for the current view
     #'
-    #' @importFrom utils read.csv
-    #'
     #' @examples
     #'
     #' WSq_mRNA = WSq_calculation(view = "mRNA",
@@ -932,7 +918,7 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
         WSq <- (Fctrzn@expectations[["W"]][[view]])^2
     } else {
         WSq <-
-            read.csv(file.path(LrnFctrnDir, paste0("WSq_", view, ".csv")),
+            utils::read.csv(file.path(LrnFctrnDir, paste0("WSq_", view, ".csv")),
                      header = FALSE)
         WSq <-
             as.matrix(WSq)[, seq_len(dim(Fctrzn@expectations[["W"]][[view]])[2])]
@@ -1012,10 +998,6 @@ intercepts_calculation <- function(expdat_meta,
     #' @return a file, named EstimatedIntercepts.rds and saved into
     #' \code{FctrznDir} directory.
     #'
-    #' @importFrom data.table fread
-    #' @importFrom stats dpois, dbinom, plogis, setNames
-    #' @importFrom stats4 mle
-    #'
     #' @examples
     #' #
     #' intercepts_calculation(expdat_meta,
@@ -1056,7 +1038,7 @@ intercepts_calculation <- function(expdat_meta,
 
         # YTmp <- read.table(file = file.path(ExpDataDir, paste0(view,'.csv')), sep = ",")
         YTmpFileName <- file.path(ExpDataDir, paste0(view, ".csv"))
-        YTmp <- as.data.frame(fread(file = YTmpFileName, sep = ","))
+        YTmp <- as.data.frame(data.table::fread(file = YTmpFileName, sep = ","))
         YTmp <- t(as.matrix(YTmp))
         rownames(YTmp) <- expdat_meta$smpls
         colnames(YTmp) <-
@@ -1094,14 +1076,14 @@ intercepts_calculation <- function(expdat_meta,
                 ## NLL function to optimize
                 # nLL = function(interceptMLE) -sum(stats::dpois(YLrn[,d], log(1 + exp(ZWLrn[,d]+interceptMLE)), log = TRUE))
                 nLL <- function(interceptMLE) {
-                    -sum(log(dpois(YTmp_d, log(
+                    -sum(log(stats::dpois(YTmp_d, log(
                         1 + exp(ZWTmp_d + interceptMLE)
-                    ))[dpois(YTmp_d[, d], log(1 + exp(ZWTmp_d + interceptMLE))) != 0]))
+                    ))[stats::dpois(YTmp_d[, d], log(1 + exp(ZWTmp_d + interceptMLE))) != 0]))
                 }
 
                 ## try to solve it and use the result otherwise use the naive estimate
                 # interceptMLEfit = try(as.vector(stats4::mle(nLL, start=list(interceptMLE=0))@coef[1]))
-                interceptMLEfit <- try(as.vector(mle(nLL, start = list(interceptMLE = InterceptsNaive[d]))@coef[1]))
+                interceptMLEfit <- try(as.vector(stats4::mle(nLL, start = list(interceptMLE = InterceptsNaive[d]))@coef[1]))
 
                 if (is(interceptMLEfit, "try-error")) {
                     InterceptsTmp <- InterceptsNaive[d]
@@ -1121,9 +1103,9 @@ intercepts_calculation <- function(expdat_meta,
             }, YTmp, ZWTmp))
 
             Intercepts <-
-                setNames(Intercepts_df$intercept, row.names(Intercepts_df))
+                stats::setNames(Intercepts_df$intercept, row.names(Intercepts_df))
             InterceptsMethod <-
-                setNames(Intercepts_df$Method, row.names(Intercepts_df))
+                stats::setNames(Intercepts_df$Method, row.names(Intercepts_df))
         } else if (likelihood == "bernoulli") {
             ## naive intercept based on approximation to feature means of ZW
             InterceptsNaive <-
@@ -1146,16 +1128,16 @@ intercepts_calculation <- function(expdat_meta,
 
                     ## NLL function to optimize
                     nLL <- function(InterceptMLE) {
-                        -sum(log(dbinom(
+                        -sum(log(stats::dbinom(
                             YTmp_d,
-                            size = 1, plogis(ZWTmp_d + InterceptMLE)
-                        )[dbinom(YTmp_d, size = 1, plogis(ZWTmp_d + InterceptMLE)) != 0]))
+                            size = 1, stats::plogis(ZWTmp_d + InterceptMLE)
+                        )[stats::dbinom(YTmp_d, size = 1, stats::plogis(ZWTmp_d + InterceptMLE)) != 0]))
                     }
 
                     ## try to solve it and use the result otherwise use the naive estimate
 
                     interceptMLEfit <-
-                        try(mle(nLL, start = list(InterceptMLE = InterceptsNaive[d]))@coef[1])
+                        try(stats4::mle(nLL, start = list(InterceptMLE = InterceptsNaive[d]))@coef[1])
 
                     if (is(interceptMLEfit, "try-error")) {
                         InterceptsTmp <- InterceptsNaive[d]
@@ -1173,8 +1155,8 @@ intercepts_calculation <- function(expdat_meta,
                     return(intercept)
                 }, YTmp, ZWTmp))
 
-            Intercepts <- setNames(Intercepts_df$intercept, row.names(Intercepts_df))
-            InterceptsMethod <- setNames(Intercepts_df$Method, row.names(Intercepts_df))
+            Intercepts <- stats::setNames(Intercepts_df$intercept, row.names(Intercepts_df))
+            InterceptsMethod <- stats::setNames(Intercepts_df$Method, row.names(Intercepts_df))
         } else {
             InterceptsNaive <- numeric()
             Intercepts <- numeric()

@@ -19,7 +19,7 @@ usethis::proj_set(".", force = TRUE)
 proj_sitrep()
 
 ## IMPORT SOME PACKAGES BY HAND ...
-usethis::use_import_from("stats", c("dpois", "dbinom"))
+## usethis::use_import_from("stats", c("dpois", "dbinom"))
 
 ## TO IGNORE FILES WHEN CREATE THE BUNDLE
 usethis::use_build_ignore("file")

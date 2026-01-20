@@ -6,10 +6,10 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     #'
     #' For the current data view, calculate the Zeta matrix \code{Zeta}.
     #'
-    #' For bernoulli data, \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
+    #' For bernoulli data, \eqn{Zeta_{nd} = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
     #'
-    #' For other data type, \eqn{Zeta_nd = E[\sum_{k} z_{n,k} w_{d,k}]}.
-    #' So\eqn{Zeta = ZMu %*% t(W)}
+    #' For other data type, \eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]}.
+    #' So \eqn{Zeta = ZMu %*% t(W)}
     #'
     #' E_ZWSq is calculated using the \code{\link{E_ZWSq_update}} function.
     #'
@@ -17,8 +17,8 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     #'
     #' Zeta values used for non-gaussian data
     #' for poisson
-    #' \eqn{Zeta_nd = E[\sum_{k} z_{n,k} w_{d,k}] so Zeta = ZMu %*% t(W)}
-    #' for bernoulli \eqn{Zeta_nd = sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
+    #' \eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]} so \eqn{Zeta = ZMu %*% t(W)}
+    #' for bernoulli \eqn{Zeta_{nd} = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
     #'
     #' @param view a character of current view name data (e.g. \code{mRNA})
     #' @param likelihoods a named list of data types. The list can contain
@@ -126,8 +126,6 @@ YGauss_calculation <- function(view,
     #'
     #' @returns pseudo Y values for the current view
     #'
-    #' @importFrom stats plogis
-    #'
     #' @examples
     #' view = "mRNA"
     #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
@@ -141,7 +139,7 @@ YGauss_calculation <- function(view,
     #' @export
 
     if (likelihoods[[view]] == "poisson") {
-        YGauss <- Zeta[[view]] - plogis(Zeta[[view]]) *
+        YGauss <- Zeta[[view]] - stats::plogis(Zeta[[view]]) *
             (1 - YTrg[[view]] / (log(1 + exp(Zeta[[view]])) + PoisRateCstnt)) / Tau[[view]]
     } else if (likelihoods[[view]] == "bernoulli") {
         YGauss <- (2 * YTrg[[view]] - 1) / (2 * Tau[[view]])
@@ -248,8 +246,6 @@ ELBO_calculation <-
         #'
         #' @returns the ELBO value for the current view/iteration
         #'
-        #' @importFrom stats plogis
-        #'
         #' @examples
         #'
         #' view = "mRNA"
@@ -272,7 +268,7 @@ ELBO_calculation <-
             ## A CONSTANT IS ADDED TO RATE CALCULATIONS HERE AS PER MOFA CODE TO AVOID ERRORS
 
             ELBO_L_tmpA <- 0.5 * Tau[[view]] * (E_ZWSq[[view]] - 2 * E_ZE_W[[view]] * Zeta[[view]] + Zeta[[view]]^2)
-            ELBO_L_tmpB <- (E_ZE_W[[view]] - Zeta[[view]]) * plogis(Zeta[[view]]) * (1 - YTrg[[view]] / (log(1 + exp(Zeta[[view]])) + PoisRateCstnt))
+            ELBO_L_tmpB <- (E_ZE_W[[view]] - Zeta[[view]]) * stats::plogis(Zeta[[view]]) * (1 - YTrg[[view]] / (log(1 + exp(Zeta[[view]])) + PoisRateCstnt))
             ELBO_L_tmpC <- (log(1 + exp(Zeta[[view]])) + PoisRateCstnt) - YTrg[[view]] * log((log(1 + exp(Zeta[[view]])) + PoisRateCstnt))
             ELBO_L_tmp <- -sum(ELBO_L_tmpA + ELBO_L_tmpB + ELBO_L_tmpC, na.rm = TRUE)
         } else if (likelihoods[[view]] == "bernoulli") {
@@ -285,7 +281,7 @@ ELBO_calculation <-
             # b_nd = log(g(zeta_nd)) + (h_nd - zeta_nd)/2 - tau_nd/2 * (x_nd^2 - zeta_nd^2)
             # here b_nd is the lower bound for log(p(y|x))
 
-            ELBO_L_tmpA <- log(plogis(Zeta[[view]]))
+            ELBO_L_tmpA <- log(stats::plogis(Zeta[[view]]))
             ELBO_L_tmpB <- 0.5 * ((2 * YTrg[[view]] - 1) * E_ZE_W[[view]] - Zeta[[view]])
             ELBO_L_tmpC <- 0.5 * Tau[[view]] * (E_ZWSq[[view]] - Zeta[[view]]^2)
             ELBO_L_tmp <- sum(ELBO_L_tmpA + ELBO_L_tmpB - ELBO_L_tmpC, na.rm = TRUE)

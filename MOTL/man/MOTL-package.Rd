@@ -8,6 +8,15 @@
 \description{
 A transfer learning algorithm for multi-omics matrix factorization called 'MOTL' (Multi-Omics Transfer Learning). 'MOTL' is a Bayesian transfer learning method, based on 'MOFA'. 'MOTL' infers latent factor values for a multi-omics target dataset, consisting of a small number of samples, by incorporating latent factor values already inferred with a 'MOFA' factorization of a large, heterogeneous, learning dataset.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/david-hirst/MOTL}
+  \item \url{https://github.com/MOohTus/MOTL-pkg}
+  \item Report bugs at \url{https://github.com/david-hirst/MOTL/issues, https://github.com/MOohTus/MOTL-pkg/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Morgane Térézol \email{morgane.terezol@univ-amu.fr} (\href{https://orcid.org/0000-0002-4090-2573}{ORCID})
 
