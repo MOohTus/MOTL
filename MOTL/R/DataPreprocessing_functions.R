@@ -116,7 +116,7 @@ countsTransformation <- function(expdat_count, TopD) {
     ## log transform and filter to keep only most variable
     expdat_counts_log <- log2(expdat_count + 1)
     FtrsKeep <-
-        base::rank(-rowVars(expdat_counts_log, na.rm = TRUE, useNames = FALSE),
+        base::rank(-matrixStats::rowVars(expdat_counts_log, na.rm = TRUE, useNames = FALSE),
                    ties.method = "first"
         ) <= TopD
     expdat_counts_fltr <- expdat_counts_log[FtrsKeep, ]
