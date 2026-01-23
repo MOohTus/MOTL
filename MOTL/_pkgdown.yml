@@ -1,4 +1,56 @@
-url: ~
+url: https://github.com/MOohTus/MOTL-pkg
 template:
   bootstrap: 5
 
+reference:
+- title: Learning dataset
+
+- subtitle: Init
+  desc: >
+    Description des fonctions
+  contents:
+  - ELBO_calculation
+  - E_ZE_W_update
+  - E_ZSqE_WSq_update
+  - E_ZWSq_update
+  - E_Z_SqE_W_Sq_update
+
+- subtitle: Claculation
+  desc: >
+    Description des fonctions
+  contents:
+  - GeoMeanFun
+  - GeoMeans_Lrn_init
+  - TCGATargetDataPrefiltering
+  - TCGATargetDataPreparation
+  - TargetDataPrefiltering
+
+- title: Target dataset
+
+- subtitle: Claculation
+  desc: >
+    Description des fonctions
+  contents:
+  - TargetDataPreparation
+  - TauLn_calculation
+  - Tau_calculation
+  - Tau_init
+  - VarExplFun
+  - W0_calculation
+
+- subtitle: Claculation
+  desc: >
+    Description des fonctions
+  contents:
+  - WSq_calculation
+  - YGauss_calculation
+  - ZMu_calculation
+  - ZVar_calculation
+  - Zeta_calculation
+  - countsNormalization
+  - countsTransformation
+  - initTransferLearningParamaters
+  - intercepts_calculation
+  - mRNA_addVersion
+  - preprocessCountsData
+  - transferLearning_function

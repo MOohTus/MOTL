@@ -40,6 +40,7 @@ usethis::use_package("withr", type = "Suggests")
 ## https://r-pkgs.org/vignettes.html
 usethis::use_vignette("Vignette")
 devtools::build_rmd("vignettes/my-vignette.Rmd")
+devtools::build_rmd("vignettes/Vignette.Rmd")
 usethis::use_package_doc()
 
 ## CREATE README TEMPLATE FOR THE PACKAGE
@@ -51,6 +52,7 @@ usethis::use_news_md()
 ## CREATE WEBSITE WITH EVERY DOCUMENTATION/VIGNETTES
 usethis::use_pkgdown()
 pkgdown::build_site()
+pkgdown::build_reference()
 
 ## INIT GITHUB
 gitcreds::gitcreds_get()
