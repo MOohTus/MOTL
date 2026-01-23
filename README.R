@@ -33,6 +33,8 @@ usethis::use_testthat(3)
 usethis::use_test()
 ## Perfom test
 devtools::test()
+##  Add withr in SUGGEST, because we ued it in tests
+usethis::use_package("withr", type = "Suggests")
 
 ## VIGNETTES
 ## https://r-pkgs.org/vignettes.html
@@ -40,8 +42,28 @@ usethis::use_vignette("Vignette")
 devtools::build_rmd("vignettes/my-vignette.Rmd")
 usethis::use_package_doc()
 
+## CREATE README TEMPLATE FOR THE PACKAGE
+usethis::use_readme_rmd()
+rmarkdown::render(input = "README.Rmd")
+devtools::build_readme()
+usethis::use_news_md()
+
+## CREATE WEBSITE WITH EVERY DOCUMENTATION/VIGNETTES
+usethis::use_pkgdown()
+pkgdown::build_site()
+
+## INIT GITHUB
+gitcreds::gitcreds_get()
+gitcreds::gitcreds_set()
+
+
+## CREATE WEBPAGE ON GITHUB
+usethis::gh_token_help()
+usethis::use_pkgdown_github_pages()
+
 ## TIDY DESCRIPTION FILE
 usethis::use_tidy_description()
+
 
 ## ROXYGEN TO DOCUMENT
 ## LOAD COMPLETE PACKAGE

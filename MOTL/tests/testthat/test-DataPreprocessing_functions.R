@@ -6,7 +6,8 @@ test_that("TCGATargetDataPrefiltering", {
     YTrg_list,
     Lrn_Fctrzn_init
   )
-  expect_equal(class(YTrg_mRNA), class(SummarizedExperiment()))
+  expect_equal(class(YTrg_mRNA),
+               class(SummarizedExperiment::SummarizedExperiment()))
   expect_equal(dim(YTrg_mRNA), dim(YTrg_list$mRNA))
   expect_equal(colnames(YTrg_mRNA), colnames(YTrg_list$mRNA))
   expect_in(rownames(YTrg_mRNA), rownames(YTrg_list$mRNA))
@@ -17,8 +18,9 @@ test_that("TCGATargetDataPrefiltering", {
     YTrg_list,
     Lrn_Fctrzn_init
   )
-  expect_equal(class(YTrg_miRNA), class(SummarizedExperiment()))
-  expect_equal(dim(YTrg_miRNA)[[1]], sum(rowVars(assay(YTrg_list$miRNA)) >
+  expect_equal(class(YTrg_miRNA),
+               class(SummarizedExperiment::SummarizedExperiment()))
+  expect_equal(dim(YTrg_miRNA)[[1]], sum(matrixStats::rowVars(SummarizedExperiment::assay(YTrg_list$miRNA)) >
                                            0))
   expect_equal(colnames(YTrg_miRNA), colnames(YTrg_list$miRNA))
   expect_in(rownames(YTrg_miRNA), rownames(YTrg_list$miRNA))
@@ -29,7 +31,8 @@ test_that("TCGATargetDataPrefiltering", {
     YTrg_list,
     Lrn_Fctrzn_init
   )
-  expect_equal(class(YTrg_DNAme), class(SummarizedExperiment()))
+  expect_equal(class(YTrg_DNAme),
+               class(SummarizedExperiment::SummarizedExperiment()))
   expect_equal(dim(YTrg_DNAme), dim(YTrg_list$DNAme))
   expect_equal(colnames(YTrg_DNAme), colnames(YTrg_list$DNAme))
   expect_in(rownames(YTrg_DNAme), rownames(YTrg_list$DNAme))
@@ -41,7 +44,7 @@ test_that("TCGATargetDataPrefiltering", {
     Lrn_Fctrzn_init
   )
   expect_equal(class(YTrg_SNV), class(matrix()))
-  expect_equal(dim(YTrg_SNV)[[1]], sum(rowVars(YTrg_list$SNV) > 0))
+  expect_equal(dim(YTrg_SNV)[[1]], sum(matrixStats::rowVars(YTrg_list$SNV) > 0))
   expect_equal(colnames(YTrg_SNV), colnames(YTrg_list$SNV))
   expect_in(rownames(YTrg_SNV), rownames(YTrg_list$SNV))
   expect_equal(colnames(YTrg_mRNA), colnames(YTrg_miRNA))
@@ -71,7 +74,7 @@ test_that("mRNA_addVersion", {
 })
 
 test_that("GeoMeanFun", {
-  x <- assay(YTrg_list$mRNA)[41, ]
+  x <- SummarizedExperiment::assay(YTrg_list$mRNA)[41, ]
   GeoMean <- GeoMeanFun(x)
   expect_equal(length(GeoMean), 1)
   expect_equal(GeoMean, exp(sum(log(x[x > 0])) / length(x)))
@@ -96,7 +99,7 @@ test_that("GeoMeans_Lrn_init", {
 
 
 test_that("countsTransformation", {
-  mat <- assay(YTrg_list$mRNA)
+  mat <- SummarizedExperiment::assay(YTrg_list$mRNA)
   expdat_trans <- countsTransformation(mat, 50)
   expect_equal(nrow(expdat_trans), 50)
   expect_equal(names(expdat_trans), names(mat))
@@ -107,7 +110,7 @@ test_that("countsNormalization_newGeoMeans", {
   # YTrg_list$mRNA <- assay(YTrg_list$mRNA)
   # expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Lrn_Fctrzn, smpls)
   expdat <- apply(YTrg_prep$mRNA, MARGIN = 2, round)
-  expdat <- SummarizedExperiment(assays = expdat)
+  expdat <- SummarizedExperiment::SummarizedExperiment(assays = expdat)
   expdat_norm <- countsNormalization(expdat, GeoMeans = "newGeoMeans")
   expect_equal(length(expdat_norm), 2)
   expect_equal(dim(expdat_norm$counts), dim(expdat))
@@ -119,7 +122,7 @@ test_that("countsNormalization_num", {
   # YTrg_list$mRNA <- assay(YTrg_list$mRNA)
   # expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Lrn_Fctrzn, smpls)
   expdat <- apply(YTrg_prep$mRNA, MARGIN = 2, round)
-  expdat <- SummarizedExperiment(assays = expdat)
+  expdat <- SummarizedExperiment::SummarizedExperiment(assays = expdat)
   GeoMeans <- GeoMeans_Lrn_init("mRNA", Lrn_meta, rownames(expdat))
   expdat_norm <- countsNormalization(expdat, GeoMeans = GeoMeans)
   expect_equal(length(expdat_norm), 1)
@@ -130,9 +133,9 @@ test_that("countsNormalization_num", {
 
 test_that("TargetDataPrefiltering", {
   ## SE object into matrix
-  YTrg_list$mRNA <- assay(YTrg_list$mRNA)
-  YTrg_list$miRNA <- assay(YTrg_list$miRNA)
-  YTrg_list$DNAme <- assay(YTrg_list$DNAme)
+  YTrg_list$mRNA <- SummarizedExperiment::assay(YTrg_list$mRNA)
+  YTrg_list$miRNA <- SummarizedExperiment::assay(YTrg_list$miRNA)
+  YTrg_list$DNAme <- SummarizedExperiment::assay(YTrg_list$DNAme)
   ## Change names of some rows - expected removed
   rownames(YTrg_list$mRNA)[c(2, 10)] <- "newNames"
   rownames(YTrg_list$DNAme)[c(2, 28, 30)] <- "newNames"
@@ -140,9 +143,9 @@ test_that("TargetDataPrefiltering", {
   YTrg <- lapply(views, TargetDataPrefiltering, YTrg_list, Lrn_Fctrzn, smpls)
   expect_equal(names(YTrg), names(YTrg_list))
   expect_equal(nrow(YTrg$mRNA), nrow(YTrg_list$mRNA) - 2)
-  expect_equal(nrow(YTrg$miRNA), sum(rowVars(YTrg_list$miRNA) > 0))
+  expect_equal(nrow(YTrg$miRNA), sum(matrixStats::rowVars(YTrg_list$miRNA) > 0))
   expect_equal(nrow(YTrg$DNAme), nrow(YTrg_list$DNAme) - 3)
-  expect_equal(nrow(YTrg$SNV), sum(rowVars(YTrg_list$SNV) > 0))
+  expect_equal(nrow(YTrg$SNV), sum(matrixStats::rowVars(YTrg_list$SNV) > 0))
   expect_equal(colnames(YTrg$mRNA), smpls)
   expect_equal(colnames(YTrg$miRNA), smpls)
   expect_equal(colnames(YTrg$DNAme), smpls)
