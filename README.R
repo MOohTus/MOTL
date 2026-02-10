@@ -38,6 +38,11 @@ usethis::use_package("withr", type = "Suggests")
 
 ## VIGNETTES
 ## https://r-pkgs.org/vignettes.html
+## Install package before building vignette
+devtools::install(build_vignettes = TRUE)
+##
+devtools::install()
+
 usethis::use_vignette("Vignette")
 devtools::build_rmd("vignettes/my-vignette.Rmd")
 devtools::build_rmd("vignettes/Vignette.Rmd")
@@ -65,6 +70,9 @@ usethis::use_pkgdown_github_pages()
 
 ## TIDY DESCRIPTION FILE
 usethis::use_tidy_description()
+
+## DATA
+usethis::use_data_raw()
 
 
 ## ROXYGEN TO DOCUMENT
