@@ -1,0 +1,19 @@
+---
+title: "UseCase_Glioblastoma"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{UseCase_Glioblastoma}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(MOTL)
+```

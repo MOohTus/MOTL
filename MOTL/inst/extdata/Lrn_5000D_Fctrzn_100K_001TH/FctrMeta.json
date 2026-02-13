@@ -1,1 +1,0 @@
-{"seed": 1234567, "TrainingIter": 10000, "freqELBOChk": 5, "drop_factor_threshold": 0.001, "scale_views": false, "scale_groups": false, "center_groups": true, "G": 1, "likelihoods": ["gaussian", "gaussian", "gaussian", "bernoulli"], "script_start_time": 1708941874.548575, "script_end_time": 1708973925.543315}

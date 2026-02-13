@@ -5,31 +5,33 @@
 \alias{Lrn}
 \title{Learning dataset}
 \format{
-List of two MOFA2 object:
-** \code{Fctrzn}: output of the factorization analysis of the learning
-dataset
-** \code{Fctrzn_init}: output of the factorization analysis of the learning
-dataset and the initialized values for the transfer learning.
-MOFA2 object is a S4 class and contains these main slots (relevant for the
-transfer learning):
-** \code{data}: input data used for the factorization analysis (mRNA, miRNA,
-DNAme and SNV)
-** \code{samples_metadata}: sample metadata (sample names and group)
-** \code{features_metadata}: features metadata (feature identifier and view)
-** \code{expectations}: expected values of the factors and the loadings
-** \code{training_stats}: model training statistics
-** \code{data_options}: data processing options
-** \code{model_options}: model options
-** \code{training_options}: model training options
-** \code{dimensions}: dimensions of the model (e.g. \code{M} number of
-views, \code{N} number of samples, \code{D} number of features)
+List of two MOFA object: \code{Fctrzn} and \code{Fctrzn_init}.
+\describe{
+\item{\code{data}}{input data used for the factorization analysis (mRNA, miRNA, DNAme and SNV)}
+\item{\code{samples_metadata}}{sample metadata (sample names and group)}
+\item{\code{features_metadata}}{features metadata (feature identifier and view)}
+\item{\code{expectations}}{expected values of the factors and the loadings}
+\item{\code{training_stats}}{model training statistics}
+\item{\code{data_options}}{data processing options}
+\item{\code{model_options}}{model options}
+\item{\code{training_options}}{model training options}
+\item{\code{dimensions}}{dimensions of the model (e.g. \code{M} number of views, \code{N} number of samples, \code{D} number of features)}
+}
 For more information about the structure of MOFA object, see the
 \link{\code{MOFA}} vignette.
 }
 \usage{
-Lrn
+data("Lrn")
 }
 \description{
-Contains factorization model results calculated using MOFA2
+Contains factorization model results calculated using MOFA2 and init for TL
+}
+\details{
+\code{Fctrzn}: output of the factorization analysis of the learning
+dataset
+\code{Fctrzn_init}: output of the factorization analysis of the learning
+dataset and the initialized values for the transfer learning.
+MOFA2 object is a S4 class and contains these main slots (relevant for the
+transfer learning):
 }
 \keyword{datasets}

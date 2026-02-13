@@ -7,6 +7,9 @@ library("usethis")
 library("devtools")
 library("BiocCheck")
 
+.libPaths(c(.libPaths(), "/home/morgane/Documents/00_Tools/miniconda3/envs/tcga_data/"))
+.libPaths(c(.libPaths(), "/home/morgane/R/x86_64-pc-linux-gnu-library/4.2/"))
+
 ## setwd("/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/")
 
 ## CREATE PACKAGE NAMED MOTL
@@ -36,16 +39,29 @@ devtools::test()
 ##  Add withr in SUGGEST, because we ued it in tests
 usethis::use_package("withr", type = "Suggests")
 
+
+## LOAD COMPLETE PACKAGE
+devtools::document(); devtools::load_all()
+devtools::test()
+
+
 ## VIGNETTES
 ## https://r-pkgs.org/vignettes.html
 ## Install package before building vignette
 devtools::install(build_vignettes = TRUE)
 ##
-devtools::install()
+devtools::install(quick = TRUE)
 
-usethis::use_vignette("Vignette")
-devtools::build_rmd("vignettes/my-vignette.Rmd")
-devtools::build_rmd("vignettes/Vignette.Rmd")
+## CREATE VIGNETTE FILE
+usethis::use_vignette("MOTL")
+usethis::use_vignette("UseCase_TCGA")
+usethis::use_vignette("UseCase_Glioblastoma")
+
+## RENDER VIGNETTE HTML
+devtools::build_rmd("vignettes/MOTL.Rmd")
+
+
+
 usethis::use_package_doc()
 
 ## CREATE README TEMPLATE FOR THE PACKAGE
@@ -55,9 +71,23 @@ devtools::build_readme()
 usethis::use_news_md()
 
 ## CREATE WEBSITE WITH EVERY DOCUMENTATION/VIGNETTES
+## INIT WEBSITE
 usethis::use_pkgdown()
-pkgdown::build_site()
+
+##
+pkgdown::clean_site(force = TRUE)
+pkgdown::clean_cache()
+devtools::document(); devtools::load_all()
+
+## RENDER ALL VIGNETTE FROM VIGNETTES INTO ARTICLES IN DOCS
+pkgdown::build_articles()
+
+## IMPORT DOC FROM FUNCTIONS/DATA INTO REFERENCES
 pkgdown::build_reference()
+
+## PREVIEW SITE LOCALLY
+pkgdown::build_site()
+
 
 ## INIT GITHUB
 gitcreds::gitcreds_get()
@@ -65,6 +95,7 @@ gitcreds::gitcreds_set()
 
 
 ## CREATE WEBPAGE ON GITHUB
+## PROJECT NEED TO BE PUBLIC
 usethis::gh_token_help()
 usethis::use_pkgdown_github_pages()
 
@@ -73,7 +104,6 @@ usethis::use_tidy_description()
 
 ## DATA
 usethis::use_data_raw()
-
 
 ## ROXYGEN TO DOCUMENT
 ## LOAD COMPLETE PACKAGE

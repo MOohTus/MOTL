@@ -5,26 +5,26 @@
 \alias{TL_param}
 \title{Transfer learning parameters}
 \format{
-** \code{YTrg}: list of the prepared input target dataset (mRNA,
+\code{YTrg}: list of the prepared input target dataset (mRNA,
 miRNA, DNAme, SNV). Samples are in columns and features are in rows.
-** \code{Fctrzn_Lrn_W0}: list of 4 variables (mRNA, miRNA, DNAme and SNV).
+\code{Fctrzn_Lrn_W0}: list of 4 variables (mRNA, miRNA, DNAme and SNV).
 Each contains a W0 vector named with the corresponding feature names.
-** \code{Fctrzn_Lrn_W}: list of 4 \coda{data.frame} (mRNA, miRNA, DNAme and
+\code{Fctrzn_Lrn_W}: list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
 SNV). Each contains factors in columns and features in rows.
-** \code{Fctrzn_Lrn_WSq}: list of 4 \coda{data.frame} (mRNA, miRNA, DNAme and
+\code{Fctrzn_Lrn_WSq}: list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
 SNV). Each contains factors in columns and features in rows.
-** \code{Tau}: list of 4 \coda{data.frame} (mRNA, miRNA, DNAme and
+\code{Tau}: list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
 SNV). Each contains features in columns.
-** \code{TauLn}: list of 4 \coda{data.frame} (mRNA, miRNA, DNAme and
+\code{TauLn}: list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
 SNV). Each contains features in columns.
-** \code{ZVar}: \code{data.frame} with factors in columns.
-** \code{ZMu}:  \code{data.frame} with factors in columns and samples in
+\code{ZVar}: \code{data.frame} with factors in columns.
+\code{ZMu}:  \code{data.frame} with factors in columns and samples in
 rows.
-** \code{ZMu_0}: vector of numeric.
-** \code{ZMuSq}: \code{data.frame} with factors in columns.
+\code{ZMu_0}: vector of numeric.
+\code{ZMuSq}: \code{data.frame} with factors in columns.
 }
 \usage{
-TL_param
+data("TL_param")
 }
 \description{
 Contains a list of input variables used for the transfer learning.

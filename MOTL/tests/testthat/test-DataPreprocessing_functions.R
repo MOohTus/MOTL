@@ -466,3 +466,4 @@ test_that("intercepts_calculation", {
                test_path("fixtures/Lrn_4test_5000D/Fctrzn_50K_01TH/",
                          "EstimatedIntercepts.rds"))
 })
+

@@ -54,3 +54,6 @@ reference:
   - mRNA_addVersion
   - preprocessCountsData
   - transferLearning_function
+  - Lrn
+  - TL_param
+  - Trg

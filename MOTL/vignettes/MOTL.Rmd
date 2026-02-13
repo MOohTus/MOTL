@@ -1,0 +1,333 @@
+---
+title: "How to run MOTL: basic commands"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to run MOTL: basic commands}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  echo = TRUE
+)
+```
+
+> ⚠️ Don't use the data inside the MOTL package to perform analysis.
+
+You will find here an example that illustrate **how to use MOTL** with the basics commands. Data used in this example are subsets of the original data. Original data can be found [ZENODO]<ZENODO>. 
+
+Main steps to perform transfer learning analysis using MOTL: 
+
+- Prepare learning dataset ``Lrn``
+- Prepare target dataset ``Trg``
+- Define parameters for transfer learning ``TL_param``
+- Run transfer learning 
+
+## Load libraries
+
+First, load the necessary packages: 
+
+- `MOTL` for the transfer learning analysis
+- `MOFA2` to read the learning factorized model
+
+```{r libraries, message = FALSE, warning = FALSE}
+library("MOTL")
+library("MOFA2")
+```
+
+## Learning dataset factorization
+
+Renvoyer à comment on fait le learning dataset factorization ? 
+Import the learning dataset and the corresponding factorization model:
+
+```{r}
+data("Lrn", package = "MOTL")
+```
+
+
+### Learning dataset metadata
+
+Learning dataset metadata are stored in ``Lrn$Lrn_meta`` object in the MOTL package. 
+```{r Lrn_loadData}
+expdat_meta_Lrn <- Lrn$Lrn_meta
+```
+
+You can also load them from .rds file:
+```{r Lrn_metadata-1, eval = FALSE}
+expdat_meta_Lrn <- readRDS("expdat_meta.rds")
+```
+
+Faire une description des informations contenues dans l'objet / The `expdat_meta_Lrn` variable contains information about the learning dataset construction. 
+```{r Lrn_metadata-2}
+names(expdat_meta_Lrn)
+```
+
+You can retrieve for example mRNA feature names
+```{r Lrn_metadata-3}
+expdat_meta_Lrn$ftrs_mRNA[c(1:5)]
+```
+
+You can retrieve for example SNV feature names
+```{r Lrn_metadata-4}
+expdat_meta_Lrn$ftrs_SNV[c(1:5)]
+```
+
+You can retrieve for example sample names
+```{r Lrn_metadata-5}
+expdat_meta_Lrn$smpls[c(1:5)]
+```
+
+### Learning dataset factorization model
+
+The learning dataset factorization model is stored in `Lrn$Fctrzn`:
+```{r}
+Fctrzn <- Lrn$Fctrzn
+```
+
+You can also load the model from the output file from MOFA:
+```{r, eval = FALSE}
+inputModel <- file.path("path/of/model", "Model.hdf5")
+Fctrzn <- MOFA2::load_model(file = inputModel)
+```
+
+```{r Lrn_fctrzn-1}
+Fctrzn
+```
+
+- 4 views were used for the factorization: `mRNA`, `miRNA`, `DNAme` and `SNV`.  
+- `mRNA`, `DNAme` and `SNV` datasets contain 1000 features each and `miRNA` 250 features.
+- Only one group was define for the factorization
+- Datasets contain 250 samples (shared between each view)
+- Factorization of the learning dataset found 20 factors
+
+See MOFA2 doc pour plus d'info sur ce que contient exactement l'objet de MOFA2
+Dire que cet objet vient de MOFA2
+
+### Initialise values from factorization
+
+- `viewsLrn` views of the learning dataset
+```{r init_viewsLrn}
+viewsLrn <- Fctrzn@data_options$views
+viewsLrn
+```
+
+- `likelihoodsLrn` le machin de chaque view:
+```{r init_likeLrn}
+likelihoodsLrn <- Fctrzn@model_options$likelihoods
+likelihoodsLrn
+```
+
+- 
+```{r init_MLrn}
+MLrn <- Fctrzn@dimensions$M
+MLrn
+```
+
+Expliquer pourquoi on fait ça:
+
+```{r}
+CenterTrg <- FALSE
+```
+
+
+
+```{r init_valuesLrn-1, eval = FALSE}
+Fctrzn@expectations[["Tau"]] <- Tau_init(viewsLrn, Fctrzn, InputModel)
+Fctrzn@expectations[["TauLn"]] <- sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn, LrnFctrnDir)
+Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn, LrnFctrnDir)
+Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrnDir)
+```
+
+CenterTrg parler de ce parametre
+
+
+Initialized data are stored in the `Lrn$Fctrzn_init` object: 
+```{r init_valuesLrn}
+Fctrzn <- Lrn$Fctrzn_init
+```
+
+
+## Target dataset factorization
+
+```{r}
+data("Trg")
+```
+
+
+### Read files
+
+Target data are stored in the `Trg$YTrg_list` object:
+
+Donner le format des fichiers
+
+```{r}
+YTrg_list <- Trg$YTrg_list
+```
+
+You can load each view of the target dataset from .csv file: 
+```{r, eval = FALSE}
+expdat_mRNA <- read.table("mRNA.csv", sep = ",")
+expdat_mRNA <- as.matrix(expdat_mRNA)
+```
+
+For genes features, ça doit être dans ce format car le format de Lrn c'est comme ça. ON a fait une fonction pour ça : 
+```{r, eval = FALSE}
+expdat_mRNA = mRNA_addVersion(expdat = expdat_mRNA, Lrndat = Fctrzn@expectations$W$mRNA)
+```
+
+
+Target dataset must be in matrix. 
+
+Then, each view are store in a list:
+```{r, eval = FALSE}
+YTrg_list <- list(
+  mRNA = expdat_mRNA,
+  miRNA = expdat_miRNA,
+  DNAme = expdat_DNAme,
+  SNV = expdat_SNV
+)
+```
+
+- sample in columns
+- features in rows
+- samples columns should be same in same order
+
+```{r}
+YTrg_list$mRNA
+```
+
+```{r}
+YTrg_list$miRNA
+```
+
+```{r}
+YTrg_list$DNAme
+```
+
+```{r}
+YTrg_list$SNV[c(1:5), c(1:5)]
+```
+
+```{r}
+lapply(YTrg_list, dim)
+```
+
+### Prepare target dataset
+
+Make normalisation and/or transformation
+Harmonize with Lrn (have same features and same order)
+Order names between views
+
+```{r}
+smpls <- colnames(YTrg_list[[1]])
+viewsTrg <- names(YTrg_list)
+views <- viewsLrn[is.element(viewsLrn,viewsTrg)]
+
+```
+
+
+```{r, message = FALSE}
+YTrg_prep <- TCGATargetDataPreparation(views = views,
+                                       YTrgFull = YTrg_list,
+                                       brcds_SS = Trg$brcds_SS,
+                                       SS = 1,
+                                       Fctrzn = Fctrzn,
+                                       smpls = smpls,
+                                       normalization = FALSE,
+                                       expdat_meta_Lrn = expdat_meta_Lrn,
+                                       transformation = FALSE
+)
+```
+
+```{r}
+YTrg_prep$mRNA[c(1:5), c(1:5)]
+```
+
+```{r}
+YTrg_prep$miRNA[c(1:5), c(1:5)]
+```
+
+```{r}
+YTrg_prep$DNAme[c(1:5), c(1:5)]
+```
+
+```{r}
+YTrg_prep$SNV[c(1:5), c(1:5)]
+```
+
+## Initialize values for transfer learning
+
+```{r}
+likelihoods <- likelihoodsLrn[views]
+```
+
+```{r, message = FALSE}
+TL_param <- initTransferLearningParamaters(YTrg = YTrg_prep, views = views, 
+                                          Fctrzn = Fctrzn, likelihoods = likelihoods)
+```
+
+Dire de quoi il est composé.
+
+
+## TRANSFERT LEARNING WITH MOTL
+
+```{r}
+ss_start_time <- Sys.time()
+minFactors <- 13 ## floor when dropping factors - number of samples in evaluations
+StartDropFactor <- 1 # after which iteration to start dropping factors
+FreqDropFactor <- 1 ## how often to drop factors
+StartELBO <- 1 #which iteration to start checking ELBO on, excl initiation iteration
+FreqELBO <- 5 #how often to assess the ELBO
+DropFactorTH <- 0.01 # factor with lowest max variance, that is less than this, is dropped
+MaxIterations <- 10
+MinIterations <- 2 # as per MOFA with defaults in python, >= 2 (hardcoded floor), exl initial setup
+ConvergenceIts <- 2 # as per MOFA python defaults
+ConvergenceTH <- 0.0005 # default for MOFA - fast option
+PoisRateCstnt <- 0.0001 ## amount to add to the poison rate function to avoid errors
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+TL_data <- transferLearning_function(TL_param = TL_param, MaxIterations = MaxIterations, MinIterations = MinIterations,
+                                    minFactors = minFactors, StartDropFactor = StartDropFactor, 
+                                    FreqDropFactor = FreqDropFactor, StartELBO = StartELBO, 
+                                    FreqELBO = FreqELBO, DropFactorTH = DropFactorTH,
+                                    ConvergenceIts = ConvergenceIts, ConvergenceTH = ConvergenceTH,
+                                    CenterTrg = CenterTrg, ss_start_time = ss_start_time,
+                                    views = views, likelihoods = likelihoods, Fctrzn = Fctrzn)
+```
+
+```{r, message = FALSE, warning = FALSE, eval = FALSE}
+TL_data <- transferLearning_function(TL_param = TL_param, MaxIterations = MaxIterations, MinIterations = MinIterations,
+                                    minFactors = minFactors, StartDropFactor = StartDropFactor, 
+                                    FreqDropFactor = FreqDropFactor, StartELBO = StartELBO, 
+                                    FreqELBO = FreqELBO, DropFactorTH = DropFactorTH,
+                                    ConvergenceIts = ConvergenceIts, ConvergenceTH = ConvergenceTH,
+                                    CenterTrg = CenterTrg, ss_start_time = ss_start_time,
+                                    views = views, likelihoods = likelihoods, Fctrzn = Fctrzn)
+```
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+file.remove("TL_data.rds")
+```
+
+Results are saved into .rds in the `outputDir`. 
+
+Then have access to the results:
+```{r}
+ZMu = TL_data$ZMu
+W_mRNA = TL_data$Fctrzn_Lrn_W$mRNA
+```
+
+```{r}
+dim(W_mRNA)
+W_mRNA[c(1:5), c(1:5)]
+```
+
+
+```{r}
+sessionInfo()
+```

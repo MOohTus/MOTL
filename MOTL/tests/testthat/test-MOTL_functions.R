@@ -399,7 +399,6 @@ test_that("E_ZWSq_update", {
 })
 
 test_that("VarExplFun", {
-  print("to do")
   likelihoods <- list("mRNA" = "gaussian",
                       "miRNA" = "gaussian",
                       "DNAme" = "poisson",
@@ -454,3 +453,4 @@ test_that("transferLearning_function", {
   expect_equal(TL_param_exp$Tau, TL_param$Tau)
   expect_equal(TL_param_exp$TauLn, TL_param$TauLn)
 })
+
