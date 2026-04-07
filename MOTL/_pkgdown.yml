@@ -1,0 +1,56 @@
+url: https://github.com/MOohTus/MOTL-pkg
+template:
+  bootstrap: 5
+
+reference:
+- title: Data
+  desc: >
+    Data available inside MOTL. These data are subsets of the original data.
+    Don't use them for your analysis.
+  contents:
+  - Lrn
+  - Trg
+  - TL_param
+
+- title: Learning dataset
+  desc: >
+    Learning dataset preparation functions
+  contents:
+  - Tau_init
+  - TauLn_calculation
+  - WSq_calculation
+  - W0_calculation
+  - intercepts_calculation
+
+- title: Target dataset
+  desc: >
+    Target dataset preparation functions
+  contents:
+  - GeoMeans_Lrn_init
+  - GeoMeanFun
+  - countsNormalization
+  - countsTransformation
+  - preprocessCountsData
+  - TargetDataPreparation
+  - initTransferLearningParamaters
+  - TCGATargetDataPrefiltering
+  - TCGATargetDataPreparation
+  - mRNA_addVersion
+  - TargetDataPrefiltering
+
+- title: MOTL functions
+  desc: >
+    Functions related to MOTL
+  contents:
+  - Zeta_calculation
+  - Tau_calculation
+  - YGauss_calculation
+  - ZVar_calculation
+  - ZMu_calculation
+  - ELBO_calculation
+  - E_ZE_W_update
+  - E_Z_SqE_W_Sq_update
+  - E_ZSqE_WSq_update
+  - E_ZWSq_update
+  - VarExplFun
+  - transferLearning_function
