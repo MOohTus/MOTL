@@ -40,9 +40,7 @@ devtools::test()
 usethis::use_package("withr", type = "Suggests")
 
 
-## LOAD COMPLETE PACKAGE
-devtools::document(); devtools::load_all()
-devtools::test()
+
 
 
 ## VIGNETTES
@@ -57,8 +55,7 @@ usethis::use_vignette("MOTL")
 usethis::use_vignette("UseCase_TCGA")
 usethis::use_vignette("UseCase_Glioblastoma")
 
-## RENDER VIGNETTE HTML
-devtools::build_rmd("vignettes/MOTL.Rmd")
+
 
 
 
@@ -80,7 +77,7 @@ pkgdown::clean_cache()
 devtools::document(); devtools::load_all()
 
 ## RENDER ALL VIGNETTE FROM VIGNETTES INTO ARTICLES IN DOCS
-pkgdown::build_articles()
+pkgdown::build_articles(lazy = TRUE)
 
 ## IMPORT DOC FROM FUNCTIONS/DATA INTO REFERENCES
 pkgdown::build_reference()
@@ -113,5 +110,33 @@ devtools::check()
 devtools::build(); devtools::check_built("../MOTL_0.99.0.tar.gz")
 devtools::build(vignettes = FALSE); devtools::check_built("../MOTL_0.99.0.tar.gz")
 
-## Check for bioconductor
+
+
+
+
+## PERFORM TESTS
+devtools::document(); devtools::load_all()
+devtools::test()
+
+## VIGNETTES
+devtools::document(); devtools::load_all()
+devtools::install(build_vignettes = TRUE)
+vignette(package = "MOTL")
+??MOTL
+
+## RENDER VIGNETTE HTML
+devtools::document(); devtools::load_all()
+devtools::build_rmd("vignettes/MOTL.Rmd")
+
+## RENDER README
+devtools::document(); devtools::load_all()
+devtools::build_readme()
+
+## ROXYGEN DOCUMENT UPDATE AND LOAD COMPLETE PACKAGE
+## BUILD and CHECK PACKAGE
+## BIOCONDUCTOR CHECKING
+devtools::document(); devtools::load_all()
+devtools::build(); devtools::check_built("../MOTL_0.99.0.tar.gz")
 BiocCheck::BiocCheck("../MOTL_0.99.0.tar.gz")
+devtools::build(vignettes = TRUE, manual = TRUE)
+devtools::install(build_vignettes = TRUE)

@@ -1,6 +1,9 @@
 ---
 title: "UseCase_Glioblastoma"
-output: rmarkdown::html_vignette
+output: 
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{UseCase_Glioblastoma}
   %\VignetteEngine{knitr::rmarkdown}
