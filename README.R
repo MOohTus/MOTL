@@ -127,6 +127,7 @@ vignette(package = "MOTL")
 ## RENDER VIGNETTE HTML
 devtools::document(); devtools::load_all()
 devtools::build_rmd("vignettes/MOTL.Rmd")
+devtools::build_rmd("vignettes/UseCase_Glioblastoma.Rmd")
 
 ## RENDER README
 devtools::document(); devtools::load_all()
