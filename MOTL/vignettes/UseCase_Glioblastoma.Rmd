@@ -18,6 +18,41 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r toRun, echo = FALSE}
+setwd("/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/MOTL/vignettes/")
+
+Seed <- 1234567
+set.seed(Seed)
+
+library("MOTL")
+library("MOFA2")
+
+metadata_file <- "Glioblastoma/02_RNAseq/phenodata_RNAseq.tsv"
+mRNA_dir <- "Glioblastoma/02_RNAseq/CountData/"
+DNAme_dir <- "Glioblastoma/03_DNAmethylation/"
+
+smpls_df <- read.table("Glioblastoma_metadata.txt", head = TRUE)
+smpls <- smpls_df$Sample
+expdat_mRNA <- as.matrix(read.table("Glioblastoma/02_RNAseq/CountData/mRNA.csv", head = TRUE, sep = ",", check.names = FALSE))
+expdat_DNAme <- as.matrix(read.table("Glioblastoma/03_DNAmethylation/DNAme.csv", head = TRUE, sep = ",", check.names = FALSE))
+
+Lrn_dir <- "Lrn_5000D/"
+LrnFctrn_dir <- "Lrn_5000D_Fctrzn_100K_001TH/"
+
+expdat_meta_Lrn <- readRDS(file.path(Lrn_dir, "expdat_meta_Lrn.rds"))
+InputModel <- file.path(LrnFctrn_dir, "Model.hdf5")
+Fctrzn <- load_model(file = InputModel)
+CenterTrg <- FALSE
+viewsLrn <- Fctrzn@data_options$views
+likelihoodsLrn <- Fctrzn@model_options$likelihoods
+MLrn <- Fctrzn@dimensions$M
+Fctrzn@expectations[["Tau"]] <- Tau_init(viewsLrn, Fctrzn, InputModel)
+Fctrzn@expectations[["TauLn"]] <- sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn)
+Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn)
+Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrn_dir)
+```
+
+
 ```{r setup, eval = TRUE}
 Seed <- 1234567
 set.seed(Seed)
@@ -160,7 +195,7 @@ write.table(x = expdat_mRNA, file = file.path(mRNA_dir, "mRNA.csv"),
             sep = ",", row.names = TRUE, col.names = TRUE)
 ```
 
-The mRNA dataset contains `r nrow(expdat_mRNA)` features (genes) and `r ncol(expdat_mRNA)` samples.
+The mRNA dataset contains ``r nrow(expdat_mRNA)`` features (genes) and ``r ncol(expdat_mRNA)`` samples.
 
 ## Import Glioblastoma DNAme data
 
@@ -219,7 +254,7 @@ write.table(x = expdat_DNAme, file = file.path(DNAme_dir, "DNAme.csv"),
             sep = ",", row.names = TRUE, col.names = TRUE)
 ```
 
-The DNAme dataset contains `r nrow(expdat_DNAme)` features (probes) and `r ncol(expdat_DNAme)` samples.
+The DNAme dataset contains ``r nrow(expdat_DNAme)`` features (probes) and ``r ncol(expdat_DNAme)`` samples.
 
 
 ```{r}
@@ -246,11 +281,15 @@ Import metadata of the learning dataset creation.
 expdat_meta_Lrn <- readRDS(file.path(Lrn_dir, "expdat_meta_Lrn.rds"))
 ```
 
+## Import learning dataset factorization model
+
 Import the learning dataset factorization model, created using `MOFA2`.
 ```{r Lrn-2, eval = TRUE}
 InputModel <- file.path(LrnFctrn_dir, "Model.hdf5")
 Fctrzn <- load_model(file = InputModel)
 ```
+
+## Prepare learning dataset for TL
 
 For the preprocessing step of the target dataset, you have two choices:
 
@@ -287,8 +326,103 @@ Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn)
 Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrn_dir)
 ```
 
+# Target dataset
+
+First, feature names need to be the same as the one that are in the learning dataset. We will add gene version names that are in the learning dataset to the mRNA dataset. Here, some of the features are not retrieve in the learning dataset, so an `NA` is added instead of a number. These features will be removed after and not used in the analysis.
+
+```{r init_TL-1, eval = TRUE}
+expdat_mRNA <- mRNA_addVersion(expdat = expdat_mRNA, Lrndat = Fctrzn@expectations$W$mRNA)
+expdat_mRNA[c(1:5), c(1:7)]
+```
+
+Then, we create a list of the omics data we want to analysis together: `mRNA` and `DNAme` data.
+```{r init_TL-2, eval = TRUE}
+YTrg_list <- list(mRNA = expdat_mRNA, DNAme = expdat_DNAme)
+```
+
+The learning and target datasets need to contain the same set of omics for transfer learning. So we define the `views` and `likelihoods` variables that contain the commun views between the two datasets and the corresponding likelihoods. 
+```{r init_TL-3, eval = TRUE}
+viewsTrg <- names(YTrg_list)
+views <- viewsLrn[is.element(viewsLrn, viewsTrg)]
+likelihoods <- likelihoodsLrn[views]
+```
+
+Target dataset are then prepared: 
+
+- features with variance equal to zero are removed
+- features are harmonized between learning and target datasets, they should contain same features
+- samples are ordered in same way between views
+- counts data (i.e. mRNA and miRNA) are normalized using ... (`normalization = "LrnGeoMeans"`)
+- counts data (i.e. mRNA and miRNA) are log2 transformed (`transformation = TRUE`)
+
+```{r init_TL-4, eval = TRUE}
+YTrg_list <- TargetDataPreparation(views = views, YTrg_list = YTrg_list, 
+                                  Fctrzn = Fctrzn, smpls = smpls, expdat_meta_Lrn = expdat_meta_Lrn,
+                                  normalization = "LrnGeoMeans", transformation = TRUE)
+```
+
+Finally, we create the `TL_param` that contains all the necessary input for the transfer learning analysis
+
+- `YTrg`: named list of the omics
+- `views`: vector of view names, shared between learning and target dataset
+- `Fctrzn`: learning dataset factorization model initialized
+- `likelihoods`: vector of view likelihoods
+```{r init_TL-5, eval = TRUE}
+TL_param <- initTransferLearningParamaters(YTrg = YTrg_list, 
+                                           views = views,
+                                           Fctrzn = Fctrzn, 
+                                           likelihoods = likelihoods
+                                          )
+names(TL_param)
+```
+
+The `TL_param` contain:
+
+- `YTrg`: named list of prepared `mRNA` and `DNAme` data matrices
+- `Fctrzn_Lrn_W0`: named list of weight intercept values `W0` for each view
+- `Fctrzn_Lrn_W`: named list of weight values `W` for each view
+- `Fctrzn_Lrn_WSq`: named list of squared weight values `WSq` fir each view
+- `Tau`: named list of Tau values `Tau` for each view
+- `TauLn`: named list of log(Tau) `TauLn` for each view
 
 # Transfer learning using MOTL
+
+Create an output folder. 
+```{r TL-1, eval = TRUE}
+TL_outDir <- file.path(glio_dir, "MOTL_results")
+if(!dir.exists(TL_outDir)){
+  dir.create(TL_outDir, showWarnings = FALSE, recursive = TRUE)
+}
+```
+
+Transfer learning parameters:
+
+- `minFactors`: floor when dropping factors - number of samples in evaluations
+- `StartDropFactor`: after which iteration to start dropping factors
+- `FreqDropFactor`: how often to drop factors
+- `StartELBO`: which iteration to start checking ELBO on, exclude initiation iteration
+- `FreqELBO`: how often to assess the ELBO
+- `DropFactorTH`: factor with lowest max variance, that is less than this, is dropped
+- `MaxIterations`: maximum iteration number
+- `MinIterations`: minimum iteration number - at least 2 and exclude initial setup (`2` is default in MOFA)
+- `ConvergenceIts`: number of consecutive iterations that change in ELBO is (`2` is default in MOFA)
+- `ConvergenceTH`: threshold number for change in ELBO for checking convergence (`0.0005` is default in MOFA, correspond to the fast option)
+- `PoisRateCstnt`: amount to add to the poison rate function to avoid errors(`1e-04` default)
+```{r TL-2, eval = TRUE}
+minFactors <- 13 
+StartDropFactor <- 1 
+FreqDropFactor <- 1 
+StartELBO <- 1 
+FreqELBO <- 5
+DropFactorTH <- 0.01 
+MaxIterations <- 10000
+MinIterations <- 2 
+ConvergenceIts <- 2 
+ConvergenceTH <- 0.0005 
+```
+
+
+
 # Downstream analysis
 
 
@@ -314,71 +448,13 @@ LrnFctrn_dir <- "Lrn_5000D_Fctrzn_100K_001TH/"
 ```
 
 
-# Prepare datasets
 
-If `CenterTrg = FALSE`, estimated intercepts are used for the normalization.
-```{r parameters}
-CenterTrg <- FALSE
-```
-
-
-
-## Target dataset: Glioblastoma data
-
-```{r}
-expdat_mRNA <- mRNA_addVersion(expdat = expdat_mRNA, Lrndat = Fctrzn@expectations$W$mRNA)
-```
-
-create a list of all target dataset omics data
-```{r}
-YTrg_list <- list(mRNA = expdat_mRNA, DNAme = expdat_DNAme)
-```
-
-harmonize the vectors of views and likelihoods
-```{r}
-viewsTrg <- names(YTrg_list)
-views <- viewsLrn[is.element(viewsLrn, viewsTrg)]
-likelihoods <- likelihoodsLrn[views]
-```
-
-Prepare YTrg data
-```{r}
-YTrg_list <- TargetDataPreparation(views = views, YTrg_list = YTrg_list, 
-                                  Fctrzn = Fctrzn, smpls = smpls, expdat_meta_Lrn = expdat_meta_Lrn,
-                                  normalization = 'LrnGeoMeans', transformation = TRUE)
-```
-
-Init parameters
-```{r}
-TL_param <- initTransferLearningParamaters(YTrg = YTrg_list, views = views, 
-                                          Fctrzn = Fctrzn, likelihoods = likelihoods
-                                          )
-```
 
 ## Transfer learning
 
-defining output folder here - this should be an input to the funciton
-```{r}
-TL_outDir <- file.path(glio_dir, "MOTL_results")
-if(!dir.exists(TL_outDir)){
-  dir.create(TL_outDir, showWarnings = FALSE, recursive = TRUE)
-}
-```
 
-Parameters
-```{r}
-minFactors <- 13 ## floor when dropping factors - number of samples in evaluations
-StartDropFactor <- 1 # after which iteration to start dropping factors
-FreqDropFactor <- 1 ## how often to drop factors
-StartELBO <- 1 #which iteration to start checking ELBO on, excl initiation iteration
-FreqELBO <- 5 #how often to assess the ELBO
-DropFactorTH <- 0.01 # factor with lowest max variance, that is less than this, is dropped
-MaxIterations <- 10000
-MinIterations <- 2 # as per MOFA with defaults in python, >= 2 (hardcoded floor), exl initial setup
-ConvergenceIts <- 2 # as per MOFA python defaults
-ConvergenceTH <- 0.0005 # default for MOFA - fast option
-# PoisRateCstnt <- 0.0001 ## amount to add to the poison rate function to avoid errors
-```
+
+
 
 Run MOTL
 ```{r, message = FALSE}
