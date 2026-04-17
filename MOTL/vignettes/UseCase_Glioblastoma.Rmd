@@ -654,7 +654,7 @@ Write results as .csv
 ```{r gsea-6, eval = TRUE}
 write.table(sigGeneSets,
             file.path(TL_outDir, paste0("SigGeneSets_", groupsTested, ".csv")),
-            quote = FALSE, sep = "","", na = "", row.names = FALSE, col.names = TRUE)
+            quote = FALSE, sep = "," , na = "", row.names = FALSE, col.names = TRUE)
 ```
 
 ## Z matrix analysis

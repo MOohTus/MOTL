@@ -121,7 +121,7 @@ devtools::test()
 ## VIGNETTES
 devtools::document(); devtools::load_all()
 devtools::install(build_vignettes = TRUE)
-vignette(package = "MOTL")
+#vignette(package = "MOTL")
 ??MOTL
 
 ## RENDER VIGNETTE HTML
