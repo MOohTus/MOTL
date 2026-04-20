@@ -249,8 +249,7 @@ Read DNAme data file. You will get warnings because the file contains some corru
 ```{r DNAme-1, eval = TRUE, warning = FALSE}
 expdat_DNAme <- strsplit(
     readLines(file.path(DNAme_dir, "5mC_bVals_HGCC.txt"), n = -1),
-    split = "\t"
-)
+    split = "\t")
 ```
 
 Reshape the DNAme data object and keep only rows with the correct number of elements.
@@ -377,7 +376,8 @@ Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrz
 First, feature names need to be the same as the one that are in the learning dataset. We will add gene version names that are in the learning dataset to the mRNA dataset. Here, some of the features are not retrieve in the learning dataset, so an `NA` is added instead of a number. These features will be removed after and not used in the analysis.
 
 ```{r init_TL-1, eval = TRUE}
-expdat_mRNA <- mRNA_addVersion(expdat = expdat_mRNA, Lrndat = Fctrzn@expectations$W$mRNA)
+expdat_mRNA <- 
+    mRNA_addVersion(expdat = expdat_mRNA, Lrndat = Fctrzn@expectations$W$mRNA)
 expdat_mRNA[c(1:5), c(1:7)]
 ```
 
@@ -398,13 +398,18 @@ Target dataset are then prepared:
 - features with variance equal to zero are removed
 - features are harmonized between learning and target datasets, they should contain same features
 - samples are ordered in same way between views
-- counts data (i.e. mRNA and miRNA) are normalized using ... (`normalization = "LrnGeoMeans"`)
+- counts data (i.e. mRNA and miRNA) are normalized using `DESeq2` normalization with the geometric values from the learning dataset (`normalization = "LrnGeoMeans"`)
 - counts data (i.e. mRNA and miRNA) are log2 transformed (`transformation = TRUE`)
 
 ```{r init_TL-4, eval = TRUE}
-YTrg_list <- TargetDataPreparation(views = views, YTrg_list = YTrg_list, 
-                                  Fctrzn = Fctrzn, smpls = smpls, expdat_meta_Lrn = expdat_meta_Lrn,
-                                  normalization = "LrnGeoMeans", transformation = TRUE)
+YTrg_list <- 
+    TargetDataPreparation(views = views, 
+                          YTrg_list = YTrg_list, 
+                          Fctrzn = Fctrzn, 
+                          smpls = smpls, 
+                          expdat_meta_Lrn = expdat_meta_Lrn, 
+                          normalization = "LrnGeoMeans", 
+                          transformation = TRUE)
 ```
 
 Finally, we create the `TL_param` that contains all the necessary input for the transfer learning analysis
@@ -417,8 +422,7 @@ Finally, we create the `TL_param` that contains all the necessary input for the 
 TL_param <- initTransferLearningParamaters(YTrg = YTrg_list, 
                                            views = views,
                                            Fctrzn = Fctrzn, 
-                                           likelihoods = likelihoods
-                                          )
+                                           likelihoods = likelihoods)
 names(TL_param)
 ```
 
@@ -471,14 +475,22 @@ ConvergenceTH <- 0.0005
 
 Run MOTL. Results will be saved into the `TL_outDir` folder in the `TL_VI_data.rds` file.
 ```{r MOTL-3, message = FALSE}
-TL_data <- transferLearning_function(TL_param = TL_param, views = views, Fctrzn = Fctrzn,
-                                    likelihoods = likelihoods,
-                                    MaxIterations = MaxIterations, 
-                                    MinIterations = MinIterations, minFactors = minFactors, 
-                                    StartDropFactor = StartDropFactor, FreqDropFactor = FreqDropFactor, 
-                                    StartELBO = StartELBO, FreqELBO = FreqELBO, DropFactorTH = DropFactorTH, 
-                                    ConvergenceIts = ConvergenceIts, ConvergenceTH = ConvergenceTH, 
-                                    CenterTrg = CenterTrg, outputDir = TL_outDir)
+TL_data <- transferLearning_function(TL_param = TL_param, 
+                                     views = views, 
+                                     Fctrzn = Fctrzn,
+                                     likelihoods = likelihoods,
+                                     MaxIterations = MaxIterations, 
+                                     MinIterations = MinIterations, 
+                                     minFactors = minFactors, 
+                                     StartDropFactor = StartDropFactor, 
+                                     FreqDropFactor = FreqDropFactor, 
+                                     StartELBO = StartELBO, 
+                                     FreqELBO = FreqELBO, 
+                                     DropFactorTH = DropFactorTH,
+                                     ConvergenceIts = ConvergenceIts, 
+                                     ConvergenceTH = ConvergenceTH,
+                                     CenterTrg = CenterTrg, 
+                                     outputDir = TL_outDir)
 ```
 
 Then, save the metadata of the transfer learning analysis.
@@ -518,8 +530,7 @@ library("RColorBrewer")
 
 Set the seed to have comparable results with this current vignette.
 ```{r setup-2, eval = TRUE}
-Seed = 1234567
-mode(Seed) = 'integer'
+Seed <- 1234567
 set.seed(Seed)
 ```
 
@@ -543,7 +554,7 @@ VarExpl <- TL_data$VarExpl
 smpls <- rownames(TL_data$YTrgSS$mRNA)
 ```
 
-Load the Glioblastoma metadata.
+Load the Glioblastoma metadata. 
 ```{r down-1, eval = TRUE}
 smpls_df <- read.table("Glioblastoma_metadata.txt", head = TRUE)
 smpls_df <- smpls_df[order(smpls_df$CaseControl, smpls_df$HGCC, smpls_df$Sample),]
@@ -553,6 +564,23 @@ smpls_df <- smpls_df[match(smpls, smpls_df$Sample),]
 ```
 
 ## Factor caracterisation: Weight matrices
+
+### Differentially active factors
+
+We consider a factor as differentially active if there is a statistically significant difference between groups, here cancer types. We perform a Wilcoxian Rank Sum tests on the Z matrix. Then, p-values are corrected with a Benjamini & Hochberg method (BH). 
+
+```{r diff-1, eval = TRUE}
+minSamples <- min(unlist(table(smpls_df$CaseControl)))
+Z_pv <- apply(X = ZMu, MARGIN = 2, FUN = DifFactTester, 
+              minSamples = minSamples, sampleGroup = smpls_df$CaseControl)
+Z_pv <- p.adjust(Z_pv, method = "BH")
+Z_pv_sig <- which(Z_pv < 0.05)
+```
+
+There are ``r length(Z_pv_sig)`` differential active factors between normal and cancer samples.
+```{r diff-2, eval = TRUE}
+Z_pv_sig
+```
 
 ## Variance explained
 
@@ -571,45 +599,37 @@ max_r2 <- max(Variances_df$Variance)
 ggplot(Variances_df, aes(x = Var2, y = Var1)) + 
     geom_tile(aes_string(fill = "Variance"), color = "black") + 
     labs(x = "", y = "", title = "") +
-    scale_fill_gradientn(colors = c("gray97", "darkblue"), 
-            guide = "colorbar", limits = c(min_r2, max_r2)) +
+    scale_fill_gradientn(colors = c("gray97", "darkblue"),
+                         guide = "colorbar", 
+                         limits = c(min_r2, max_r2)) +
     guides(fill = guide_colorbar("Var. (%)")) + 
-    theme(axis.text.x = element_text(size = rel(1), 
-        color = "black"), axis.text.y = element_text(size = rel(1.1), 
-        color = "black"), axis.line = element_blank(), axis.ticks = element_blank(), 
-        panel.background = element_blank(), strip.background = element_blank(), 
-        strip.text = element_text(size = rel(1)))
+    theme(axis.text.x = element_text(size = rel(1),
+                                     color = "black"), 
+          axis.text.y = element_text(size = rel(1.1), color = "black"), 
+          axis.line = element_blank(), 
+          axis.ticks = element_blank(),
+          panel.background = element_blank(), 
+          strip.background = element_blank(),
+          strip.text = element_text(size = rel(1)))
 ```
 
 Petit problème ici, il y a des variances négatives ... 
 
 ```{r var-4, eval = TRUE}
 ggplot(Variances_df, aes(x = Var2, y = Variance)) + 
-    geom_bar(stat = "identity", fill = "deepskyblue4", color = "NA", width = 0.9) +
+    geom_bar(stat = "identity", 
+             fill = "deepskyblue4", 
+             color = "NA", 
+             width = 0.9) +
     xlab("") + ylab("Variance explained (%)") +
-    theme(axis.ticks.x = element_blank(), 
-            axis.text.x = element_text(size = rel(1.1), color = "black"), 
-            axis.text.y = element_text(size = rel(1), color = "black"), 
-            axis.title.y = element_text(size = rel(1), color = "black"), 
-            axis.line = element_line(size = rel(1), color = "black"), 
-            panel.background = element_blank(), strip.background = element_blank(), 
-            strip.text = element_text(size = rel(1)))
-```
-
-### Differentially active factors
-
-Qu'est-ce que c'est ? Pourquoi on cherche ça. 
-
-```{r diff-1, eval = TRUE}
-minSamples <- min(unlist(table(smpls_df$CaseControl)))
-Z_pv <- apply(X = ZMu, MARGIN = 2, FUN = DifFactTester, minSamples = minSamples, sampleGroup = smpls_df$CaseControl)
-Z_pv <- p.adjust(Z_pv, method = "BH")
-Z_pv_sig <- which(Z_pv < 0.05)
-```
-
-There are ``r length(Z_pv_sig)`` differential active factors. 
-```{r diff-2, eval = TRUE}
-Z_pv_sig
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_text(size = rel(1.1), color = "black"), 
+          axis.text.y = element_text(size = rel(1), color = "black"), 
+          axis.title.y = element_text(size = rel(1), color = "black"),
+          axis.line = element_line(size = rel(1), color = "black"),
+          panel.background = element_blank(), 
+          strip.background = element_blank(), 
+          strip.text = element_text(size = rel(1)))
 ```
 
 ### Enrichment analysis
@@ -639,29 +659,34 @@ We create the input data frame for the enrichment analysis.
 toTest <- data.frame(
     k = rep(kToTest, each = length(genesetCatToTest)),
     category = rep(genesetCatToTest, times = length(kToTest)),
-    subcategory = rep(genesetSubCatToTest, times = length(kToTest))
-)
+    subcategory = rep(genesetSubCatToTest, times = length(kToTest)))
 head(toTest)
 ```
 
 Reshape the enrichment analysis results.
-```{r gsea-5, eval = TRUE}
-sigGeneSets <- apply(X = toTest, MARGIN = 1, FUN = sigGeneSetFct, WMat = W_mRNA, groups = groupsTested)
+```{r gsea-5, eval = TRUE, warning = FALSE}
+sigGeneSets <- apply(X = toTest, 
+                     MARGIN = 1, 
+                     FUN = sigGeneSetFct, 
+                     WMat = W_mRNA, 
+                     groups = groupsTested)
 sigGeneSets <- do.call(rbind, sigGeneSets)
 ```
 
-Write results as .csv
+Write results as .csv file.
 ```{r gsea-6, eval = TRUE}
 write.table(sigGeneSets,
             file.path(TL_outDir, paste0("SigGeneSets_", groupsTested, ".csv")),
-            quote = FALSE, sep = "," , na = "", row.names = FALSE, col.names = TRUE)
+            quote = FALSE, 
+            sep = "," , 
+            na = "", 
+            row.names = FALSE, 
+            col.names = TRUE)
 ```
 
 ## Z matrix analysis
 
-Ca correspond à quoi la matrice Z
-
-We will visualize the Z matrix using an heatmap. 
+We will visualize the Z matrix inferred using MOTL. 
 
 Create the input data frame of the heatmap. 
 ```{r z-1, eval = TRUE}
@@ -671,7 +696,8 @@ Zmu_MOTL[c(1:5), c(1,7)]
 
 Create the corresponding annotation file.
 ```{r z-2, eval = TRUE}
-heatMapAnno <- data.frame(SubType = as.factor(smpls_df$HGCC), Type = as.factor(smpls_df$CaseControl))
+heatMapAnno <- data.frame(SubType = as.factor(smpls_df$HGCC), 
+                          Type = as.factor(smpls_df$CaseControl))
 heatMapAnno$SubType <- relevel(heatMapAnno$SubType, ref = "Normal")
 heatMapAnno$Type <- relevel(heatMapAnno$Type, ref = "Normal")
 rownames(heatMapAnno) <- smpls_df$Sample
@@ -686,7 +712,7 @@ names(annot_colors$SubType) <- levels(heatMapAnno$SubType)
 names(annot_colors$Type) <- levels(heatMapAnno$Type)
 ```
 
-Create the heatmap of the Z matrix.
+Create the heatmap of the Z matrix. Clustering is performed using a hierarchical clustering (`complete` method, as default).
 ```{r z-4, eval = TRUE}
 pheatmap(Zmu_MOTL,
          border_color = NA,
@@ -701,7 +727,8 @@ pheatmap(Zmu_MOTL,
          annotation_col = heatMapAnno,
          annotation_colors = annot_colors,
          annotation_names_col = TRUE,
-         annotation_legend = TRUE)
+         annotation_legend = TRUE, 
+         main = "heatmap clustering of the Z matrix inferred using MOTL.")
 ```
 
-Mettre une petite explication de comment lire ça.
+The heatmap clustering of the factors inferred with MOTL, separates cancer (in orange) and normal (in green) samples. We can also see subgroups that partially match cancer subtypes, the ones defined based on transcriptome signatures.
