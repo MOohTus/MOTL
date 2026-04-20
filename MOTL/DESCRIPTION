@@ -37,7 +37,13 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     withr,
-    BiocStyle
+    BiocStyle,
+    MOFA2,
+    fgsea,
+    msigdbr,
+    ggplot2,
+    pheatmap,
+    RColorBrewer
 VignetteBuilder: 
     knitr
 biocViews: DimensionReduction, FeatureExtraction, Bayesian, Normalization
