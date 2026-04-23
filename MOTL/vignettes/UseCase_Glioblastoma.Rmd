@@ -19,30 +19,35 @@ knitr::opts_chunk$set(
 ```
 
 ```{r toRun, echo = FALSE}
+
+## WORKING DIRECTORY
 setwd("/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/MOTL/vignettes/")
 
+## SET ENVIRONMENT
 Seed <- 1234567
 set.seed(Seed)
 
+## LIBRARIES
 library("MOTL")
 library("MOFA2")
 
+## GLIOBLASTOMA FILES
 metadata_file <- "Glioblastoma/02_RNAseq/phenodata_RNAseq.tsv"
 mRNA_dir <- "Glioblastoma/02_RNAseq/CountData/"
 DNAme_dir <- "Glioblastoma/03_DNAmethylation/"
-
 smpls_df <- read.table("Glioblastoma_metadata.txt", head = TRUE)
 smpls <- smpls_df$Sample
-
 expdat_mRNA <- as.matrix(read.table("Glioblastoma/02_RNAseq/CountData/mRNA.csv", head = TRUE, sep = ",", check.names = FALSE))
 expdat_DNAme <- as.matrix(read.table("Glioblastoma/03_DNAmethylation/DNAme.csv", head = TRUE, sep = ",", check.names = FALSE))
 
+## LEARNING DATASET
 Lrn_dir <- "Lrn_5000D/"
 LrnFctrn_dir <- "Lrn_5000D_Fctrzn_100K_001TH/"
-
 expdat_meta_Lrn <- readRDS(file.path(Lrn_dir, "expdat_meta_Lrn.rds"))
 InputModel <- file.path(LrnFctrn_dir, "Model.hdf5")
 Fctrzn <- load_model(file = InputModel)
+
+## LEARNING DATASET INIT
 CenterTrg <- FALSE
 viewsLrn <- Fctrzn@data_options$views
 likelihoodsLrn <- Fctrzn@model_options$likelihoods
@@ -52,6 +57,7 @@ Fctrzn@expectations[["TauLn"]] <- sapply(viewsLrn, TauLn_calculation, likelihood
 Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn)
 Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrn_dir)
 
+## TL
 TL_outDir <- "Glioblastoma/MOTL_results"
 
 ```
@@ -65,14 +71,27 @@ library("MOFA2")
 Helper functions created for this specific use case.
 ```{r functions, eval = TRUE}
 mRNA_raw_import <- function(smpls, InRawCountsDir){
-  # import raw counts line by line for each sample
+    #' Create a data frame of mRNA Glioblastoma counts
+    #' 
+    #' Import raw counts line by line for each sample
+    #' Remove lines with more or less than 7 columns
+    #' Create a data frame of mRNA Glioblastoma counts
+    #' 
+    #' 
+    #' @param smpls sample names vector
+    #' @param InRawCountsDir directory of the mRNA Glioblastoma counts data
+    #' 
+    #' @returns data frame of mRNA counts data
   mRNA_trg_tmp <- strsplit(
-    readLines(file.path(InRawCountsDir, paste0(smpls, ".genes.results")), n = -1), 
+    readLines(file.path(InRawCountsDir, 
+                        paste0(smpls, ".genes.results")), 
+              n = -1), 
     split = "\t"
   )
   
   correct_length <- 7
-  mRNA_trg_tmp_chk <- lapply(mRNA_trg_tmp, function(x) length(x) == correct_length)
+  mRNA_trg_tmp_chk <- lapply(mRNA_trg_tmp, 
+                             function(x) length(x) == correct_length)
   mRNA_trg_tmp <- mRNA_trg_tmp[unlist(mRNA_trg_tmp_chk)]
   mRNA_trg_tmp <- do.call(rbind, mRNA_trg_tmp)
   colnames(mRNA_trg_tmp) <- mRNA_trg_tmp[1,]
@@ -88,19 +107,36 @@ mRNA_raw_import <- function(smpls, InRawCountsDir){
 }
 
 mRNA_stripVersion <- function(expdat){
-  # strip version and gene symbol from ensembl ids
+    #' Strip version and gene symbol from Ensembl IDs 
+    #'
+    #' @param expdat matrix of mRNA counts data
+    #' 
+    #' @returns tidied up matrix
   vStart <- regexpr("[.]", rownames(expdat))
   suffixStart <- regexpr("_PAR_Y", rownames(expdat))
-  suffixEnd <- suffixStart -1 + attr(regexpr("_PAR_Y", rownames(expdat)), "match.length")
+  suffixEnd <- suffixStart -1 + 
+      attr(regexpr("_PAR_Y", rownames(expdat)), "match.length")
   rownames(expdat) <- paste0(
     substr(rownames(expdat), 1, vStart-1),
     substr(rownames(expdat), suffixStart, suffixEnd)
   )
-  # return tidied up matrix
   return(expdat)
 }
 
 DifFactTester <- function(x, minSamples, sampleGroup) {
+    #' Find differentially active factors
+    #'
+    #' If number of samples under a condition is less than 4, a T-test is 
+    #' performed to determine if a factor is differentially active between 
+    #' two conditions.
+    #' Otherwise (`minSamples >= 4`), a Wilcox test is performed to evaluate 
+    #' if a factor is differentially active between two conditions.
+    #' 
+    #' @param x line that contains sample Z values for a given factor 
+    #' @param minSamples number of minimum sample under a condition
+    #' @sampleGroup sample condition vector (as factor)
+    #' 
+    #' @returns p-value of the factor
   if (minSamples >= 4) {
     wilcox.test(x ~ sampleGroup)$p.value
   } else {
@@ -108,11 +144,14 @@ DifFactTester <- function(x, minSamples, sampleGroup) {
   }
 }
 
-ScaleW <- function(x) {
-  return(x/norm(matrix(x), type = "F"))
-}
-
 sigGeneSetFct <- function(v, WMat, groups){
+    #' Perform enrichment analysis using fgsea
+    #'
+    #' @param v 
+    #' @param WMat weights matrix
+    #' @param groups
+    #' 
+    #' @returns fgsea results
     ## Retrieve element from the inputs
     k <- v[1]
     category <- v[2]
@@ -147,6 +186,32 @@ sigGeneSetFct <- function(v, WMat, groups){
     
     return(fgseaRes)
 }
+
+createOrsumInputFile <- function(Fct, SigGeneSets, SC){
+    #' Create orsum input file
+    #' 
+    #' Create a .txt file that contains significant pathways name, collected 
+    #' from the enrichment analysis results for a given
+    #' factor number.
+    #' 
+    #' @param Fct factor number as string
+    #' @param SigGeneSets data.frame of fgsea results
+    #' @param SC database name
+    #' 
+    SigGeneSets_Fct <- SigGeneSets[SigGeneSets$FactorNum == Fct,]
+    SigGeneSets_Fct <- SigGeneSets_Fct[order(SigGeneSets_Fct$padj, 
+                                             SigGeneSets_Fct$size),]
+    SigGeneSets_Fct <- SigGeneSets_Fct$pathway
+    if(length(SigGeneSets_Fct) != 0)
+    {
+        write.table(SigGeneSets_Fct, 
+                    file.path(orsum_dir,
+                              paste0(str_replace(SC, ":", "_"), "_", Fct, ".txt")),
+                    col.names = FALSE, row.names = FALSE, quote = FALSE)
+    }
+
+}
+
 ```
 
 Example of real data analysis. You can find the entire analysis that you can retreive in the paper in the github paper. 
@@ -211,7 +276,7 @@ smpls_df$CaseControl <- smpls_df$HGCC
 smpls_df$CaseControl[smpls_df$CaseControl != "Normal"] <- "Case"
 ```
 
-```{r metadata-6, eval = TRUE}
+```{r metadata-6}
 write.table(x = smpls_df, file = "Glioblastoma_metadata.txt", sep = "\t", 
             quote = FALSE, row.names = FALSE)
 ```
@@ -291,6 +356,7 @@ expdat_DNAme <- sesame::BetaValueToMValue(expdat_DNAme)
 Finally, we remove samples that are not in the `smpls` variable and order sample columns. 
 ```{r DNAme-7, eval = TRUE}
 expdat_DNAme <- expdat_DNAme[,smpls]
+expdat_DNAme[c(1:5), c(1:3)]
 ```
 
 The M-Values matrix is saved into a .csv file to facilitate the loading.
@@ -300,11 +366,6 @@ write.table(x = expdat_DNAme, file = file.path(DNAme_dir, "DNAme.csv"),
 ```
 
 The DNAme dataset contains ``r nrow(expdat_DNAme)`` features (probes) and ``r ncol(expdat_DNAme)`` samples.
-
-
-```{r}
-smpls_raw <- sub("-", ".", smpls)
-```
 
 # Learning dataset
 
@@ -520,6 +581,8 @@ For the downstream analysis, you will need the following libraries.
 ## Enrichment analysis
 library("fgsea")
 library("msigdbr")
+library("stringr")
+library("GSA")
 ## Plots
 library("ggplot2")
 library("pheatmap")
@@ -561,11 +624,17 @@ smpls_df <- smpls_df[order(smpls_df$CaseControl, smpls_df$HGCC, smpls_df$Sample)
 sampleGroup <- as.factor(smpls_df$CaseControl)
 smpls_df$CaseControl[smpls_df$CaseControl == "Case"] <- "pd-GBSC"
 smpls_df <- smpls_df[match(smpls, smpls_df$Sample),]
+head(smpls_df)
 ```
 
 ## Factor caracterisation: Weight matrices
 
 ### Differentially active factors
+
+MOTL inferred ``r length(colnames(ZMu))`` factors. 
+```{r diff-0, eval = TRUE}
+colnames(ZMu)
+```
 
 We consider a factor as differentially active if there is a statistically significant difference between groups, here cancer types. We perform a Wilcoxian Rank Sum tests on the Z matrix. Then, p-values are corrected with a Benjamini & Hochberg method (BH). 
 
@@ -582,20 +651,57 @@ There are ``r length(Z_pv_sig)`` differential active factors between normal and 
 Z_pv_sig
 ```
 
-## Variance explained
+### Variance decomposition
 
+Plots are inspired from the `plot_variance_explained()` function available in the `MOFA2` library.
+
+#### Total variance explained per omics data
+
+Set the factors with negative variance explained to zero. 
 ```{r var-1, eval = TRUE}
-Z_mRNA_rel <- which(VarExpl[, "mRNA"] > 0.01)
-Z_DNAme_rel <- which(VarExpl[, "DNAme"] > 0.01)
-Variances_df <- reshape2::melt(TL_data$VarExpl, value.name = "Variance")
+Variances_df <- reshape2::melt(VarExpl, value.name = "Variance")
+Variances_df$Variance[Variances_df$Variance < 0] <- 0
 ```
+
+The ``r length(colnames(ZMu))`` inferred factors ~80% of the variation in the mRNA data and ~40% of the variation in the DNAme data. 
 
 ```{r var-2, eval = TRUE}
-min_r2 <- 0.01
-max_r2 <- max(Variances_df$Variance)
+ggplot(Variances_df, aes(x = Var2, y = Variance * 100)) + 
+    geom_bar(stat = "identity", 
+             fill = "deepskyblue4", 
+             color = "NA", 
+             width = 0.9) +
+    xlab("") + ylab("Variance explained (%)") +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_text(size = rel(1.1), color = "black"), 
+          axis.text.y = element_text(size = rel(1), color = "black"), 
+          axis.title.y = element_text(size = rel(1), color = "black"),
+          axis.line = element_line(size = rel(1), color = "black"),
+          panel.background = element_blank(), 
+          strip.background = element_blank(), 
+          strip.text = element_text(size = rel(1)))
 ```
 
+#### Variance decomposition by by differentially active factor
+
+Set the factors with negative variance explained to zero and retreive differentially active factors.
 ```{r var-3, eval = TRUE}
+VarExpl_sig <- VarExpl[Z_pv_sig,]
+Variances_df <- reshape2::melt(VarExpl_sig, value.name = "Variance")
+Variances_df$Variance[Variances_df$Variance < 0.01] <- 0.001
+Variances_df$Variance <- Variances_df$Variance * 100
+```
+
+This plot shows only the interested factors (i.e. differentially active between control and cancer conditions). 
+
+- Factor 1 captures a very strong source of variation that is present only in mRNA data
+- Factor 2 captures variability that is present across both data (mRNA and DNAme)
+- Factor 40 also captures co-variation between mRNA and DNAme data but a weaker signal 
+
+```{r var-4, eval = TRUE}
+min_r2 <- 0.01 
+max_r2 <- max(Variances_df$Variance)
+
 ggplot(Variances_df, aes(x = Var2, y = Var1)) + 
     geom_tile(aes_string(fill = "Variance"), color = "black") + 
     labs(x = "", y = "", title = "") +
@@ -613,36 +719,23 @@ ggplot(Variances_df, aes(x = Var2, y = Var1)) +
           strip.text = element_text(size = rel(1)))
 ```
 
-Petit problème ici, il y a des variances négatives ... 
-
-```{r var-4, eval = TRUE}
-ggplot(Variances_df, aes(x = Var2, y = Variance)) + 
-    geom_bar(stat = "identity", 
-             fill = "deepskyblue4", 
-             color = "NA", 
-             width = 0.9) +
-    xlab("") + ylab("Variance explained (%)") +
-    theme(axis.ticks.x = element_blank(),
-          axis.text.x = element_text(size = rel(1.1), color = "black"), 
-          axis.text.y = element_text(size = rel(1), color = "black"), 
-          axis.title.y = element_text(size = rel(1), color = "black"),
-          axis.line = element_line(size = rel(1), color = "black"),
-          panel.background = element_blank(), 
-          strip.background = element_blank(), 
-          strip.text = element_text(size = rel(1)))
-```
-
 ### Enrichment analysis
 
 For mRNA view, we will perform an enrichment analysis of the differentially active factors using GSEA.
 
 ```{r gsea-1, eval = TRUE}
 groupsTested <- paste(levels(sampleGroup), collapse = "_vs_")
-W_mRNA <- t(apply(Fctrzn_Lrn_W[["mRNA"]], 1, ScaleW))
+W_mRNA <- t(apply(Fctrzn_Lrn_W[["mRNA"]], 
+                  MARGIN= 1, 
+                  FUN = function(x){return(x/norm(matrix(x), type = "F"))}))
 W_mRNA <- mRNA_stripVersion(W_mRNA)
 ```
 
-We have ``r length(Z_pv_sig)`` differentially active factors and ``r length(Z_mRNA_rel)`` factors that explained at least 0.001 of the total variance. We select factors that are differentially active and also explained at least 0.001 of the total variance.
+```{r gesa-11, eval = TRUE}
+Z_mRNA_rel <- which(VarExpl[,"mRNA"] >= 0.01)
+```
+
+We have ``r length(Z_pv_sig)`` differentially active factors and ``r length(Z_mRNA_rel)`` factors that explained at least 0.01 of the total variance. We select factors that are differentially active and also explained at least 0.01 of the total variance.
 ```{r gsea-2, eval = TRUE}
 kToTest <- names(Z_pv_sig)[is.element(names(Z_pv_sig), names(Z_mRNA_rel))]
 kToTest
@@ -664,7 +757,7 @@ head(toTest)
 ```
 
 Reshape the enrichment analysis results.
-```{r gsea-5, eval = TRUE, warning = FALSE}
+```{r gsea-5, warning = FALSE}
 sigGeneSets <- apply(X = toTest, 
                      MARGIN = 1, 
                      FUN = sigGeneSetFct, 
@@ -674,7 +767,7 @@ sigGeneSets <- do.call(rbind, sigGeneSets)
 ```
 
 Write results as .csv file.
-```{r gsea-6, eval = TRUE}
+```{r gsea-6}
 write.table(sigGeneSets,
             file.path(TL_outDir, paste0("SigGeneSets_", groupsTested, ".csv")),
             quote = FALSE, 
@@ -682,6 +775,128 @@ write.table(sigGeneSets,
             na = "", 
             row.names = FALSE, 
             col.names = TRUE)
+```
+
+```{r gsea-7, echo = FALSE, eval = TRUE}
+sigGeneSets <- read.table(file.path("Glioblastoma/MOTL_results/", "SigGeneSets_Case_vs_Normal.csv"), header = TRUE, sep = ",")
+```
+
+Gene set enrichment analysis was performed on differential active factors that capture variation in mRNA data, using Reactome, GO::CC, GO:BP and KEGG. It found for ``r length(unique(sigGeneSets$k))`` factors, ``r length(unique(sigGeneSets[sigGeneSets$padj <= 0.01, "pathway"]))`` processes and pathways.
+
+```{r gsea-8, eval = TRUE}
+sigGeneSets$GeneSet <- substr(sigGeneSets$pathway, 
+                             as.vector(regexpr(pattern = "_", sigGeneSets$pathway)) + 1, 
+                             nchar(sigGeneSets$pathway))
+sigGeneSets$GeneSet <- str_replace_all(sigGeneSets$GeneSet, "_", " ")
+```
+
+```{r gsea-9, eval = TRUE}
+sigGeneSets$FactorNum <- paste0("0", substr(sigGeneSets$k, 7, nchar(sigGeneSets$k)))
+sigGeneSets$FactorNum <- substr(sigGeneSets$FactorNum,
+                                nchar(sigGeneSets$FactorNum) - 1,
+                                nchar(sigGeneSets$FactorNum))
+```
+
+Make files for plots
+```{r gsea-12, eval = TRUE}
+orsum_dir <- "Glioblastoma/orsum/"
+if(!dir.exists(orsum_dir)){
+  dir.create(orsum_dir, showWarnings = FALSE, recursive = TRUE)
+}
+```
+
+```{r gsea-13, message = FALSE, warning = FALSE, eval = FALSE}
+SCsToExport <- unique(sigGeneSets$subcategory)
+
+lapply(SCsToExport, function(SC, sigGeneSets){
+    SigGeneSets_SC <- sigGeneSets[sigGeneSets$subcategory == SC,]
+    FactorsToExport <- unique(sigGeneSets$FactorNum)
+    lapply(FactorsToExport, createOrsumInputFile, SigGeneSets_SC, SC)
+}, sigGeneSets)
+```
+
+Files are downloaded from the [msidgb website](https://data.broadinstitute.org/gsea-msigdb/msigdb/release/2024.1.Hs/).
+Import and tidy gmt files. They are saved into the `Glioblastoma/orsum/` folder.
+
+```{r, message = FALSE, warning = FALSE, eval = FALSE}
+gmt_inputs <- list.files(path = orsum_dir, pattern = "*.gmt")
+
+lapply(gmt_inputs, function(gmt_file){
+    gmt <- GSA.read.gmt(file.path(orsum_dir, gmt_file))
+    gmt$geneset.descriptions <- 
+        substr(gmt$geneset.descriptions,
+               as.vector(regexpr(pattern = "_",
+                                 gmt$geneset.descriptions)) + 1,
+                                 nchar(gmt$geneset.descriptions))
+    gmt_out_rows <- length(gmt$genesets)
+    gmt_out_cols <- max(do.call("rbind", lapply(gmt$genesets, length))) + 2
+    gmt_out <- matrix("", nrow = gmt_out_rows, ncol = gmt_out_cols)
+    gmt_out[,1] <- gmt$geneset.names
+    gmt_out[,2] <- gmt$geneset.descriptions
+    for (i in 1:gmt_out_rows){
+        for (j in 1:length(gmt$genesets[[i]])){
+            gmt_out[i, j+2] = gmt$genesets[[i]][j]
+        }
+    }
+    write.table(gmt_out, file.path(orsum_dir, 
+                                   paste0('adj_', gmt_file)),
+                sep = "\t", quote = FALSE, col.names = FALSE, row.names = FALSE)
+    
+})
+```
+
+In terminal, commands to run orsum 
+
+On KEGG database
+```{bash}
+orsum.py --gmt "adj_c2.cp.kegg_legacy.v2026.1.Hs.symbols.gmt" 
+--files "CP_KEGG_01.txt" "CP_KEGG_02.txt" "CP_KEGG_05.txt" "CP_KEGG_06.txt" 
+"CP_KEGG_26.txt" "CP_KEGG_39.txt" "CP_KEGG_40.txt" "CP_KEGG_48.txt" 
+"CP_KEGG_63.txt" --fileAliases "MOTL_01" "MOTL_02" "MOTL_05" "MOTL_06" 
+"MOTL_26" "MOTL_39" "MOTL_40" "MOTL_48" "MOTL_63" --outputFolder KEGGresults 
+--maxRepSize 2000 --maxTermSize 3000 --minTermSize 15 --numberOfTermsToPlot 30
+```
+
+```{r, echo = FALSE, fig.cap = "KEGG orsum results picture", out.width = "100%", eval = TRUE, fig.align = "center"}
+knitr::include_graphics("Glioblastoma/orsum/KEGGresults/Heatmap.png")
+```
+
+On Reactome database
+```{bash}
+orsum.py --gmt "adj_c2.cp.reactome.v2026.1.Hs.symbols.gmt" 
+--files "CP_REACTOME_01.txt" "CP_REACTOME_02.txt" "CP_REACTOME_05.txt" 
+"CP_REACTOME_06.txt" "CP_REACTOME_25.txt" "CP_REACTOME_26.txt" 
+"CP_REACTOME_39.txt" "CP_REACTOME_40.txt" "CP_REACTOME_43.txt" 
+"CP_REACTOME_48.txt" "CP_REACTOME_63.txt" --fileAliases "MOTL_01" "MOTL_02" 
+"MOTL_05" "MOTL_06" "MOTL_25" "MOTL_26" "MOTL_39" "MOTL_40" "MOTL_43" "MOTL_48" 
+"MOTL_63" --outputFolder REACTOMEresults --maxRepSize 2000 --maxTermSize 3000 
+--minTermSize 15 --numberOfTermsToPlot 30
+```
+
+```{r, echo = FALSE, fig.cap = "Reactome orsum results picture", out.width = "100%", eval = TRUE, fig.align = "center"}
+knitr::include_graphics("Glioblastoma/orsum/REACTOMEresults/Heatmap.png")
+```
+
+GO CC and BP
+```{bash}
+orsum.py --gmt "adj_c5.go.bp.v2026.1.Hs.symbols.gmt" --files "GO_BP_01.txt" 
+"GO_BP_02.txt" "GO_BP_05.txt" "GO_BP_06.txt" "GO_BP_25.txt" "GO_BP_26.txt" 
+"GO_BP_39.txt" "GO_BP_40.txt" "GO_BP_43.txt" "GO_BP_48.txt" "GO_BP_63.txt" 
+--fileAliases "MOTL_01" "MOTL_02" "MOTL_05" "MOTL_06" "MOTL_25" "MOTL_26" 
+"MOTL_39" "MOTL_40" "MOTL_43" "MOTL_48" "MOTL_63" --outputFolder BPresults 
+--maxRepSize 2000 --maxTermSize 3000 --minTermSize 15 --numberOfTermsToPlot 30
+
+orsum.py --gmt "c5.go.cc.v2026.1.Hs.symbols.gmt" --files "GO_CC_01.txt" 
+"GO_CC_02.txt" "GO_CC_05.txt" "GO_CC_06.txt" "GO_CC_25.txt" "GO_CC_26.txt" 
+"GO_CC_39.txt" "GO_CC_40.txt" "GO_CC_43.txt" "GO_CC_48.txt" "GO_CC_63.txt" 
+--fileAliases "MOTL_01" "MOTL_02" "MOTL_05" "MOTL_06" "MOTL_25" "MOTL_26" 
+"MOTL_39" "MOTL_40" "MOTL_43" "MOTL_48" "MOTL_63" --outputFolder CCresults 
+--maxRepSize 2000 --maxTermSize 3000 --minTermSize 15 --numberOfTermsToPlot 30
+```
+
+```{r, echo = FALSE, fig.cap = "GO BP and CC orsum results picture"}
+knitr::include_graphics("Glioblastoma/orsum/BPresults/Heatmap.png")
+knitr::include_graphics("Glioblastoma/orsum/CCresults/Heatmap.png")
 ```
 
 ## Z matrix analysis

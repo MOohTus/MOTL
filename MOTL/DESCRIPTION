@@ -43,7 +43,9 @@ Suggests:
     msigdbr,
     ggplot2,
     pheatmap,
-    RColorBrewer
+    RColorBrewer,
+    stringr,
+    GSA
 VignetteBuilder: 
     knitr
 biocViews: DimensionReduction, FeatureExtraction, Bayesian, Normalization
