@@ -894,7 +894,7 @@ orsum.py --gmt "c5.go.cc.v2026.1.Hs.symbols.gmt" --files "GO_CC_01.txt"
 --maxRepSize 2000 --maxTermSize 3000 --minTermSize 15 --numberOfTermsToPlot 30
 ```
 
-```{r, echo = FALSE, fig.cap = "GO BP and CC orsum results picture"}
+```{r, echo = FALSE, fig.cap = "GO BP and CC orsum results picture", eval = TRUE}
 knitr::include_graphics("Glioblastoma/orsum/BPresults/Heatmap.png")
 knitr::include_graphics("Glioblastoma/orsum/CCresults/Heatmap.png")
 ```
