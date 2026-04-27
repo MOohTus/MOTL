@@ -11,7 +11,7 @@ TCGATargetDataPreparation(
   SS,
   Fctrzn,
   smpls,
-  normalization = "Lrn",
+  normalization = FALSE,
   expdat_meta_Lrn,
   transformation = TRUE
 )
@@ -35,14 +35,14 @@ for each view. Each dataframe contains at least one column named "brcds"
 \item{smpls}{a vector of sample names (i.e. column names of the
 \code{YTrgFull})}
 
-\item{normalization}{if FALSE, no normalization. If "Lrn", normalization
-using the learning GeoMeans. If "Trg", normalization without learning
-GeoMeans. By default it's set to "Lrn".}
+\item{normalization}{if FALSE, no normalization. If "LrnGeoMeans", normalization
+using the learning Geometric means. If "newGeoMeans", normalization with
+target Geometric means. By default it's set to "FALSE".}
 
 \item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 
 \item{transformation}{if FALSE, no transformation. If TRUE, log2
-transformation of counts data. By default it's set to TRUE}
+transformation of counts data. By default it's set to "FALSE"}
 }
 \value{
 list of prepared subset data for the current subset number
@@ -71,10 +71,10 @@ Finally, counts data (e.g. mRNA and miRNA) can be normalized and/or
 transformed using \code{\link{preprocessCountsData}} function.
 \itemize{
 \item if \code{normalization = FALSE}: counts data are not normalized
-\item if \code{normalization = "Lrn"}: counts data are normalized using
-the learning dataset geomeans calculated
-\item if \code{normalization = "Trg"}: counts data are normalized without
-the learning dataset geomeans.
+\item if \code{normalization = "LrnGeoMeans"}: counts data are normalized using
+the learning dataset Geometric means calculated
+\item if \code{normalization = "newGeoMeans"}: counts data are normalized using the
+geometric means calculated on the target dataset.
 }
 
 Normalization is performed in the \code{\link{countsNormalization}}
@@ -83,7 +83,7 @@ function using \code{\link{estimateSizeFactors}} from
 \code{\link{countsTransformation}} with a log2 transformation.
 
 Look \code{\link{GeoMeans_Lrn_init}} and \code{\link{GeoMeanFun}} to see
-how learning GeoMeans are calculated.
+how learning Geometric means are calculated.
 }
 \examples{
 # see to create input data
@@ -94,7 +94,7 @@ YTrg_prep <- TCGATargetDataPreparation(views,
                                         SS,
                                         Fctrzn,
                                         smpls,
-                                        normalization = "Lrn",
+                                        normalization = "LrnGeoMeans",
                                         expdat_meta_Lrn,
                                         transformation = TRUE)
 YTrg_prep$mRNA[c(1:5), c(1:5)]

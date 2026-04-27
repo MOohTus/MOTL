@@ -13,7 +13,8 @@ WSq_calculation(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE)
 
 \item{LrnFctrnDir}{directory where \code{WSq} values are saved}
 
-\item{LrnSimple}{if TRUE, calculates the squared weight values \code{WSq}
+\item{LrnSimple}{if TRUE, calculates the squared weight values \code{WSq}.
+If FALSE, imports values from a .csv file. By default is set to "TRUE".
 \eqn{E[W^2]} using the weight values \code{W} \eqn{E[W]}.
 If FALSE, load squared weight values from a file. By default, it's set to TRUE.}
 }

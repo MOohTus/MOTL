@@ -2,13 +2,14 @@
 
 GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
     #'
-    #' Retrieve the GeoMeans calculated for the learning dataset during counts normalization
+    #' Retrieve the Geometric means calculated for the learning dataset during
+    #' counts normalization
     #'
     #' @param view current view data name
     #' @param expdat_meta_Lrn list of learning dataset factorization metadata
     #' @param YTrgFtrs feature names of the current view
     #'
-    #' @returns precalculated GeoMeans of the learning dataset
+    #' @returns precalculated Geometric means of the learning dataset
     #'
     #' @examples
     #'
@@ -51,23 +52,22 @@ countsNormalization <- function(expdat, GeoMeans) {
     #'
     #' Normalize counts data using DESeq2 normalization.
     #' Two ways of normalization:
-    #' 1. Use the precalculated GeoMeans of the learning dataset
-    #' 2. Use calculated GeoMeans of the \code{expdat} dataset givne in input
+    #' 1. Use the pre-calculated Geometric means of the learning dataset
+    #' 2. Use calculated Geometric means of the \code{expdat} dataset given in input
     #'
     #' If \code{is.numeric(GeoMeans) == TRUE}, input data are normalized with
-    #' pre-calculated GeoMeans (from learning dataset).
-    #' If non values are provided, GeoMeans is calculated on the input dataset
+    #' pre-calculated Geometric means (from learning dataset).
+    #' If non values are provided, Geometric means is calculated based on the input dataset
     #' using \code{\link{GeoMeanFun}} function.
-    #' Then, the input dataset is normalized using these GeoMeans
-    #'
+    #' Then, the input dataset is normalized using these Geometric means.
     #'
     #' @param expdat SE object of experimental data (could be miRNA or mRNA)
-    #' @param GeoMeans if it's a character, GeoMeans will be calculated for the
+    #' @param GeoMeans if it's a character, Geometric means will be calculated for the
     #' \code{expdat} variable given in input (learning or target dataset).
-    #' If it's a numerical vector, given GeoMeans will be used for
+    #' If it's a numerical vector, given Geometric means will be used for
     #' the normalization (the ones pre-calculated from the learning dataset)
     #'
-    #' @returns list of data.frame of the counts normalized and GeoMeans
+    #' @returns list of data.frame of the counts normalized and Geometric means
     #' calculated
     #'
     #' @import DESeq2
@@ -78,7 +78,7 @@ countsNormalization <- function(expdat, GeoMeans) {
     #'
     #' @export
 
-    ## create deseq object
+    ## Create DESeq object
     expdat_dds <- DESeqDataSet(expdat, design = ~1)
 
     if(is.numeric(GeoMeans)){
@@ -93,14 +93,14 @@ countsNormalization <- function(expdat, GeoMeans) {
     expdat_counts_norm <-
         list("counts" = counts(expdat_dds_norm, normalized = TRUE))
 
-    ## Save GeoMeans
+    ## Save Geometric means
     expdat_counts_norm$GeoMeans <- GeoMeans
 
     return(expdat_counts_norm)
 }
 
 countsTransformation <- function(expdat_count, TopD) {
-    #' Log2 Transform and select top data based on variance
+    #' Log2 transform and select top data based on variance
     #'
     #' @param expdat_count data.frame of the counts
     #' @param TopD number of features to keep
@@ -134,7 +134,7 @@ preprocessCountsData <- function(view,
     #' Counts data (i.e. mRNA and miRNA) can be normalized and/or transformed.
     #'
     #' Normalization is performed using the \code{\link{countsNormalization}}
-    #' function with precalculated GeoMeans or new calculated GeoMeans.
+    #' function with pre-calculated or new calculated Geometric means.
     #'
     #' Transformation is performed using the \code{\link{countsTransformation}}
     #' function with log2.
@@ -143,8 +143,8 @@ preprocessCountsData <- function(view,
     #' @param YTrg_list a named list of target data. Names correspond to the
     #' defined views. The list contains matrices.
     #' @param normalization if FALSE, no normalization. If "LrnGeoMeans",
-    #' normalization using the precalculated GeoMeans. If "newGeoMeans",
-    #' normalization using GeoMeans from dataset. By default, it's set to FALSE.
+    #' normalization using the pre-calculated Geometric means. If "newGeoMeans",
+    #' normalization using Geometric means from dataset. By default, it's set to FALSE.
     #' @param expdat_meta_Lrn the list of learning set factorization metadata
     #' @param transformation if FALSE, no transformation. If TRUE, log2
     #' normalization.
@@ -153,7 +153,7 @@ preprocessCountsData <- function(view,
     #'
     #' @examples
     #' mRNA <- preprocessCountsData(view = "mRNA", YTrg_list = YTrg_list,
-    #'                            normalization = "Trg",
+    #'                            normalization = "newGeoMeans",
     #'                            expdat_meta_Lrn = expdat_meta_Lrn,
     #'                            transformation = TRUE)
     #'
@@ -164,43 +164,34 @@ preprocessCountsData <- function(view,
     YTrg <- YTrg_list[[view]]
 
     if (view %in% c("mRNA", "miRNA")) {
-        ## print(view)
-
         ## Normalization
-        ## if Lrn, retreive the learning set geomeans and normalize with it
-        ## if Trg, normalize without using precalculated geomeans
+        ## if "LrnGeoMeans", retrieve the learning set geometric means and normalize with it
+        ## if "newGeoMeans", calculate the Geometric means of the input data
         if (is.character(normalization)) {
             if (normalization == "LrnGeoMeans") {
-                ## print("Normalize with the Learning set GeoMeans")
-                message("Normalize using the pre-calculated learning dataset GeoMeans")
+                message("Normalize using the pre-calculated learning dataset Geometric means")
                 GeoMeans <-
                     GeoMeans_Lrn_init(view, expdat_meta_Lrn, rownames(YTrg))
             }
             if (normalization == "newGeoMeans") {
-                ## print("Normalize without GeoMeans")
-                message("Calculate GeoMeans during the normalization")
+                message("Calculate Geometric means during the normalization")
                 GeoMeans <- normalization
             }
             YTrg <- SummarizedExperiment::SummarizedExperiment(assays = list(YTrg))
             YTrg <- countsNormalization(expdat = YTrg, GeoMeans = GeoMeans)
             YTrg <- YTrg$counts
         } else {
-            ## print("No normalization")
             message("No normalization")
         }
 
         ## Transformation
         if (transformation) {
-            ## print("Log transform data")
             message("Log transform data")
             YTrg <- countsTransformation(expdat_count = YTrg, TopD = nrow(YTrg))
         } else {
-            ## print("No transformation")
             message("No transformation")
         }
     }
-
-    ## Return
     return(YTrg)
 }
 
@@ -219,15 +210,20 @@ TargetDataPreparation <- function(views,
     #' 2. Normalize and/or transform counts data
     #'
     #'
-    #' Preparation of data consists on removing features with variance equal to
-    #' zero, features harmonization between target and learning data and column
-    #' ordering between views. Preparation is perform using the
-    #' \code{\link{TargetDataPrefiltering}} function. See the doc for more
-    #' details.
+    #' Preparation of data consists on
+    #'
+    #' - removing features with variance equal to zero
+    #' - features harmonization between target and learning data
+    #' - column ordering between views.
+    #'
+    #' Preparation is perform using the
+    #' \code{\link{TargetDataPrefiltering}} function. See the documentation
+    #' for more details.
     #'
     #' It could be possible to normalize and or transform counts data using the
     #' \code{\link{preprocessCountsData}} function. Normalization can be done
-    #' using GeoMeans and transformation is a log2 transformation of the counts.
+    #' using Geometric means (from learning or target dataset) and transformation
+    #' is a log2 transformation of the counts.
     #'
     #' @param views a list of target data views (e.g. \code{c("mRNA", "miRNA")})
     #' @param YTrg_list a named list of target set data. Names correspond to the
@@ -235,9 +231,9 @@ TargetDataPreparation <- function(views,
     #' @param Fctrzn the learning factorization model object (from \code{MOFA})
     #' @param smpls a vector of sample names (i.e. column names of the
     #' \code{YTrgFull})
-    #' @param normalization if FALSE, no normalization. If "Lrn", normalization
-    #' using the learning GeoMeans. If "Trg", normalization without learning
-    #' GeoMeans. By default it's set to FALSE.
+    #' @param normalization if FALSE, no normalization. If "LrnGeoMeans", normalization
+    #' using the learning Geometric means. If "newGeoMeans", Geometric means are
+    #' calculated using the input data. By default it's set to FALSE.
     #' @param expdat_meta_Lrn the list of learning set factorization metadata
     #' @param transformation if FALSE, no transformation. If TRUE, log2
     #' transformation of counts data. By default it's set to FALSE.
@@ -258,12 +254,10 @@ TargetDataPreparation <- function(views,
     names(views) <- views
 
     ## Feature variance prefiltering and feature harmonization
-    ## print("Feature prefiltering")
     message("Feature prefiltering")
     YTrg <- lapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
 
     ## Normalization and transformation
-    ## print("Normalization and transformation")
     message("Normalization and transformation")
     YTrg <- lapply(
         views,
@@ -295,11 +289,9 @@ initTransferLearningParamaters <- function(YTrg,
     #' are transposed.
     #'
     #' Each parameter are extracted from the \code{Fctrzn} model created using
-    #' \code{\link{MOFA2}}. More details.
+    #' \code{\link{MOFA2}}.
     #'
     #' \code{YTrg} matrices should have the same columns order.
-    #'
-    #' Define what is each returned parameters?
     #'
     #' @param YTrg a named list of target dataset matrices. Names correspond to the
     #' defined views.
@@ -342,7 +334,6 @@ initTransferLearningParamaters <- function(YTrg,
     YTrgFtrs <- lapply(YTrg, rownames)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX ZERO
-    ## print("Factorized learning set weight intercepts")
     message("Factorized learning set weight intercepts")
     Fctrzn_Lrn_W0 <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_W0 <- Fctrzn@expectations[["W0"]][[view]]
@@ -354,7 +345,6 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrgFtrs)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX
-    ## print("Factorized learning set weights")
     message("Factorized learning set weights")
     Fctrzn_Lrn_W <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_W <- Fctrzn@expectations[["W"]][[view]]
@@ -366,7 +356,6 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrgFtrs)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX SQUARED
-    ## print("Factorized learning set squared weights")
     message("Factorized learning set squared weights")
     Fctrzn_Lrn_WSq <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_WSq <- Fctrzn@expectations[["WSq"]][[view]]
@@ -378,7 +367,6 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrgFtrs)
 
     ## TAU PARAMETER
-    ## print("Tau")
     message("Tau")
     Tau <- lapply(views, function(view, Fctrzn, YTrg, YTrgFtrs) {
         Tau <- Fctrzn@expectations[["Tau"]][[view]]$group0
@@ -396,7 +384,6 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrg, YTrgFtrs)
 
     ## LOG TAU PARAMETER
-    ## print("LOG Tau")
     message("LOG Tau")
     TauLn <- lapply(views, function(view,
                                     likelihoods,
@@ -421,12 +408,12 @@ initTransferLearningParamaters <- function(YTrg,
         return(TauLn)
     }, likelihoods, Fctrzn, YTrg, YTrgFtrs)
 
-    ## transpose matrices where necessary - to make them samples x features
+    ## Transpose matrices where necessary - to make them samples x features
     YTrg <- lapply(YTrg, t)
     Tau <- lapply(Tau, t)
     TauLn <- lapply(TauLn, t)
 
-    ## return
+    ## Return
     TL_param <- list(
         "YTrg" = YTrg,
         "Fctrzn_Lrn_W0" = Fctrzn_Lrn_W0,
@@ -452,7 +439,7 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     #' 2. Remove features with variance equal to zero
     #' 3. Match features between target data set and learning data set
     #'
-    #' The function return a prefiltered target dataframe for the current view.
+    #' The function return a pre-filtered target dataframe for the current view.
     #'
     #' @param view a character of current view name data
     #' @param brcds_SS a list of sample names for each view. The list is named
@@ -492,13 +479,10 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     #'
     #' @export
 
-    ## print(view)
-
     ## select samples and subset the YTrg
     brcds <- brcds_SS[[paste0("brcds_", view, "_SS")]][[SS]]
     SmplsKeep <- is.element(colnames(YTrgFull[[view]]), brcds$brcds)
     YTrgSS <- YTrgFull[[view]][, SmplsKeep]
-    ## print(paste0("YTrgSS dimensions: ", dim(YTrgSS)))
 
     ## prefiltering, only condition is that variance >0
     if (is.element(view, c("mRNA", "DNAme", "miRNA"))) {
@@ -509,7 +493,6 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     }
     FtrsKeep[is.na(FtrsKeep)] <- FALSE
     YTrgSS <- YTrgSS[FtrsKeep, ]
-    ## print(paste0("YTrgSS dimensions after prefiltering: ", dim(YTrgSS)))
 
     ## harmonize features between Trg SS and Lrn data
     features_metadata <- Fctrzn@features_metadata
@@ -528,7 +511,7 @@ TCGATargetDataPreparation <- function(views,
                                       SS,
                                       Fctrzn,
                                       smpls,
-                                      normalization = "Lrn",
+                                      normalization = FALSE,
                                       expdat_meta_Lrn,
                                       transformation = TRUE) {
     #'
@@ -554,10 +537,10 @@ TCGATargetDataPreparation <- function(views,
     #' Finally, counts data (e.g. mRNA and miRNA) can be normalized and/or
     #' transformed using \code{\link{preprocessCountsData}} function.
     #' - if \code{normalization = FALSE}: counts data are not normalized
-    #' - if \code{normalization = "Lrn"}: counts data are normalized using
-    #' the learning dataset geomeans calculated
-    #' - if \code{normalization = "Trg"}: counts data are normalized without
-    #' the learning dataset geomeans.
+    #' - if \code{normalization = "LrnGeoMeans"}: counts data are normalized using
+    #' the learning dataset Geometric means calculated
+    #' - if \code{normalization = "newGeoMeans"}: counts data are normalized using the
+    #' geometric means calculated on the target dataset.
     #'
     #' Normalization is performed in the \code{\link{countsNormalization}}
     #' function using \code{\link{estimateSizeFactors}} from
@@ -565,7 +548,7 @@ TCGATargetDataPreparation <- function(views,
     #' \code{\link{countsTransformation}} with a log2 transformation.
     #'
     #' Look \code{\link{GeoMeans_Lrn_init}} and \code{\link{GeoMeanFun}} to see
-    #' how learning GeoMeans are calculated.
+    #' how learning Geometric means are calculated.
     #'
     #' @param views a list of target data views (e.g. \code{c("mRNA", "miRNA")})
     #' @param YTrgFull a named list of target set data. Names correspond to the
@@ -579,12 +562,12 @@ TCGATargetDataPreparation <- function(views,
     #' @param Fctrzn the learning factorization model object (from \code{MOFA})
     #' @param smpls a vector of sample names (i.e. column names of the
     #' \code{YTrgFull})
-    #' @param normalization if FALSE, no normalization. If "Lrn", normalization
-    #' using the learning GeoMeans. If "Trg", normalization without learning
-    #' GeoMeans. By default it's set to "Lrn".
+    #' @param normalization if FALSE, no normalization. If "LrnGeoMeans", normalization
+    #' using the learning Geometric means. If "newGeoMeans", normalization with
+    #' target Geometric means. By default it's set to "FALSE".
     #' @param expdat_meta_Lrn the list of learning set factorization metadata
     #' @param transformation if FALSE, no transformation. If TRUE, log2
-    #' transformation of counts data. By default it's set to TRUE
+    #' transformation of counts data. By default it's set to "FALSE"
     #'
     #' @returns list of prepared subset data for the current subset number
     #'
@@ -597,7 +580,7 @@ TCGATargetDataPreparation <- function(views,
     #'                                         SS,
     #'                                         Fctrzn,
     #'                                         smpls,
-    #'                                         normalization = "Lrn",
+    #'                                         normalization = "LrnGeoMeans",
     #'                                         expdat_meta_Lrn,
     #'                                         transformation = TRUE)
     #' YTrg_prep$mRNA[c(1:5), c(1:5)]
@@ -623,8 +606,6 @@ TCGATargetDataPreparation <- function(views,
     #' # \link{https://github.com/david-hirst/MOTL/blob/main/TCGAStudy/00_TCGAstudy_ReadMe.md}
     #'
     #' @export
-
-    ## print("Feature prefiltering")
 
     names(views) <- views
 
@@ -654,7 +635,6 @@ TCGATargetDataPreparation <- function(views,
     }, YTrgSSFull, smpls)
 
     ## Normalization and transformation
-    ## print("Normalization and transformation")
     YTrgSSFull <- lapply(
         views,
         preprocessCountsData,
@@ -818,8 +798,6 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     return(Tau)
 }
 
-## MT - maybe change name into TauLn_init ?
-## MT - view = viewsLrn ?
 TauLn_calculation <- function(view,
                               likelihoodsLrn,
                               Fctrzn,
@@ -842,7 +820,7 @@ TauLn_calculation <- function(view,
     #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
     #' type. Names are the view names.
     #' @param LrnSimple if TRUE, initialization uses the Tau values. If FALSE,
-    #' imports values from a .csv file.
+    #' imports values from a .csv file. By default is set to "TRUE".
     #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
     #' @param LrnFctrnDir directory where log(Tau) values are saved. Files
     #' should be named like \code{"TauLn_mRNA.csv"}.
@@ -877,8 +855,6 @@ TauLn_calculation <- function(view,
     return(TauLn)
 }
 
-## MT - maybe change name into WSq_init ?
-## MT - explain LrnSimple input
 WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     #'
     #' Initialization of the squared weight values
@@ -896,7 +872,8 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     #'
     #'
     #' @param view a character of current view name data
-    #' @param LrnSimple if TRUE, calculates the squared weight values \code{WSq}
+    #' @param LrnSimple if TRUE, calculates the squared weight values \code{WSq}.
+    #' If FALSE, imports values from a .csv file. By default is set to "TRUE".
     #' \eqn{E[W^2]} using the weight values \code{W} \eqn{E[W]}.
     #' If FALSE, load squared weight values from a file. By default, it's set to TRUE.
     #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
@@ -927,7 +904,6 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     return(WSq)
 }
 
-## MT - maybe change name into W0_init ?
 W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     #'
     #' Initialization of feature weight intercept values
@@ -1009,7 +985,6 @@ intercepts_calculation <- function(expdat_meta,
     #' @export
     #'
 
-    ## print("Estimation of the intercept")
     message("Estimation of the intercept")
 
     fit_start_time <- Sys.time()
@@ -1047,9 +1022,6 @@ intercepts_calculation <- function(expdat_meta,
         expectations <- Fctrzn@expectations
         ZWTmp <- expectations$Z$group0 %*%
             t(expectations$W[[which(names(expectations$W) == view)]])
-
-        # mean(colnames(YTmp)==colnames(ZWTmp))
-        # mean(rownames(YTmp)==rownames(ZWTmp))
 
         invisible(gc())
 
@@ -1196,7 +1168,6 @@ intercepts_calculation <- function(expdat_meta,
         file.path(FctrznDir, "EstimatedIntercepts.rds")
     )
 
-    ## print("finished")
     message("finished")
 }
 

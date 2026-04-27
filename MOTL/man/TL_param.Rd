@@ -5,23 +5,25 @@
 \alias{TL_param}
 \title{Transfer learning parameters}
 \format{
-\code{YTrg}: list of the prepared input target dataset (mRNA,
-miRNA, DNAme, SNV). Samples are in columns and features are in rows.
-\code{Fctrzn_Lrn_W0}: list of 4 variables (mRNA, miRNA, DNAme and SNV).
-Each contains a W0 vector named with the corresponding feature names.
-\code{Fctrzn_Lrn_W}: list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
-SNV). Each contains factors in columns and features in rows.
-\code{Fctrzn_Lrn_WSq}: list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
-SNV). Each contains factors in columns and features in rows.
-\code{Tau}: list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
-SNV). Each contains features in columns.
-\code{TauLn}: list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
-SNV). Each contains features in columns.
-\code{ZVar}: \code{data.frame} with factors in columns.
-\code{ZMu}:  \code{data.frame} with factors in columns and samples in
-rows.
-\code{ZMu_0}: vector of numeric.
-\code{ZMuSq}: \code{data.frame} with factors in columns.
+\describe{
+\item{YTrg}{list of the prepared input target dataset (mRNA,
+miRNA, DNAme, SNV). Samples are in columns and features are in rows.}
+\item{Fctrzn_Lrn_W0}{list of 4 variables (mRNA, miRNA, DNAme and SNV).
+Each contains a W0 vector named with the corresponding feature names.}
+\item{Fctrzn_Lrn_W}{list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
+SNV). Each contains factors in columns and features in rows.}
+\item{Fctrzn_Lrn_WSq}{list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
+SNV). Each contains factors in columns and features in rows.}
+\item{Tau}{list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
+SNV). Each contains features in columns.}
+\item{TauLn}{list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
+SNV). Each contains features in columns.}
+\item{ZVar}{\code{data.frame} with factors in columns.}
+\item{ZMu}{\code{data.frame} with factors in columns and samples in
+rows.}
+\item{ZMu_0}{vector of numerics}
+\item{ZMuSq}{\code{data.frame} with factors in columns.}
+}
 }
 \usage{
 data("TL_param")

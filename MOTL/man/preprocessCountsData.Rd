@@ -19,8 +19,8 @@ preprocessCountsData(
 defined views. The list contains matrices.}
 
 \item{normalization}{if FALSE, no normalization. If "LrnGeoMeans",
-normalization using the precalculated GeoMeans. If "newGeoMeans",
-normalization using GeoMeans from dataset. By default, it's set to FALSE.}
+normalization using the pre-calculated Geometric means. If "newGeoMeans",
+normalization using Geometric means from dataset. By default, it's set to FALSE.}
 
 \item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 
@@ -35,14 +35,14 @@ Counts data (i.e. mRNA and miRNA) can be normalized and/or transformed.
 }
 \details{
 Normalization is performed using the \code{\link{countsNormalization}}
-function with precalculated GeoMeans or new calculated GeoMeans.
+function with pre-calculated or new calculated Geometric means.
 
 Transformation is performed using the \code{\link{countsTransformation}}
 function with log2.
 }
 \examples{
 mRNA <- preprocessCountsData(view = "mRNA", YTrg_list = YTrg_list,
-                           normalization = "Trg",
+                           normalization = "newGeoMeans",
                            expdat_meta_Lrn = expdat_meta_Lrn,
                            transformation = TRUE)
 

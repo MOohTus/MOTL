@@ -34,7 +34,7 @@ This function performs a prefiltering analysis through the steps:
 }
 }
 \details{
-The function return a prefiltered target dataframe for the current view.
+The function return a pre-filtered target dataframe for the current view.
 }
 \examples{
 
