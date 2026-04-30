@@ -2,7 +2,7 @@
 % Please edit documentation in R/MOTL_functions.R
 \name{ZMu_calculation}
 \alias{ZMu_calculation}
-\title{Z mu calculation for the current data}
+\title{Z matrix \code{ZMu} calculation for the current data}
 \usage{
 ZMu_calculation(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss)
 }
@@ -25,10 +25,10 @@ matrices}
 \item{YGauss}{list of pseudo Y value matrices}
 }
 \value{
-ZMu values for the current view
+ZMu values for the current view (Z matrix)
 }
 \description{
-Z mu calculation for the current data
+Z matrix \code{ZMu} calculation for the current data
 }
 \examples{
 

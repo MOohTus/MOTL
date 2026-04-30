@@ -4,6 +4,7 @@ output:
   BiocStyle::html_document:
     toc: true
     toc_depth: 2
+bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{UseCase_Glioblastoma}
   %\VignetteEngine{knitr::rmarkdown}
@@ -69,6 +70,10 @@ library("MOFA2")
 ```
 
 Helper functions created for this specific use case.
+
+<details>
+  <summary>**Functions**</summary>
+
 ```{r functions, eval = TRUE}
 mRNA_raw_import <- function(smpls, InRawCountsDir){
     #' Create a data frame of mRNA Glioblastoma counts
@@ -214,12 +219,22 @@ createOrsumInputFile <- function(Fct, SigGeneSets, SC){
 
 ```
 
-Example of real data analysis. You can find the entire analysis that you can retreive in the paper in the github paper. 
+</details>
+
+# Introduction
+
+This is an example of a real data analysis. You can find the entire analysis in the tool paper [@motl] and also on [Github](https://github.com/david-hirst/MOTL). You will have also the comparison with a direct MOFA (without transfer learning). 
+
+First, set the seed session to be able to reproduce the same results as thise user manual.
 
 ```{r setup, eval = TRUE}
 Seed <- 1234567
 set.seed(Seed)
 ```
+
+Glioblastoma is a rare and aggressive type of cancer. In a previous analysis [@glio], they integrated DNA methylation data with gene expression of four normal brain samples and nine patient-derived glioblastoma stem cell (pd-GBSC) cultures. The cancer samples has been previously classified into three subtypes (classical CL, proneural PN and mesenchymal MS).Due to the small number of samples, authors used in addition datasets from the literature. 
+
+Does MOTL could help in analyzing such datasets, with a small number of samples?
 
 # Import Glioblastoma dataset
 
@@ -947,3 +962,21 @@ pheatmap(Zmu_MOTL,
 ```
 
 The heatmap clustering of the factors inferred with MOTL, separates cancer (in orange) and normal (in green) samples. We can also see subgroups that partially match cancer subtypes, the ones defined based on transcriptome signatures.
+
+# Session info
+
+<details>
+  <summary>**Session Info**</summary>
+
+```{r, eval = TRUE}
+sessionInfo()
+```
+
+</details>
+
+# References
+
+---
+nocite: |
+  @MOFA2
+---

@@ -36,11 +36,13 @@ the \code{EstimatedIntercepts.rds} file. If TRUE, use the feature weight means.}
 pseudo Y values for the current view
 }
 \description{
-For gaussian data this is just the (centered) Y values which are fixed
-For non gaussian these are transformed y values that change after each
-update of z the y pseudo values are centered at each step if the
-centering option is selected.
-For gaussian data this is done for It>=0, for others it is It>0
+For gaussian data, Y values (observed data) are centered
+(if \code{CenterTrg = TRUE}) and will not change.
+For non gaussian, Y values are transformed and change after each
+update of Z matrix. The Y pseudo values are centered at each step if
+\code{CenterTrg = TRUE}.
+For gaussian data this is done for each iteration \code{It>=0}, for others
+it is done for each iteration, exept the first one \code{It>0}.
 }
 \examples{
 view = "mRNA"
@@ -50,6 +52,5 @@ likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
 YGauss <- YGauss_calculation(view = view,
                                likelihoods = likelihoods,
                                YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
-
 
 }

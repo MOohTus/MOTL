@@ -2,7 +2,7 @@
 % Please edit documentation in R/MOTL_functions.R
 \name{E_ZE_W_update}
 \alias{E_ZE_W_update}
-\title{Calculate \eqn{E[Z]E[W]}}
+\title{Calculate \code{E_ZE_W}}
 \usage{
 E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
 }
@@ -19,10 +19,11 @@ matrices}
 \item{Fctrzn_Lrn_W}{list of factorized learning set weight matrices}
 }
 \value{
-\eqn{E[Z]E[W]} for current view
+\code{E_ZE_W} for current view
 }
 \description{
-Calculate \eqn{E[Z]E[W]}
+\code{E_ZE_W} is the multiplication of the expected values of Z matrix with the
+expected values of W matrix \eqn{E[Z]E[W]}.
 }
 \examples{
 

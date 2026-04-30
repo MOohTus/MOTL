@@ -13,9 +13,11 @@ Zeta_calculation(view, likelihoods, E_ZWSq, E_ZE_W)
 \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
 type. Names are the view names.}
 
-\item{E_ZWSq}{expected values of\eqn{E[(ZW)^2]}}
+\item{E_ZWSq}{expected values of the multiplication of the Z matrix with
+weight squared W matrix.}
 
-\item{E_ZE_W}{\eqn{E[Z]E[W]}}
+\item{E_ZE_W}{multiplication of the expected values of Z matrix with the
+expected values of W matrix}
 }
 \value{
 Zeta matrix for the current data view
@@ -24,7 +26,17 @@ Zeta matrix for the current data view
 For the current data view, calculate the Zeta matrix \code{Zeta}.
 }
 \details{
-
+\describe{
+\item{For bernoulli data, Zeta is calculated using the expected values
+of Z matrix and W squared matrix \code{E_ZWSq}. \code{E_ZWSq} is calculated
+using the \code{\link{E_ZWSq_update}} function.}{\eqn{Zeta_{nd}
+     = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}}
+\item{For other data type, Zeta is calculated using the expected values
+of Z matrix and the expected values of W matrix \code{E_ZE_W}. \code{E_ZE_W}
+is calculated using the \code{\link{E_ZE_W_update}}
+function.}{\eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]}, so
+\eqn{Zeta = ZMu \%*\% t(W)}}
+}
 }
 \examples{
 view <- "mRNA"

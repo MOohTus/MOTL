@@ -13,21 +13,19 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     #'      = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}}
     #'      \item{For other data type, Zeta is calculated using the expected values
     #'      of Z matrix and the expected values of W matrix \code{E_ZE_W}. \code{E_ZE_W}
-    #'      is calculated using the \code{\link{E_ZE_W_update}} function.}{\eqn{Zeta_{nd} =
-    #'      E[\sum_{k} z_{n,k} w_{d,k}]}; So \eqn{Zeta = ZMu %*% t(W)}}
+    #'      is calculated using the \code{\link{E_ZE_W_update}}
+    #'      function.}{\eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]}, so
+    #'      \eqn{Zeta = ZMu \%*\% t(W)}}
     #' }
-    #'
-    #' Zeta values used for non-gaussian data
-    #' for poisson
-    #' \eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]} so \eqn{Zeta = ZMu %*% t(W)}
-    #' for bernoulli \eqn{Zeta_{nd} = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}
     #'
     #' @param view a character of current view name data (e.g. \code{mRNA})
     #' @param likelihoods a named list of data types. The list can contain
     #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
     #' type. Names are the view names.
-    #' @param E_ZWSq expected values of\eqn{E[(ZW)^2]}
-    #' @param E_ZE_W \eqn{E[Z]E[W]}
+    #' @param E_ZWSq expected values of the multiplication of the Z matrix with
+    #' weight squared W matrix.
+    #' @param E_ZE_W multiplication of the expected values of Z matrix with the
+    #' expected values of W matrix
     #'
     #' @returns Zeta matrix for the current data view
     #'
@@ -62,12 +60,13 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
 
 Tau_calculation <- function(view, likelihoods, Zeta, Tau) {
     #'
-    #' Update Tau values
+    #' Update Tau values for the current view
     #'
-    #' Tau values are updated using Zeta values with the
-    #' following equation:
-    #' \eqn{Tau = (1/2)*(1/Zeta[[view]])*tanh(Zeta[[view]]/2)}
-    #' only for bernoulli data.
+    #' Tau values are updated only for bernoulli data.
+    #'
+    #' Tau values are updated using the following equation:
+    #'
+    #' \eqn{Tau = (\frac{1}{2})*(\frac{1}{Zeta[[view]]})*tanh(\frac{Zeta[[view]]}{2})}
     #'
     #' @param view a character of current view name data
     #' @param likelihoods a named list of data types. The list can contain
@@ -108,11 +107,13 @@ YGauss_calculation <- function(view,
     #'
     #' Initialize or update pseudo Y values (YGauss)
     #'
-    #' For gaussian data this is just the (centered) Y values which are fixed
-    #' For non gaussian these are transformed y values that change after each
-    #' update of z the y pseudo values are centered at each step if the
-    #' centering option is selected.
-    #' For gaussian data this is done for It>=0, for others it is It>0
+    #' For gaussian data, Y values (observed data) are centered
+    #' (if `CenterTrg = TRUE`) and will not change.
+    #' For non gaussian, Y values are transformed and change after each
+    #' update of Z matrix. The Y pseudo values are centered at each step if
+    #' `CenterTrg = TRUE`.
+    #' For gaussian data this is done for each iteration `It>=0`, for others
+    #' it is done for each iteration, exept the first one `It>0`.
     #'
     #' @param view a character of current view name data
     #' @param likelihoods a named list of data types. The list can contain
@@ -135,7 +136,6 @@ YGauss_calculation <- function(view,
     #' YGauss <- YGauss_calculation(view = view,
     #'                                likelihoods = likelihoods,
     #'                                YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
-    #'
     #'
     #' @export
 
@@ -160,8 +160,9 @@ ZVar_calculation <- function(view, Tau, Fctrzn_Lrn_WSq) {
     #'
     #' Calculation of the Z variances for the current data
     #'
-    #' Z variances using initialised / updated tau values and W^2 values
-    #' based on the appendix of the mofa paper and Github code
+    #' Z variances is calculation using initialized or updated Tau values
+    #' and the squared weight values WSq values
+    #' based on the appendix of the \link{MOFA2} paper and [Github code](https://github.com/bioFAM/MOFA2)
     #'
     #' @param view a character of current view name data
     #' @param Tau list of Tau matrices
@@ -182,7 +183,7 @@ ZVar_calculation <- function(view, Tau, Fctrzn_Lrn_WSq) {
 ZMu_calculation <-
     function(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss) {
         #'
-        #' Z mu calculation for the current data
+        #' Z matrix `ZMu` calculation for the current data
         #'
         #' @param view a character of current view name data
         #' @param k feature index in the current data
@@ -194,7 +195,7 @@ ZMu_calculation <-
         #' @param ZMu matrix of Z values
         #' @param YGauss list of pseudo Y value matrices
         #'
-        #' @returns ZMu values for the current view
+        #' @returns ZMu values for the current view (Z matrix)
         #'
         #' @examples
         #'
@@ -238,8 +239,10 @@ ELBO_calculation <-
         #' type. Names are the view names.
         #' @param Tau list of Tau matrices
         #' @param TauLn list of log(Tau) matrices
-        #' @param E_ZWSq \eqn{E[(ZW)^2]}
-        #' @param E_ZE_W \eqn{E[Z]E[W]}
+        #' @param E_ZWSq expected values of the multiplication of the Z matrix with
+        #' weight squared W matrix. See \code{\link{E_ZWSq_update}} function.
+        #' @param E_ZE_W multiplication of the expected values of Z matrix with the
+        #' expected values of W matrix. Seed \code{\link{E_ZE_W_update}} function.
         #' @param Zeta list of Zeta matrices
         #' @param YTrg list of data
         #' @param YGauss list of pseudo Y value matrices
@@ -298,7 +301,10 @@ ELBO_calculation <-
 
 E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
-    #' Calculate \eqn{E[Z]E[W]}
+    #' Calculate `E_ZE_W`
+    #'
+    #' `E_ZE_W` is the multiplication of the expected values of Z matrix with the
+    #' expected values of W matrix \eqn{E[Z]E[W]}.
     #'
     #' @param view current view name
     #' @param ZMu_0 vector of coefficients for weight intercepts
@@ -307,7 +313,7 @@ E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #' matrices
     #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
     #'
-    #' @returns \eqn{E[Z]E[W]} for current view
+    #' @returns `E_ZE_W` for current view
     #'
     #' @examples
     #'
@@ -323,7 +329,11 @@ E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
 
 E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
-    #' Calculate \eqn{((E[Z])^2)((E[W])^2)}
+    #' Calculate `E_Z_SqE_W_Sq`
+    #'
+    #' `E_Z_SqE_W_Sq` is the multiplication of the squared expected values of Z
+    #' matrix with the squared expected values of W matrix
+    #' \eqn{((E[Z])^2)*((E[W])^2)}.
     #'
     #' @param view current view name
     #' @param ZMu_0 vector of coefficients for weight intercepts
@@ -332,13 +342,12 @@ E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #' matrices
     #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
     #'
-    #' @returns \eqn{((E[Z])^2)((E[W])^2)} for current view
+    #' @returns `E_Z_SqE_W_Sq` for current view
     #'
     #' @examples
     #'
     #' E_Z_SqE_W_Sq <-
     #'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-    #'
     #'
     #' @export
 
@@ -351,7 +360,11 @@ E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
 E_ZSqE_WSq_update <-
     function(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq) {
         #'
-        #' Calculate \eqn{E[Z^2]E[W^2]}
+        #' Calculate `E_ZSqE_WSq`
+        #'
+        #' `E_ZSqE_WSq` is the multiplication of the expected values of the squared Z
+        #' matrix with the expected values of the squared W matrix
+        #' \eqn{E[Z^2]*E[W^2]}
         #'
         #' @param view current view name
         #' @param ZMu_0 vector of coefficients for weight intercepts
@@ -361,13 +374,12 @@ E_ZSqE_WSq_update <-
         #' @param Fctrzn_Lrn_WSq  list of factorized learning set weight squared
         #' matrices
         #'
-        #' @returns \eqn{E[Z^2]E[W^2]} for current view
+        #' @returns E_ZSqE_WSq for current view
         #'
         #' @examples
         #'
         #' E_ZSqE_WSq <-
         #'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-        #'
         #'
         #' @export
 
@@ -379,7 +391,10 @@ E_ZSqE_WSq_update <-
 
 E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
     #'
-    #' Calculate \eqn{E[(ZW)^2]}
+    #' Calculate `E_ZWSq`
+    #'
+    #' `E_ZWSq` is the expected values of the multiplication of the Z matrix with
+    #' weight squared W matrix \eqn{E[(ZW)^2]}.
     #'
     #' @param view current view name
     #' @param E_ZE_W matrix of \eqn{E[Z]E[W]} values for current view
@@ -387,12 +402,11 @@ E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
     #' @param E_Z_SqE_W_Sq matrix of \eqn{((E[Z])^2)((E[W])^2)} values for current view
     #' @param E_ZSqE_WSq matrix of \eqn{E[Z^2]E[W^2]} values for current view
     #'
-    #' @returns \eqn{E[(ZW)^2]} values for current view
+    #' @returns `E_ZWSq` values for current view
     #'
     #' @examples
     #'
     #' E_ZWSq <- E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
-    #'
     #'
     #' @export
 
@@ -418,7 +432,6 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     #'
     #' VarExpl <-
     #'     VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
-    #'
     #'
     #' @export
 
@@ -457,11 +470,9 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #' learning. The target dataset is factorized using the latent factor values
     #' inferred from the previous factorization of a learning dataset.
     #'
-    #'
     #' This function is called after target dataset is prepared (using
     #' \code{\link{TargetDataPreparation}}) and parameters initialized (using
     #' \code{\link{initTransferLearningParamaters}}).
-    #'
     #'
     #' \code{TL_param} is a named list of the initialized parameters and
     #' data objects for transfer learning. It contains :
@@ -564,7 +575,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
 
     ss_fit_start_time <- Sys.time()
 
-    ## RETREIVE PARAMETERS
+    ## RETRIEVE PARAMETERS
     YTrgSS <- TL_param$YTrg
     Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
     Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
@@ -588,7 +599,6 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
         # r2[g][m, k] = 1.0 - Res / SS as per paper
         BegK <- dim(Fctrzn_Lrn_W[[1]])[2]
         if ((BegK > minFactors) & (It > 1) & (It > StartDropFactor) & (((It - StartDropFactor - 1) %% FreqDropFactor) == 0)) {
-            ## print("Drop factors")
             message("Drop factors")
 
             VarExpl <- VarExplFun(views = views, YGauss = YGauss, ZMu_0 = ZMu_0, Fctrzn_Lrn_W0 = Fctrzn_Lrn_W0, ZMu = ZMu, Fctrzn_Lrn_W = Fctrzn_Lrn_W)
@@ -630,7 +640,6 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
         }
 
         if (It > 0) {
-            ## print("Zeta, Tau and YGauss")
             message("Zeta, Tau, YGauss")
 
             ## Zeta values used for non-gaussian data
@@ -644,14 +653,12 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
         }
 
         ## Z variances using initialised / updated tau values and W^2 values
-        ## print("Zeta")
         message("Zeta")
         ZVar <- Reduce("+", lapply(views, ZVar_calculation, Tau, Fctrzn_Lrn_WSq))
         ZVar <- 1 / (ZVar + 1)
 
         ## Initialize or update ZMu values
         if (It == 0) {
-            ## print("Init Z")
             message("Init Z")
             # initialise with means of learning set Z
             ZMu <- matrix(
@@ -665,7 +672,6 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
             # vector of 1s to act as multiplier of W intercept term
             ZMu_0 <- rep(1, dim(ZVar)[1])
         } else {
-            ## print("update Z")
             message("update Z")
             # variational updates
             for (k in seq_len(dim(ZMu)[2])) {
@@ -677,7 +683,6 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
         PrintMessage <- paste0(PrintMessage, " K=", dim(ZMu)[2])
 
         ## Z^2 values
-        ## print("Z squared")
         message("Z squared")
         ZMuSq <- ZVar + ZMu^2
 
@@ -690,7 +695,6 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
         ## And B_nd = \sum_{k} E[(z_{n,k})^2]E[(w_{d,k})^2]
         ## E_ZWSq_nd = (A + B)_nd = (square(ZMu%*%t(W)) - square(ZMu)%*%square(t(W)) + ZMuSq%*%t(WSq))_nd
 
-        ## print("Expected")
         message("Expected")
         E_ZE_W <- lapply(views, E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
         E_Z_SqE_W_Sq <- lapply(views, E_Z_SqE_W_Sq_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
@@ -700,7 +704,6 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
         ## Calculate and check the ELBO
 
         if ((It > 0) & (It >= StartELBO) & (((It - StartELBO) %% FreqELBO) == 0)) {
-            ## print("ELBO")
             message("ELBO")
 
             ELBO_L <- do.call(sum, lapply(X = views, FUN = ELBO_calculation, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrgSS, YGauss))
@@ -725,12 +728,10 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
             }
         }
 
-        ## print(PrintMessage)
         message(PrintMessage)
 
         ## can the algorithm be stopped?
         if ((It >= 2) & (It >= MinIterations) & (convergence_token >= ConvergenceIts)) {
-            ## print("converged")
             message("converged")
             break
         }

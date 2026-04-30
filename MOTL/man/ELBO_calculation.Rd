@@ -28,9 +28,11 @@ type. Names are the view names.}
 
 \item{TauLn}{list of log(Tau) matrices}
 
-\item{E_ZWSq}{\eqn{E[(ZW)^2]}}
+\item{E_ZWSq}{expected values of the multiplication of the Z matrix with
+weight squared W matrix. See \code{\link{E_ZWSq_update}} function.}
 
-\item{E_ZE_W}{\eqn{E[Z]E[W]}}
+\item{E_ZE_W}{multiplication of the expected values of Z matrix with the
+expected values of W matrix. Seed \code{\link{E_ZE_W_update}} function.}
 
 \item{Zeta}{list of Zeta matrices}
 

@@ -17,8 +17,9 @@ ZVar_calculation(view, Tau, Fctrzn_Lrn_WSq)
 calculated Z variances matrix for the current data
 }
 \description{
-Z variances using initialised / updated tau values and W^2 values
-based on the appendix of the mofa paper and Github code
+Z variances is calculation using initialized or updated Tau values
+and the squared weight values WSq values
+based on the appendix of the \link{MOFA2} paper and \href{https://github.com/bioFAM/MOFA2}{Github code}
 }
 \examples{
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/MOTL_functions.R
 \name{E_ZWSq_update}
 \alias{E_ZWSq_update}
-\title{Calculate \eqn{E[(ZW)^2]}}
+\title{Calculate \code{E_ZWSq}}
 \usage{
 E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 }
@@ -18,14 +18,14 @@ E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 \item{E_ZSqE_WSq}{matrix of \eqn{E[Z^2]E[W^2]} values for current view}
 }
 \value{
-\eqn{E[(ZW)^2]} values for current view
+\code{E_ZWSq} values for current view
 }
 \description{
-Calculate \eqn{E[(ZW)^2]}
+\code{E_ZWSq} is the expected values of the multiplication of the Z matrix with
+weight squared W matrix \eqn{E[(ZW)^2]}.
 }
 \examples{
 
 E_ZWSq <- E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
-
 
 }

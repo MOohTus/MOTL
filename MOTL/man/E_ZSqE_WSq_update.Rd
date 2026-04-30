@@ -2,7 +2,7 @@
 % Please edit documentation in R/MOTL_functions.R
 \name{E_ZSqE_WSq_update}
 \alias{E_ZSqE_WSq_update}
-\title{Calculate \eqn{E[Z^2]E[W^2]}}
+\title{Calculate \code{E_ZSqE_WSq}}
 \usage{
 E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
 }
@@ -20,15 +20,16 @@ matrices}
 \item{ZMu}{matrix of Z values}
 }
 \value{
-\eqn{E[Z^2]E[W^2]} for current view
+E_ZSqE_WSq for current view
 }
 \description{
-Calculate \eqn{E[Z^2]E[W^2]}
+\code{E_ZSqE_WSq} is the multiplication of the expected values of the squared Z
+matrix with the expected values of the squared W matrix
+\eqn{E[Z^2]*E[W^2]}
 }
 \examples{
 
 E_ZSqE_WSq <-
     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-
 
 }

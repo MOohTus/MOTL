@@ -2,7 +2,7 @@
 % Please edit documentation in R/MOTL_functions.R
 \name{Tau_calculation}
 \alias{Tau_calculation}
-\title{Update Tau values}
+\title{Update Tau values for the current view}
 \usage{
 Tau_calculation(view, likelihoods, Zeta, Tau)
 }
@@ -21,10 +21,12 @@ type. Names are the view names.}
 (updated) Tau matrix for the current view data
 }
 \description{
-Tau values are updated using Zeta values with the
-following equation:
-\eqn{Tau = (1/2)*(1/Zeta[[view]])*tanh(Zeta[[view]]/2)}
-only for bernoulli data.
+Tau values are updated only for bernoulli data.
+}
+\details{
+Tau values are updated using the following equation:
+
+\eqn{Tau = (\frac{1}{2})*(\frac{1}{Zeta[[view]]})*tanh(\frac{Zeta[[view]]}{2})}
 }
 \examples{
 view = "mRNA"
