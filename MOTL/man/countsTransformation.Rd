@@ -2,7 +2,7 @@
 % Please edit documentation in R/DataPreprocessing_functions.R
 \name{countsTransformation}
 \alias{countsTransformation}
-\title{Log2 Transform and select top data based on variance}
+\title{Log2 transform and select top data based on variance}
 \usage{
 countsTransformation(expdat_count, TopD)
 }
@@ -15,7 +15,7 @@ countsTransformation(expdat_count, TopD)
 data.frame of the log2 transformed and filtered data
 }
 \description{
-Log2 Transform and select top data based on variance
+Log2 transform and select top data based on variance
 }
 \examples{
 expdat_counts_fltr <- countsTransformation(expdat_count, TopD)

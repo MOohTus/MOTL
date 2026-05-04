@@ -2,7 +2,7 @@
 % Please edit documentation in R/MOTL_functions.R
 \name{E_Z_SqE_W_Sq_update}
 \alias{E_Z_SqE_W_Sq_update}
-\title{Calculate \eqn{((E[Z])^2)((E[W])^2)}}
+\title{Calculate \code{E_Z_SqE_W_Sq}}
 \usage{
 E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
 }
@@ -19,15 +19,16 @@ matrices}
 \item{Fctrzn_Lrn_W}{list of factorized learning set weight matrices}
 }
 \value{
-\eqn{((E[Z])^2)((E[W])^2)} for current view
+\code{E_Z_SqE_W_Sq} for current view
 }
 \description{
-Calculate \eqn{((E[Z])^2)((E[W])^2)}
+\code{E_Z_SqE_W_Sq} is the multiplication of the squared expected values of Z
+matrix with the squared expected values of W matrix
+\eqn{((E[Z])^2)*((E[W])^2)}.
 }
 \examples{
 
 E_Z_SqE_W_Sq <-
     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-
 
 }

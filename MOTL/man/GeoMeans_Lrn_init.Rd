@@ -2,7 +2,8 @@
 % Please edit documentation in R/DataPreprocessing_functions.R
 \name{GeoMeans_Lrn_init}
 \alias{GeoMeans_Lrn_init}
-\title{Retrieve the GeoMeans calculated for the learning dataset during counts normalization}
+\title{Retrieve the Geometric means calculated for the learning dataset during
+counts normalization}
 \usage{
 GeoMeans_Lrn_init(view, expdat_meta_Lrn, YTrgFtrs)
 }
@@ -14,10 +15,11 @@ GeoMeans_Lrn_init(view, expdat_meta_Lrn, YTrgFtrs)
 \item{YTrgFtrs}{feature names of the current view}
 }
 \value{
-precalculated GeoMeans of the learning dataset
+precalculated Geometric means of the learning dataset
 }
 \description{
-Retrieve the GeoMeans calculated for the learning dataset during counts normalization
+Retrieve the Geometric means calculated for the learning dataset during
+counts normalization
 }
 \examples{
 

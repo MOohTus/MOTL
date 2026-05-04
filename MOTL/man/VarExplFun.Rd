@@ -31,5 +31,4 @@ Calculate the variance explained by each factor for each view
 VarExpl <-
     VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
 
-
 }

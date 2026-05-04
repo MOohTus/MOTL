@@ -48,11 +48,9 @@ are transposed.
 }
 \details{
 Each parameter are extracted from the \code{Fctrzn} model created using
-\code{\link{MOFA2}}. More details.
+\code{\link{MOFA2}}.
 
 \code{YTrg} matrices should have the same columns order.
-
-Define what is each returned parameters?
 }
 \examples{
 views = c("mRNA", "miRNA", "DNAme", "SNV")

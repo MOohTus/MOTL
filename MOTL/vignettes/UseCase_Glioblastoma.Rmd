@@ -4,6 +4,7 @@ output:
   BiocStyle::html_document:
     toc: true
     toc_depth: 2
+bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{UseCase_Glioblastoma}
   %\VignetteEngine{knitr::rmarkdown}
@@ -13,10 +14,967 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
-```{r setup}
-library(MOTL)
+```{r toRun, echo = FALSE}
+
+## WORKING DIRECTORY
+setwd("/home/morgane/Documents/01_Projects/03_OtherProjects/05_David_Thesis/test_package_aout25/MOTL/vignettes/")
+
+## SET ENVIRONMENT
+Seed <- 1234567
+set.seed(Seed)
+
+## LIBRARIES
+library("MOTL")
+library("MOFA2")
+
+## GLIOBLASTOMA FILES
+metadata_file <- "Glioblastoma/02_RNAseq/phenodata_RNAseq.tsv"
+mRNA_dir <- "Glioblastoma/02_RNAseq/CountData/"
+DNAme_dir <- "Glioblastoma/03_DNAmethylation/"
+smpls_df <- read.table("Glioblastoma_metadata.txt", head = TRUE)
+smpls <- smpls_df$Sample
+expdat_mRNA <- as.matrix(read.table("Glioblastoma/02_RNAseq/CountData/mRNA.csv", head = TRUE, sep = ",", check.names = FALSE))
+expdat_DNAme <- as.matrix(read.table("Glioblastoma/03_DNAmethylation/DNAme.csv", head = TRUE, sep = ",", check.names = FALSE))
+
+## LEARNING DATASET
+Lrn_dir <- "Lrn_5000D/"
+LrnFctrn_dir <- "Lrn_5000D_Fctrzn_100K_001TH/"
+expdat_meta_Lrn <- readRDS(file.path(Lrn_dir, "expdat_meta_Lrn.rds"))
+InputModel <- file.path(LrnFctrn_dir, "Model.hdf5")
+Fctrzn <- load_model(file = InputModel)
+
+## LEARNING DATASET INIT
+CenterTrg <- FALSE
+viewsLrn <- Fctrzn@data_options$views
+likelihoodsLrn <- Fctrzn@model_options$likelihoods
+MLrn <- Fctrzn@dimensions$M
+Fctrzn@expectations[["Tau"]] <- Tau_init(viewsLrn, Fctrzn, InputModel)
+Fctrzn@expectations[["TauLn"]] <- sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn)
+Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn)
+Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrn_dir)
+
+## TL
+TL_outDir <- "Glioblastoma/MOTL_results"
+
 ```
+
+Libraries used for input data preparation and transfer learning:
+
+- `MOTL` (@motl) for multiomics data integration using transfer learning
+- `MOFA2` (@MOFA2) for multiomics data integration
+```{r libraries-1, eval = TRUE, message = FALSE, warning = FALSE}
+library("MOTL")
+library("MOFA2")
+```
+
+Helper functions created for this specific use case.
+
+<details>
+  <summary>**Functions**</summary>
+
+```{r functions, eval = TRUE}
+mRNA_raw_import <- function(smpls, InRawCountsDir){
+    #' Create a data frame of mRNA Glioblastoma counts
+    #' 
+    #' Import raw counts line by line for each sample
+    #' Remove lines with more or less than 7 columns
+    #' Create a data frame of mRNA Glioblastoma counts
+    #' 
+    #' 
+    #' @param smpls sample names vector
+    #' @param InRawCountsDir directory of the mRNA Glioblastoma counts data
+    #' 
+    #' @returns data frame of mRNA counts data
+  mRNA_trg_tmp <- strsplit(
+    readLines(file.path(InRawCountsDir, 
+                        paste0(smpls, ".genes.results")), 
+              n = -1), 
+    split = "\t"
+  )
+  
+  correct_length <- 7
+  mRNA_trg_tmp_chk <- lapply(mRNA_trg_tmp, 
+                             function(x) length(x) == correct_length)
+  mRNA_trg_tmp <- mRNA_trg_tmp[unlist(mRNA_trg_tmp_chk)]
+  mRNA_trg_tmp <- do.call(rbind, mRNA_trg_tmp)
+  colnames(mRNA_trg_tmp) <- mRNA_trg_tmp[1,]
+  mRNA_trg_tmp <- mRNA_trg_tmp[-1,]
+  
+  mRNA_trg_tmp <- data.frame(
+    gene_id = mRNA_trg_tmp[, "gene_id"],
+    sample = smpls,
+    expected_count = round(as.numeric(mRNA_trg_tmp[, "expected_count"]))
+  )
+  
+  return(mRNA_trg_tmp)
+}
+
+mRNA_stripVersion <- function(expdat){
+    #' Strip version and gene symbol from Ensembl IDs 
+    #'
+    #' @param expdat matrix of mRNA counts data
+    #' 
+    #' @returns tidied up matrix
+  vStart <- regexpr("[.]", rownames(expdat))
+  suffixStart <- regexpr("_PAR_Y", rownames(expdat))
+  suffixEnd <- suffixStart -1 + 
+      attr(regexpr("_PAR_Y", rownames(expdat)), "match.length")
+  rownames(expdat) <- paste0(
+    substr(rownames(expdat), 1, vStart-1),
+    substr(rownames(expdat), suffixStart, suffixEnd)
+  )
+  return(expdat)
+}
+
+DifFactTester <- function(x, minSamples, sampleGroup) {
+    #' Find differentially active factors
+    #'
+    #' If number of samples under a condition is less than 4, a T-test is 
+    #' performed to determine if a factor is differentially active between 
+    #' two conditions.
+    #' Otherwise (`minSamples >= 4`), a Wilcox test is performed to evaluate 
+    #' if a factor is differentially active between two conditions.
+    #' 
+    #' @param x line that contains sample Z values for a given factor 
+    #' @param minSamples number of minimum sample under a condition
+    #' @sampleGroup sample condition vector (as factor)
+    #' 
+    #' @returns p-value of the factor
+  if (minSamples >= 4) {
+    wilcox.test(x ~ sampleGroup)$p.value
+  } else {
+    t.test(x ~ sampleGroup)$p.value
+  }
+}
+
+sigGeneSetFct <- function(v, WMat, groups){
+    #' Perform enrichment analysis using fgsea
+    #'
+    #' @param v 
+    #' @param WMat weights matrix
+    #' @param groups
+    #' 
+    #' @returns fgsea results
+    ## Retrieve element from the inputs
+    k <- v[1]
+    category <- v[2]
+    subcategory <- v[3]
+    rankings <- WMat[,k]
+    # names(rankings) <- rownames(WMat)
+    
+    ## Retrieve gene sets data frame
+    gene_sets <- msigdbr(species = "Homo sapiens",
+                         category = category,
+                         subcategory = subcategory)
+    ## Reformat the gene sets data frame
+    gene_sets <- gene_sets %>% 
+        dplyr::distinct(gs_name, ensembl_gene) %>%
+        as.data.frame()
+    gene_sets <- split(x = gene_sets$ensembl_gene, f = gene_sets$gs_name)
+    
+    ## Run the enrichment analysis
+    fgseaRes <- fgsea(pathways = gene_sets,
+                      stats = rankings,
+                      minSize = 15,
+                      maxSize = 500)
+    ## Reshape results
+    fgseaRes <- fgseaRes %>%
+        dplyr::select(pathway, padj, ES, NES, size) %>%
+        as.data.frame()
+    ## Select significant results
+    fgseaRes <- fgseaRes[fgseaRes$padj < 0.01 & !is.na(fgseaRes$padj),]
+    fgseaRes$k <- rep(k, nrow(fgseaRes))
+    fgseaRes$subcategory <- rep(subcategory, nrow(fgseaRes))
+    fgseaRes$groups <- rep(groups, nrow(fgseaRes))
+    
+    return(fgseaRes)
+}
+
+createOrsumInputFile <- function(Fct, SigGeneSets, SC){
+    #' Create orsum input file
+    #' 
+    #' Create a .txt file that contains significant pathways name, collected 
+    #' from the enrichment analysis results for a given
+    #' factor number.
+    #' 
+    #' @param Fct factor number as string
+    #' @param SigGeneSets data.frame of fgsea results
+    #' @param SC database name
+    #' 
+    SigGeneSets_Fct <- SigGeneSets[SigGeneSets$FactorNum == Fct,]
+    SigGeneSets_Fct <- SigGeneSets_Fct[order(SigGeneSets_Fct$padj, 
+                                             SigGeneSets_Fct$size),]
+    SigGeneSets_Fct <- SigGeneSets_Fct$pathway
+    if(length(SigGeneSets_Fct) != 0)
+    {
+        write.table(SigGeneSets_Fct, 
+                    file.path(orsum_dir,
+                              paste0(str_replace(SC, ":", "_"), "_", Fct, ".txt")),
+                    col.names = FALSE, row.names = FALSE, quote = FALSE)
+    }
+
+}
+
+```
+
+</details>
+
+# Introduction
+
+This is an example of a real data analysis. You can find the entire analysis in the tool paper [@motl] and also on [Github](https://github.com/david-hirst/MOTL). You will have also the comparison with a direct MOFA (without transfer learning). 
+
+First, set the seed session to be able to reproduce the same results as thise user manual.
+
+```{r setup, eval = TRUE}
+Seed <- 1234567
+set.seed(Seed)
+```
+
+Glioblastoma is a rare and aggressive type of cancer. In a previous analysis [@glio], they integrated DNA methylation data with gene expression of four normal brain samples and nine patient-derived glioblastoma stem cell (pd-GBSC) cultures. The cancer samples has been previously classified into three subtypes (classical CL, proneural PN and mesenchymal MS).Due to the small number of samples, authors used in addition datasets from the literature. 
+
+Does MOTL could help in analyzing such datasets, with a small number of samples?
+
+# Import Glioblastoma dataset
+
+Download the data from [zenodo](https://zenodo.org/records/7380252):
+
+- mRNA data: https://zenodo.org/records/7380252/files/02_RNAseq.zip?download=1
+- DNAme data: https://zenodo.org/records/7380252/files/03_DNAmethylation.zip?download=1
+
+In this use case, data are stored in the `Glioblastoma/` folder.
+
+```{r G_files, eval = TRUE}
+metadata_file <- "Glioblastoma/02_RNAseq/phenodata_RNAseq.tsv"
+mRNA_dir <- "Glioblastoma/02_RNAseq/CountData/"
+DNAme_dir <- "Glioblastoma/03_DNAmethylation/"
+```
+
+## Import Glioblastoma metadata
+
+First, import the metadata associated to datasets. 
+```{r metadata-1, eval = TRUE}
+smpls_df <- read.table(metadata_file, header = TRUE)
+smpls_df$Sample
+```
+
+Replace `.` with `-` and remove the `X` in the sample names.
+```{r metadata-2, eval = TRUE}
+smpls_df$Sample <- sub("[.]", "-", smpls_df$Sample)
+smpls_df$Sample <- sub("X", "", smpls_df$Sample)
+smpls_df$Sample
+```
+
+We are interested in the cancer subtypes: 
+
+- `CL`: classical
+- `MS`: mesenchymal
+- `PN`: proneural
+
+Samples are ordered randomly.
+```{r metadata-3, eval = TRUE}
+HGCCgroups <- c("Normal", "CL", "MS", "PN")
+smpls <- smpls_df$Sample[is.element(smpls_df$HGCC, HGCCgroups)]
+smpls <- sample(smpls, length(smpls), replace = FALSE)
+```
+
+We selected ```r length(smpls)``` samples for the analysis.
+```{r metadata-4, eval = TRUE}
+smpls
+```
+
+Retrieve metadata for selected samples. Create a column with `Case` and `Normal` conditions. 
+```{r metadata-5, eval = TRUE}
+smpls_df <- smpls_df[match(smpls, smpls_df$Sample),]
+smpls_df$CaseControl <- smpls_df$HGCC
+smpls_df$CaseControl[smpls_df$CaseControl != "Normal"] <- "Case"
+```
+
+```{r metadata-6}
+write.table(x = smpls_df, file = "Glioblastoma_metadata.txt", sep = "\t", 
+            quote = FALSE, row.names = FALSE)
+```
+
+## Import Glioblastoma mRNA data
+
+Import mRNA data and make a raw counts matrix.
+```{r mRNA-1, eval = TRUE}
+expdat_mRNA <- lapply(X = smpls, FUN = mRNA_raw_import, mRNA_dir)
+expdat_mRNA <- do.call(rbind, expdat_mRNA)
+expdat_mRNA <- reshape2::dcast(expdat_mRNA, formula = gene_id ~ sample)
+rownames(expdat_mRNA) <- expdat_mRNA$gene_id
+expdat_mRNA <- as.matrix(expdat_mRNA[, -1])
+expdat_mRNA[c(1:5), c(1:7)]
+```
+
+Tidy up feature names and order sample columns.
+```{r mRNA-2, eval = TRUE}
+expdat_mRNA <- mRNA_stripVersion(expdat_mRNA)
+expdat_mRNA <- expdat_mRNA[,smpls]
+expdat_mRNA[c(1:5), c(1:7)]
+```
+
+The raw counts matrix is saved into a .csv file to facilitate the loading.
+```{r mRNA-3}
+write.table(x = expdat_mRNA, file = file.path(mRNA_dir, "mRNA.csv"), 
+            sep = ",", row.names = TRUE, col.names = TRUE)
+```
+
+The mRNA dataset contains ``r nrow(expdat_mRNA)`` features (genes) and ``r ncol(expdat_mRNA)`` samples.
+
+## Import Glioblastoma DNAme data
+
+Read DNAme data file. You will get warnings because the file contains some corrupted lines. We will remove these lines after.
+```{r DNAme-1, eval = TRUE, warning = FALSE}
+expdat_DNAme <- strsplit(
+    readLines(file.path(DNAme_dir, "5mC_bVals_HGCC.txt"), n = -1),
+    split = "\t")
+```
+
+Reshape the DNAme data object and keep only rows with the correct number of elements.
+```{r DNAme-2, eval = TRUE}
+DNAme_smpls <- expdat_DNAme[[1]]
+correct_length <- 15
+expdat_DNAme_chk <- lapply(expdat_DNAme, function(x) length(x) == correct_length)
+expdat_DNAme <- expdat_DNAme[unlist(expdat_DNAme_chk)]
+expdat_DNAme <- do.call(rbind, expdat_DNAme)
+```
+
+Make sure only rows with probe IDs are kept
+```{r DNAme-3, eval = TRUE}
+expdat_DNAme <- 
+    expdat_DNAme[is.element(substr(expdat_DNAme[,1], 1, 2), c("cg", "ch")),]
+```
+
+Move sample IDs to the row name columns and add sample names.
+```{r DNAme-4, eval = TRUE}
+rownames(expdat_DNAme) <- expdat_DNAme[,1]
+expdat_DNAme <- expdat_DNAme[,-1]
+colnames(expdat_DNAme) <- DNAme_smpls
+expdat_DNAme[c(1:5), c(1:3)]
+```
+
+Then, values need to be convert into numeric values. Don't worry, the introduced NA are in the `e12` column and we will remove it.
+```{r DNAme-5, eval = TRUE, warning = FALSE, message = FALSE}
+expdat_DNAme <- matrix(as.numeric(expdat_DNAme), 
+                       ncol = ncol(expdat_DNAme),
+                       dimnames = list(rownames(expdat_DNAme),
+                                       colnames(expdat_DNAme)))
+```
+
+To analysis the DNAme data, values need to be converted into M-Values.
+```{r DNAme-6, eval = TRUE}
+expdat_DNAme <- sesame::BetaValueToMValue(expdat_DNAme)
+```
+
+Finally, we remove samples that are not in the `smpls` variable and order sample columns. 
+```{r DNAme-7, eval = TRUE}
+expdat_DNAme <- expdat_DNAme[,smpls]
+expdat_DNAme[c(1:5), c(1:3)]
+```
+
+The M-Values matrix is saved into a .csv file to facilitate the loading.
+```{r DNAme-8}
+write.table(x = expdat_DNAme, file = file.path(DNAme_dir, "DNAme.csv"), 
+            sep = ",", row.names = TRUE, col.names = TRUE)
+```
+
+The DNAme dataset contains ``r nrow(expdat_DNAme)`` features (probes) and ``r ncol(expdat_DNAme)`` samples.
+
+# Learning dataset
+
+Download the learning dataset factorization files from [zenodo](https://zenodo.org/records/10848217):
+
+- TCGA dataset factorization: [Lrn_5000D_Fctrzn_100k_001TH.zip](https://zenodo.org/records/10848217/files/Lrn_5000D_Fctrzn_100K_001TH.zip?download=1)
+- Metadata file from TCGA data processing: [expdat_meta.rds](https://zenodo.org/records/10848217/files/expdat_meta.rds?download=1)
+
+Here, factorization data are stored in the `Lrn_5000D_Fctrzn_100K_001TH/` folder and metadata in the `Lrn_5000D/` folder.
+```{r Lrn_files, eval = TRUE}
+Lrn_dir <- "Lrn_5000D/"
+LrnFctrn_dir <- "Lrn_5000D_Fctrzn_100K_001TH/"
+```
+
+## Import learning dataset metadata
+
+Import metadata of the learning dataset creation. 
+```{r Lrn-1, eval = TRUE}
+expdat_meta_Lrn <- readRDS(file.path(Lrn_dir, "expdat_meta_Lrn.rds"))
+```
+
+## Import learning dataset factorization model
+
+Import the learning dataset factorization model, created using `MOFA2`.
+```{r Lrn-2, eval = TRUE}
+InputModel <- file.path(LrnFctrn_dir, "Model.hdf5")
+Fctrzn <- load_model(file = InputModel)
+```
+
+## Prepare learning dataset for TL
+
+For the preprocessing step of the target dataset, you have two choices:
+
+- `CenterTrg <- TRUE`: center the target dataset values
+- `CenterTrg <- FALSE`: leave the values uncentered and use instead the estimated learning dataset intercepts
+
+```{r Lrn-3, eval = TRUE}
+CenterTrg <- FALSE
+```
+
+Initialize values from learning dataset factorization:
+
+- `viewsLrn`: names of the learning dataset view (e.g. `r Fctrzn@data_options$views`)
+- `likelihoodsLrn`: the defined likelihood of each view (e.g. `r Fctrzn@model_options$likelihoods`)
+- `MLrn`: number of views in the learning dataset (`r Fctrzn@dimensions$M`)
+
+```{r Lrn-4, eval = TRUE}
+viewsLrn <- Fctrzn@data_options$views
+likelihoodsLrn <- Fctrzn@model_options$likelihoods
+MLrn <- Fctrzn@dimensions$M
+```
+
+In this use case, to initialize or caluclate the expected values, we use values from the leaning dataset factorization model generated using MOFA2.
+
+- Initialize the `Tau` values using the one from the learning dataset model
+- The log(Tau) values `TauLn` are calculated using the `Tau` values
+- The squared weight values `WSq` are calculated using the weight values `W` 
+- The weight intercept values `W0` are loaded from the estimated intercept file (`CenterTrg <- FALSE`) 
+
+```{r Lrn-5, eval = TRUE}
+Fctrzn@expectations[["Tau"]] <- Tau_init(viewsLrn, Fctrzn, InputModel)
+Fctrzn@expectations[["TauLn"]] <- sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn)
+Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn)
+Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrn_dir)
+```
+
+# Target dataset
+
+First, feature names need to be the same as the one that are in the learning dataset. We will add gene version names that are in the learning dataset to the mRNA dataset. Here, some of the features are not retrieve in the learning dataset, so an `NA` is added instead of a number. These features will be removed after and not used in the analysis.
+
+```{r init_TL-1, eval = TRUE}
+expdat_mRNA <- 
+    mRNA_addVersion(expdat = expdat_mRNA, Lrndat = Fctrzn@expectations$W$mRNA)
+expdat_mRNA[c(1:5), c(1:7)]
+```
+
+Then, we create a list of the omics data we want to analysis together: `mRNA` and `DNAme` data.
+```{r init_TL-2, eval = TRUE}
+YTrg_list <- list(mRNA = expdat_mRNA, DNAme = expdat_DNAme)
+```
+
+The learning and target datasets need to contain the same set of omics for transfer learning. So we define the `views` and `likelihoods` variables that contain the commun views between the two datasets and the corresponding likelihoods. 
+```{r init_TL-3, eval = TRUE}
+viewsTrg <- names(YTrg_list)
+views <- viewsLrn[is.element(viewsLrn, viewsTrg)]
+likelihoods <- likelihoodsLrn[views]
+```
+
+Target dataset are then prepared: 
+
+- features with variance equal to zero are removed
+- features are harmonized between learning and target datasets, they should contain same features
+- samples are ordered in same way between views
+- counts data (i.e. mRNA and miRNA) are normalized using `DESeq2` normalization with the geometric values from the learning dataset (`normalization = "LrnGeoMeans"`)
+- counts data (i.e. mRNA and miRNA) are log2 transformed (`transformation = TRUE`)
+
+```{r init_TL-4, eval = TRUE}
+YTrg_list <- 
+    TargetDataPreparation(views = views, 
+                          YTrg_list = YTrg_list, 
+                          Fctrzn = Fctrzn, 
+                          smpls = smpls, 
+                          expdat_meta_Lrn = expdat_meta_Lrn, 
+                          normalization = "LrnGeoMeans", 
+                          transformation = TRUE)
+```
+
+Finally, we create the `TL_param` that contains all the necessary input for the transfer learning analysis
+
+- `YTrg`: named list of the omics
+- `views`: vector of view names, shared between learning and target dataset
+- `Fctrzn`: learning dataset factorization model initialized
+- `likelihoods`: vector of view likelihoods
+```{r init_TL-5, eval = TRUE}
+TL_param <- initTransferLearningParamaters(YTrg = YTrg_list, 
+                                           views = views,
+                                           Fctrzn = Fctrzn, 
+                                           likelihoods = likelihoods)
+names(TL_param)
+```
+
+The `TL_param` contain:
+
+- `YTrg`: named list of prepared `mRNA` and `DNAme` data matrices
+- `Fctrzn_Lrn_W0`: named list of weight intercept values `W0` for each view
+- `Fctrzn_Lrn_W`: named list of weight values `W` for each view
+- `Fctrzn_Lrn_WSq`: named list of squared weight values `WSq` fir each view
+- `Tau`: named list of Tau values `Tau` for each view
+- `TauLn`: named list of log(Tau) `TauLn` for each view
+
+# Transfer learning using MOTL
+
+Mettre une phrase de contexte, avec le nombre d'échantillon et de features dans chaque views.
+
+Create an output folder. 
+```{r MOTL-1, eval = TRUE}
+TL_outDir <- "Glioblastoma/MOTL_results"
+if(!dir.exists(TL_outDir)){
+  dir.create(TL_outDir, showWarnings = FALSE, recursive = TRUE)
+}
+```
+
+Transfer learning parameters:
+
+- `minFactors`: floor when dropping factors - number of samples in evaluations
+- `StartDropFactor`: after which iteration to start dropping factors
+- `FreqDropFactor`: how often to drop factors
+- `StartELBO`: which iteration to start checking ELBO on, exclude initiation iteration
+- `FreqELBO`: how often to assess the ELBO
+- `DropFactorTH`: factor with lowest max variance, that is less than this, is dropped
+- `MaxIterations`: maximum iteration number
+- `MinIterations`: minimum iteration number - at least 2 and exclude initial setup (`2` is default in MOFA)
+- `ConvergenceIts`: number of consecutive iterations that change in ELBO is (`2` is default in MOFA)
+- `ConvergenceTH`: threshold number for change in ELBO for checking convergence (`0.0005` is default in MOFA, correspond to the fast option)
+- `PoisRateCstnt`: amount to add to the poison rate function to avoid errors(`1e-04` default)
+```{r MOTL-2, eval = TRUE}
+minFactors <- 13
+StartDropFactor <- 1 
+FreqDropFactor <- 1 
+StartELBO <- 1 
+FreqELBO <- 5
+DropFactorTH <- 0.01 
+MaxIterations <- 10000
+MinIterations <- 2 
+ConvergenceIts <- 2 
+ConvergenceTH <- 0.0005 
+```
+
+Run MOTL. Results will be saved into the `TL_outDir` folder in the `TL_VI_data.rds` file.
+```{r MOTL-3, message = FALSE}
+TL_data <- transferLearning_function(TL_param = TL_param, 
+                                     views = views, 
+                                     Fctrzn = Fctrzn,
+                                     likelihoods = likelihoods,
+                                     MaxIterations = MaxIterations, 
+                                     MinIterations = MinIterations, 
+                                     minFactors = minFactors, 
+                                     StartDropFactor = StartDropFactor, 
+                                     FreqDropFactor = FreqDropFactor, 
+                                     StartELBO = StartELBO, 
+                                     FreqELBO = FreqELBO, 
+                                     DropFactorTH = DropFactorTH,
+                                     ConvergenceIts = ConvergenceIts, 
+                                     ConvergenceTH = ConvergenceTH,
+                                     CenterTrg = CenterTrg, 
+                                     outputDir = TL_outDir)
+```
+
+Then, save the metadata of the transfer learning analysis.
+```{r MOTL-4}
+TL_meta_data <- list(
+  "Seed" = Seed,
+  "CenterTrg" = CenterTrg,
+  "StartDropFactor" = StartDropFactor,
+  "FreqDropFactor" = FreqDropFactor,
+  "DropFactorTH" = DropFactorTH,
+  "minFactors" = minFactors,
+  "MinIterations" = MinIterations,
+  "MaxIterations" = MaxIterations,
+  "StartELBO" = StartELBO,
+  "FreqELBO" = FreqELBO,
+  "ConvergenceTH" = ConvergenceTH,
+  "ConvergenceIts" = ConvergenceIts
+)
+saveRDS(TL_meta_data, file.path(TL_outDir, "TL_VI_meta_data.rds"))
+```
+
+# Downstream analysis
+
+For the downstream analysis, you will need the following libraries.
+
+```{r libraries-2, eval = TRUE, message = FALSE, warning = FALSE}
+## Enrichment analysis
+library("fgsea")
+library("msigdbr")
+library("stringr")
+library("GSA")
+## Plots
+library("ggplot2")
+library("pheatmap")
+library("RColorBrewer")
+```
+
+## MOTL results
+
+Set the seed to have comparable results with this current vignette.
+```{r setup-2, eval = TRUE}
+Seed <- 1234567
+set.seed(Seed)
+```
+
+Load the transfer learning results and corresponding metadata.
+```{r down-2, eval = TRUE}
+TL_outDir <- "Glioblastoma/MOTL_results"
+TL_data <- readRDS(file = file.path(TL_outDir, "TL_data.rds"))
+TL_meta_data <- readRDS(file = file.path(TL_outDir, "TL_VI_meta_data.rds"))
+```
+
+First, init the necessary variables.
+```{r down-3, eval = TRUE}
+YGauss <- TL_data$YGauss
+ZMu_0 <- TL_data$ZMu_0
+ZMu <- TL_data$ZMu
+Fctrzn_Lrn_W0 <- TL_data$Fctrzn_Lrn_W0
+Fctrzn_Lrn_W <- TL_data$Fctrzn_Lrn_W
+views <- names(YGauss)
+factorNames <- colnames(ZMu)
+VarExpl <- TL_data$VarExpl
+smpls <- rownames(TL_data$YTrgSS$mRNA)
+```
+
+Load the Glioblastoma metadata. 
+```{r down-1, eval = TRUE}
+smpls_df <- read.table("Glioblastoma_metadata.txt", head = TRUE)
+smpls_df <- smpls_df[order(smpls_df$CaseControl, smpls_df$HGCC, smpls_df$Sample),]
+sampleGroup <- as.factor(smpls_df$CaseControl)
+smpls_df$CaseControl[smpls_df$CaseControl == "Case"] <- "pd-GBSC"
+smpls_df <- smpls_df[match(smpls, smpls_df$Sample),]
+head(smpls_df)
+```
+
+## Factor caracterisation: Weight matrices
+
+### Differentially active factors
+
+MOTL inferred ``r length(colnames(ZMu))`` factors. 
+```{r diff-0, eval = TRUE}
+colnames(ZMu)
+```
+
+We consider a factor as differentially active if there is a statistically significant difference between groups, here cancer types. We perform a Wilcoxian Rank Sum tests on the Z matrix. Then, p-values are corrected with a Benjamini & Hochberg method (BH). 
+
+```{r diff-1, eval = TRUE}
+minSamples <- min(unlist(table(smpls_df$CaseControl)))
+Z_pv <- apply(X = ZMu, MARGIN = 2, FUN = DifFactTester, 
+              minSamples = minSamples, sampleGroup = smpls_df$CaseControl)
+Z_pv <- p.adjust(Z_pv, method = "BH")
+Z_pv_sig <- which(Z_pv < 0.05)
+```
+
+There are ``r length(Z_pv_sig)`` differential active factors between normal and cancer samples.
+```{r diff-2, eval = TRUE}
+Z_pv_sig
+```
+
+### Variance decomposition
+
+Plots are inspired from the `plot_variance_explained()` function available in the `MOFA2` library.
+
+#### Total variance explained per omics data
+
+Set the factors with negative variance explained to zero. 
+```{r var-1, eval = TRUE}
+Variances_df <- reshape2::melt(VarExpl, value.name = "Variance")
+Variances_df$Variance[Variances_df$Variance < 0] <- 0
+```
+
+The ``r length(colnames(ZMu))`` inferred factors ~80% of the variation in the mRNA data and ~40% of the variation in the DNAme data. 
+
+```{r var-2, eval = TRUE}
+ggplot(Variances_df, aes(x = Var2, y = Variance * 100)) + 
+    geom_bar(stat = "identity", 
+             fill = "deepskyblue4", 
+             color = "NA", 
+             width = 0.9) +
+    xlab("") + ylab("Variance explained (%)") +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_text(size = rel(1.1), color = "black"), 
+          axis.text.y = element_text(size = rel(1), color = "black"), 
+          axis.title.y = element_text(size = rel(1), color = "black"),
+          axis.line = element_line(size = rel(1), color = "black"),
+          panel.background = element_blank(), 
+          strip.background = element_blank(), 
+          strip.text = element_text(size = rel(1)))
+```
+
+#### Variance decomposition by by differentially active factor
+
+Set the factors with negative variance explained to zero and retreive differentially active factors.
+```{r var-3, eval = TRUE}
+VarExpl_sig <- VarExpl[Z_pv_sig,]
+Variances_df <- reshape2::melt(VarExpl_sig, value.name = "Variance")
+Variances_df$Variance[Variances_df$Variance < 0.01] <- 0.001
+Variances_df$Variance <- Variances_df$Variance * 100
+```
+
+This plot shows only the interested factors (i.e. differentially active between control and cancer conditions). 
+
+- Factor 1 captures a very strong source of variation that is present only in mRNA data
+- Factor 2 captures variability that is present across both data (mRNA and DNAme)
+- Factor 40 also captures co-variation between mRNA and DNAme data but a weaker signal 
+
+```{r var-4, eval = TRUE}
+min_r2 <- 0.01 
+max_r2 <- max(Variances_df$Variance)
+
+ggplot(Variances_df, aes(x = Var2, y = Var1)) + 
+    geom_tile(aes_string(fill = "Variance"), color = "black") + 
+    labs(x = "", y = "", title = "") +
+    scale_fill_gradientn(colors = c("gray97", "darkblue"),
+                         guide = "colorbar", 
+                         limits = c(min_r2, max_r2)) +
+    guides(fill = guide_colorbar("Var. (%)")) + 
+    theme(axis.text.x = element_text(size = rel(1),
+                                     color = "black"), 
+          axis.text.y = element_text(size = rel(1.1), color = "black"), 
+          axis.line = element_blank(), 
+          axis.ticks = element_blank(),
+          panel.background = element_blank(), 
+          strip.background = element_blank(),
+          strip.text = element_text(size = rel(1)))
+```
+
+### Enrichment analysis
+
+For mRNA view, we will perform an enrichment analysis of the differentially active factors using GSEA.
+
+```{r gsea-1, eval = TRUE}
+groupsTested <- paste(levels(sampleGroup), collapse = "_vs_")
+W_mRNA <- t(apply(Fctrzn_Lrn_W[["mRNA"]], 
+                  MARGIN= 1, 
+                  FUN = function(x){return(x/norm(matrix(x), type = "F"))}))
+W_mRNA <- mRNA_stripVersion(W_mRNA)
+```
+
+```{r gesa-11, eval = TRUE}
+Z_mRNA_rel <- which(VarExpl[,"mRNA"] >= 0.01)
+```
+
+We have ``r length(Z_pv_sig)`` differentially active factors and ``r length(Z_mRNA_rel)`` factors that explained at least 0.01 of the total variance. We select factors that are differentially active and also explained at least 0.01 of the total variance.
+```{r gsea-2, eval = TRUE}
+kToTest <- names(Z_pv_sig)[is.element(names(Z_pv_sig), names(Z_mRNA_rel))]
+kToTest
+```
+
+We want to perform an enrichment analysis using REACTOME, KEGG, Biological Process and Cellular Component from Gene Ontology.
+```{r gsea-3, eval = TRUE}
+genesetCatToTest <- c("C2", "C2", "C5", "C5")
+genesetSubCatToTest <- c("CP:KEGG", "CP:REACTOME", "GO:BP", "GO:CC")
+```
+
+We create the input data frame for the enrichment analysis.
+```{r gsea-4, eval = TRUE}
+toTest <- data.frame(
+    k = rep(kToTest, each = length(genesetCatToTest)),
+    category = rep(genesetCatToTest, times = length(kToTest)),
+    subcategory = rep(genesetSubCatToTest, times = length(kToTest)))
+head(toTest)
+```
+
+Reshape the enrichment analysis results.
+```{r gsea-5, warning = FALSE}
+sigGeneSets <- apply(X = toTest, 
+                     MARGIN = 1, 
+                     FUN = sigGeneSetFct, 
+                     WMat = W_mRNA, 
+                     groups = groupsTested)
+sigGeneSets <- do.call(rbind, sigGeneSets)
+```
+
+Write results as .csv file.
+```{r gsea-6}
+write.table(sigGeneSets,
+            file.path(TL_outDir, paste0("SigGeneSets_", groupsTested, ".csv")),
+            quote = FALSE, 
+            sep = "," , 
+            na = "", 
+            row.names = FALSE, 
+            col.names = TRUE)
+```
+
+```{r gsea-7, echo = FALSE, eval = TRUE}
+sigGeneSets <- read.table(file.path("Glioblastoma/MOTL_results/", "SigGeneSets_Case_vs_Normal.csv"), header = TRUE, sep = ",")
+```
+
+Gene set enrichment analysis was performed on differential active factors that capture variation in mRNA data, using Reactome, GO::CC, GO:BP and KEGG. It found for ``r length(unique(sigGeneSets$k))`` factors, ``r length(unique(sigGeneSets[sigGeneSets$padj <= 0.01, "pathway"]))`` processes and pathways.
+
+```{r gsea-8, eval = TRUE}
+sigGeneSets$GeneSet <- substr(sigGeneSets$pathway, 
+                             as.vector(regexpr(pattern = "_", sigGeneSets$pathway)) + 1, 
+                             nchar(sigGeneSets$pathway))
+sigGeneSets$GeneSet <- str_replace_all(sigGeneSets$GeneSet, "_", " ")
+```
+
+```{r gsea-9, eval = TRUE}
+sigGeneSets$FactorNum <- paste0("0", substr(sigGeneSets$k, 7, nchar(sigGeneSets$k)))
+sigGeneSets$FactorNum <- substr(sigGeneSets$FactorNum,
+                                nchar(sigGeneSets$FactorNum) - 1,
+                                nchar(sigGeneSets$FactorNum))
+```
+
+Make files for plots
+```{r gsea-12, eval = TRUE}
+orsum_dir <- "Glioblastoma/orsum/"
+if(!dir.exists(orsum_dir)){
+  dir.create(orsum_dir, showWarnings = FALSE, recursive = TRUE)
+}
+```
+
+```{r gsea-13, message = FALSE, warning = FALSE, eval = FALSE}
+SCsToExport <- unique(sigGeneSets$subcategory)
+
+lapply(SCsToExport, function(SC, sigGeneSets){
+    SigGeneSets_SC <- sigGeneSets[sigGeneSets$subcategory == SC,]
+    FactorsToExport <- unique(sigGeneSets$FactorNum)
+    lapply(FactorsToExport, createOrsumInputFile, SigGeneSets_SC, SC)
+}, sigGeneSets)
+```
+
+Files are downloaded from the [msidgb website](https://data.broadinstitute.org/gsea-msigdb/msigdb/release/2024.1.Hs/).
+Import and tidy gmt files. They are saved into the `Glioblastoma/orsum/` folder.
+
+```{r, message = FALSE, warning = FALSE, eval = FALSE}
+gmt_inputs <- list.files(path = orsum_dir, pattern = "*.gmt")
+
+lapply(gmt_inputs, function(gmt_file){
+    gmt <- GSA.read.gmt(file.path(orsum_dir, gmt_file))
+    gmt$geneset.descriptions <- 
+        substr(gmt$geneset.descriptions,
+               as.vector(regexpr(pattern = "_",
+                                 gmt$geneset.descriptions)) + 1,
+                                 nchar(gmt$geneset.descriptions))
+    gmt_out_rows <- length(gmt$genesets)
+    gmt_out_cols <- max(do.call("rbind", lapply(gmt$genesets, length))) + 2
+    gmt_out <- matrix("", nrow = gmt_out_rows, ncol = gmt_out_cols)
+    gmt_out[,1] <- gmt$geneset.names
+    gmt_out[,2] <- gmt$geneset.descriptions
+    for (i in 1:gmt_out_rows){
+        for (j in 1:length(gmt$genesets[[i]])){
+            gmt_out[i, j+2] = gmt$genesets[[i]][j]
+        }
+    }
+    write.table(gmt_out, file.path(orsum_dir, 
+                                   paste0('adj_', gmt_file)),
+                sep = "\t", quote = FALSE, col.names = FALSE, row.names = FALSE)
+    
+})
+```
+
+In terminal, commands to run orsum 
+
+On KEGG database
+```{bash}
+orsum.py --gmt "adj_c2.cp.kegg_legacy.v2026.1.Hs.symbols.gmt" 
+--files "CP_KEGG_01.txt" "CP_KEGG_02.txt" "CP_KEGG_05.txt" "CP_KEGG_06.txt" 
+"CP_KEGG_26.txt" "CP_KEGG_39.txt" "CP_KEGG_40.txt" "CP_KEGG_48.txt" 
+"CP_KEGG_63.txt" --fileAliases "MOTL_01" "MOTL_02" "MOTL_05" "MOTL_06" 
+"MOTL_26" "MOTL_39" "MOTL_40" "MOTL_48" "MOTL_63" --outputFolder KEGGresults 
+--maxRepSize 2000 --maxTermSize 3000 --minTermSize 15 --numberOfTermsToPlot 30
+```
+
+```{r, echo = FALSE, fig.cap = "KEGG orsum results picture", out.width = "100%", eval = TRUE, fig.align = "center"}
+knitr::include_graphics("Glioblastoma/orsum/KEGGresults/Heatmap.png")
+```
+
+On Reactome database
+```{bash}
+orsum.py --gmt "adj_c2.cp.reactome.v2026.1.Hs.symbols.gmt" 
+--files "CP_REACTOME_01.txt" "CP_REACTOME_02.txt" "CP_REACTOME_05.txt" 
+"CP_REACTOME_06.txt" "CP_REACTOME_25.txt" "CP_REACTOME_26.txt" 
+"CP_REACTOME_39.txt" "CP_REACTOME_40.txt" "CP_REACTOME_43.txt" 
+"CP_REACTOME_48.txt" "CP_REACTOME_63.txt" --fileAliases "MOTL_01" "MOTL_02" 
+"MOTL_05" "MOTL_06" "MOTL_25" "MOTL_26" "MOTL_39" "MOTL_40" "MOTL_43" "MOTL_48" 
+"MOTL_63" --outputFolder REACTOMEresults --maxRepSize 2000 --maxTermSize 3000 
+--minTermSize 15 --numberOfTermsToPlot 30
+```
+
+```{r, echo = FALSE, fig.cap = "Reactome orsum results picture", out.width = "100%", eval = TRUE, fig.align = "center"}
+knitr::include_graphics("Glioblastoma/orsum/REACTOMEresults/Heatmap.png")
+```
+
+GO CC and BP
+```{bash}
+orsum.py --gmt "adj_c5.go.bp.v2026.1.Hs.symbols.gmt" --files "GO_BP_01.txt" 
+"GO_BP_02.txt" "GO_BP_05.txt" "GO_BP_06.txt" "GO_BP_25.txt" "GO_BP_26.txt" 
+"GO_BP_39.txt" "GO_BP_40.txt" "GO_BP_43.txt" "GO_BP_48.txt" "GO_BP_63.txt" 
+--fileAliases "MOTL_01" "MOTL_02" "MOTL_05" "MOTL_06" "MOTL_25" "MOTL_26" 
+"MOTL_39" "MOTL_40" "MOTL_43" "MOTL_48" "MOTL_63" --outputFolder BPresults 
+--maxRepSize 2000 --maxTermSize 3000 --minTermSize 15 --numberOfTermsToPlot 30
+
+orsum.py --gmt "c5.go.cc.v2026.1.Hs.symbols.gmt" --files "GO_CC_01.txt" 
+"GO_CC_02.txt" "GO_CC_05.txt" "GO_CC_06.txt" "GO_CC_25.txt" "GO_CC_26.txt" 
+"GO_CC_39.txt" "GO_CC_40.txt" "GO_CC_43.txt" "GO_CC_48.txt" "GO_CC_63.txt" 
+--fileAliases "MOTL_01" "MOTL_02" "MOTL_05" "MOTL_06" "MOTL_25" "MOTL_26" 
+"MOTL_39" "MOTL_40" "MOTL_43" "MOTL_48" "MOTL_63" --outputFolder CCresults 
+--maxRepSize 2000 --maxTermSize 3000 --minTermSize 15 --numberOfTermsToPlot 30
+```
+
+```{r, echo = FALSE, fig.cap = "GO BP and CC orsum results picture", eval = TRUE}
+knitr::include_graphics("Glioblastoma/orsum/BPresults/Heatmap.png")
+knitr::include_graphics("Glioblastoma/orsum/CCresults/Heatmap.png")
+```
+
+## Z matrix analysis
+
+We will visualize the Z matrix inferred using MOTL. 
+
+Create the input data frame of the heatmap. 
+```{r z-1, eval = TRUE}
+Zmu_MOTL <- t(ZMu[smpls_df$Sample,])
+Zmu_MOTL[c(1:5), c(1,7)]
+```
+
+Create the corresponding annotation file.
+```{r z-2, eval = TRUE}
+heatMapAnno <- data.frame(SubType = as.factor(smpls_df$HGCC), 
+                          Type = as.factor(smpls_df$CaseControl))
+heatMapAnno$SubType <- relevel(heatMapAnno$SubType, ref = "Normal")
+heatMapAnno$Type <- relevel(heatMapAnno$Type, ref = "Normal")
+rownames(heatMapAnno) <- smpls_df$Sample
+head(heatMapAnno)
+```
+
+Samples will be colored by the subtype of the cancer and also by the condition.
+```{r z-3, eval = TRUE}
+annot_colors <- list(SubType = brewer.pal(5, "Set2")[c(1,3,4,5)],
+                     Type = brewer.pal(5, "Set2")[1:2])
+names(annot_colors$SubType) <- levels(heatMapAnno$SubType)
+names(annot_colors$Type) <- levels(heatMapAnno$Type)
+```
+
+Create the heatmap of the Z matrix. Clustering is performed using a hierarchical clustering (`complete` method, as default).
+```{r z-4, eval = TRUE}
+pheatmap(Zmu_MOTL,
+         border_color = NA,
+         angle_col = 45,
+         cluster_rows = TRUE,
+         cluster_cols = TRUE,
+         treeheight_row = 0,
+         treeheight_col = 10,
+         legend = FALSE,
+         show_rownames = TRUE,
+         show_colnames = TRUE,
+         annotation_col = heatMapAnno,
+         annotation_colors = annot_colors,
+         annotation_names_col = TRUE,
+         annotation_legend = TRUE, 
+         main = "heatmap clustering of the Z matrix inferred using MOTL.")
+```
+
+The heatmap clustering of the factors inferred with MOTL, separates cancer (in orange) and normal (in green) samples. We can also see subgroups that partially match cancer subtypes, the ones defined based on transcriptome signatures.
+
+# Session info
+
+<details>
+  <summary>**Session Info**</summary>
+
+```{r, eval = TRUE}
+sessionInfo()
+```
+
+</details>
+
+# References

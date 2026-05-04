@@ -27,9 +27,9 @@ defined views. The list contains matrices.}
 
 \item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 
-\item{normalization}{if FALSE, no normalization. If "Lrn", normalization
-using the learning GeoMeans. If "Trg", normalization without learning
-GeoMeans. By default it's set to FALSE.}
+\item{normalization}{if FALSE, no normalization. If "LrnGeoMeans", normalization
+using the learning Geometric means. If "newGeoMeans", Geometric means are
+calculated using the input data. By default it's set to FALSE.}
 
 \item{transformation}{if FALSE, no transformation. If TRUE, log2
 transformation of counts data. By default it's set to FALSE.}
@@ -45,15 +45,21 @@ The function follows these steps:
 }
 }
 \details{
-Preparation of data consists on removing features with variance equal to
-zero, features harmonization between target and learning data and column
-ordering between views. Preparation is perform using the
-\code{\link{TargetDataPrefiltering}} function. See the doc for more
-details.
+Preparation of data consists on
+\itemize{
+\item removing features with variance equal to zero
+\item features harmonization between target and learning data
+\item column ordering between views.
+}
+
+Preparation is perform using the
+\code{\link{TargetDataPrefiltering}} function. See the documentation
+for more details.
 
 It could be possible to normalize and or transform counts data using the
 \code{\link{preprocessCountsData}} function. Normalization can be done
-using GeoMeans and transformation is a log2 transformation of the counts.
+using Geometric means (from learning or target dataset) and transformation
+is a log2 transformation of the counts.
 }
 \examples{
 YTrg_prep <- TargetDataPreparation(views = c("mRNA", "miRNA", "DNAme"),

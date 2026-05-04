@@ -5,21 +5,29 @@
 \alias{Trg}
 \title{Target datasets}
 \format{
-\code{YTrg_list}: list of the target dataset - \code{mRNA}, \code{miRNA}
-and \code{DNAme} data are \code{\link{SummarizedExperiment}} object and
-\code{SNV} data are stored in a \code{matrix}. Samples are in columns and
+\describe{
+\item{YTrg_list}{list of the target dataset - Samples are in columns and
 features are in rows.
-\code{Trg_meta}: list of metadata - Five \code{character} (smpls,
-ftrs_mRNA, ftrs_miRNA, ftrs_DNAme, ftrs_SNV), four \code{data.frame}
-(brcds_mRNA, brcds_miRNA, brcds_DNAme, brcds_SNV) with three variables
-(brcds, submittor, prjct),  six \code{integer} (Seed, ElbowK_Total,
-ElbowK_mRNA, ElbowK_miRNA, ElbowK_DNAme, ElbowK_SNV), one \code{logical}
-variable (if_vst) and four \code{numeric} (PCVarPrcnt_mRNA, PCVarPrcnt_miRNA,
-PCVarPrcnt_DNAme, PCVarPrcnt_SNV).
-\code{brcds_SS}: a list of 4 list of \code{data.frame} with the sample
-names.
-\code{YTrg_prep}: list of the prepared input target dataset (mRNA,
-miRNA, DNAme, SNV). Samples are in columns and features are in rows.
+\describe{
+\item{\code{mRNA}:}{data stored into a \code{\link{SummarizedExperiment}} object}
+\item{\code{miRNA}:}{data stored into a \code{\link{SummarizedExperiment}} object}
+\item{\code{DNAme}:}{data stored into a \code{\link{SummarizedExperiment}} object}
+\item{\code{SNV}:}{data stored into a \code{matrix}}
+}
+}
+\item{Trg_meta}{list of metadata:
+\describe{
+\item{Five \code{character}}{smpls, ftrs_mRNA, ftrs_miRNA, ftrs_DNAme, ftrs_SNV}
+\item{Four \code{data.frame}}{with three variables (brcds, submittor, prjct) - brcds_mRNA, brcds_miRNA, brcds_DNAme, brcds_SNV}
+\item{Six \code{integer}}{Seed, ElbowK_Total, ElbowK_mRNA, ElbowK_miRNA, ElbowK_DNAme, ElbowK_SNV}
+\item{One \code{logical}}{if_vst}
+\item{Four \code{numeric}}{PCVarPrcnt_mRNA, PCVarPrcnt_miRNA, PCVarPrcnt_DNAme, PCVarPrcnt_SNV}
+}
+}
+\item{brcds_SS}{a list of 4 list of \code{data.frame} with the sample names.}
+\item{YTrg_prep}{list of the prepared input target dataset (mRNA,
+miRNA, DNAme, SNV). Samples are in columns and features are in rows.}
+}
 }
 \usage{
 data("Trg")

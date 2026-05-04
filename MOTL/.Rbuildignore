@@ -5,3 +5,7 @@
 ^docs$
 ^pkgdown$
 ^data-raw$
+^vignettes/Glioblastoma$
+^vignettes/Glioblastoma_metadata\.txt$
+^vignettes/Lrn_5000D$
+^vignettes/Lrn_5000D_Fctrzn_100K_001TH$

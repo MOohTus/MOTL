@@ -19,7 +19,7 @@ type. Names are the view names.}
 should be named like \code{"TauLn_mRNA.csv"}.}
 
 \item{LrnSimple}{if TRUE, initialization uses the Tau values. If FALSE,
-imports values from a .csv file.}
+imports values from a .csv file. By default is set to "TRUE".}
 }
 \value{
 the log(Tau) matrix for the current view
