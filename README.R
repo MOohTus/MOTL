@@ -133,11 +133,31 @@ devtools::build_rmd("vignettes/UseCase_Glioblastoma.Rmd")
 devtools::document(); devtools::load_all()
 devtools::build_readme()
 
+## IGNORE
+use_build_ignore("vignettes/Glioblastoma/")
+use_build_ignore("vignettes/Glioblastoma_metadata.txt")
+use_build_ignore("vignettes/Lrn_5000D/")
+use_build_ignore("vignettes/Lrn_5000D_Fctrzn_100K_001TH/")
+
+
 ## ROXYGEN DOCUMENT UPDATE AND LOAD COMPLETE PACKAGE
 ## BUILD and CHECK PACKAGE
 ## BIOCONDUCTOR CHECKING
 devtools::document(); devtools::load_all()
-devtools::build(); devtools::check_built("../MOTL_0.99.0.tar.gz")
+devtools::build(vignettes = TRUE); devtools::check_built("../MOTL_0.99.0.tar.gz")
+
 BiocCheck::BiocCheck("../MOTL_0.99.0.tar.gz")
 devtools::build(vignettes = TRUE, manual = TRUE)
 devtools::install(build_vignettes = TRUE)
+
+
+## CREATE PACKAGE
+devtools::document(); devtools::load_all()
+devtools::build_rmd("vignettes/MOTL.Rmd")
+devtools::build_rmd("vignettes/UseCase_Glioblastoma.Rmd")
+devtools::build_readme()
+devtools::test()
+devtools::build(vignettes = TRUE); devtools::check_built("../MOTL_0.99.0.tar.gz")
+BiocCheck::BiocCheck("../MOTL_0.99.0.tar.gz")
+
+

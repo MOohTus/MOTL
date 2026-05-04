@@ -22,8 +22,7 @@ SNV). Each contains features in columns.}
 \item{ZMu}{\code{data.frame} with factors in columns and samples in
 rows.}
 \item{ZMu_0}{vector of numerics}
-\item{ZMuSq}{\code{data.frame} with factors in columns.}
-}
+\item{ZMuSq}{\code{data.frame} with factors in columns.}}
 }
 \usage{
 data("TL_param")

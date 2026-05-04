@@ -63,7 +63,10 @@ TL_outDir <- "Glioblastoma/MOTL_results"
 
 ```
 
-Libraries used for input data preparation and transfer learning.
+Libraries used for input data preparation and transfer learning:
+
+- `MOTL` (@motl) for multiomics data integration using transfer learning
+- `MOFA2` (@MOFA2) for multiomics data integration
 ```{r libraries-1, eval = TRUE, message = FALSE, warning = FALSE}
 library("MOTL")
 library("MOFA2")
@@ -975,8 +978,3 @@ sessionInfo()
 </details>
 
 # References
-
----
-nocite: |
-  @MOFA2
----

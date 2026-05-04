@@ -19,8 +19,7 @@ relevant and used for the transfer learning):
 \item{data_options}{data processing options}
 \item{model_options}{model options}
 \item{training_options}{model training options}
-\item{dimensions}{dimensions of the model (e.g. \code{M} number of views, \code{N} number of samples, \code{D} number of features)}
-}
+\item{dimensions}{dimensions of the model (e.g. \code{M} number of views, \code{N} number of samples, \code{D} number of features)}}
 
 For more information about the structure of MOFA object, see the
 \href{https://bioconductor.org/packages/release/bioc/manuals/MOFA2/man/MOFA2.pdf}{\code{MOFA2}} vignette.
@@ -37,7 +36,6 @@ initialized for transfer learning: \code{Fctrzn} and \code{Fctrzn_init}.
 \item{Fctrzn}{output of the factorization analysis of the learning
 dataset}
 \item{Fctrzn_init}{output of the factorization analysis of the
-learning dataset and the initialized values for the transfer learning}
-}
+learning dataset and the initialized values for the transfer learning}}
 }
 \keyword{datasets}

@@ -50,6 +50,11 @@ Main steps to perform transfer learning analysis using MOTL:
 
 ## Load libraries
 
+Libraries used for input data preparation and transfer learning:
+
+- `MOTL` (@motl) for multiomics data integration using transfer learning
+- `MOFA2` (@MOFA2) for multiomics data integration
+
 ```{r libraries, message = FALSE, warning = FALSE}
 library("MOTL")
 library("MOFA2")
@@ -333,8 +338,3 @@ sessionInfo()
 </details>
 
 # References
-
----
-nocite: |
-  @motl, @MOFA2
----
