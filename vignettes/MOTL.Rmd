@@ -172,8 +172,6 @@ Fctrzn <- Lrn$Fctrzn_init
 
 # Target dataset ``Trg``
 
-## Create target dataset
-
 > **📝 NOTE**
 >
 > Target dataset is a list of matrices. You can create it like this:
@@ -323,10 +321,6 @@ W_mRNA[c(1:5), c(1:3)]
 ```
 
 The results shown in this example may differ from yours due to the use of random number generation. So, two runs of MOTL will produce different results. To obtain a reproducible analysis, you can configure random number generation using `set.seed(NumberYouChose)` and run it before MOTL.
-
-# Downstream analysis
-
-If you want to go further and try with your data, see the [Glioblastoma analysis](UseCase_Glioblastoma.html). It's an example of how to run `MOTL` on real data.
 
 # Session info
 

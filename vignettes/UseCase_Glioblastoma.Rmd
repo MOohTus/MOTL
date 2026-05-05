@@ -63,6 +63,14 @@ TL_outDir <- "Glioblastoma/MOTL_results"
 
 ```
 
+
+Write this in the end of MOTL.Rmd
+
+# Downstream analysis
+
+If you want to go further and try with your data, see the [Glioblastoma analysis](UseCase_Glioblastoma.html). It's an example of how to run `MOTL` on real data.
+
+
 Libraries used for input data preparation and transfer learning:
 
 - `MOTL` (@motl) for multiomics data integration using transfer learning
