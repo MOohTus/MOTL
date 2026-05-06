@@ -32,7 +32,8 @@ Imports:
     stats4,
     SummarizedExperiment,
     utils,
-    methods
+    methods,
+    MOFA2
 Suggests: 
     knitr,
     rmarkdown,
