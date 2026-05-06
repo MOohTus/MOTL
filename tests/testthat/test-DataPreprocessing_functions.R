@@ -335,6 +335,7 @@ test_that("TauLn_calculation_TRUE", {
 test_that("TauLn_calculation_FALSE", {
   # skip_issue_2_solve("miRNA length is different between model and imported TauLn file")
   ## LrnSimple = FALSE / USE LrnFctrnDir TAU FILES
+    print(Lrn_ModelDir)
   mRNA <- TauLn_calculation(
     view = "mRNA",
     likelihoods,
