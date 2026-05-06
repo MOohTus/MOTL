@@ -29,6 +29,10 @@ matrix with the squared expected values of W matrix
 \examples{
 
 view <- "mRNA"
+ZMu <- TL_param$ZMu
+ZMu_0 <- TL_param$ZMu_0
+Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
 
 E_Z_SqE_W_Sq <-
     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)

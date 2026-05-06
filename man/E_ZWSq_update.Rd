@@ -26,8 +26,27 @@ weight squared W matrix \eqn{E[(ZW)^2]}.
 }
 \examples{
 
+data(TL_param)
 view <- "mRNA"
+ZMuSq <- TL_param$ZMuSq
+ZMu <- TL_param$ZMu
+ZMu_0 <- TL_param$ZMu_0
+Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
 
-E_ZWSq <- E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+E_ZE_W <- list()
+E_Z_SqE_W_Sq <- list()
+E_ZSqE_WSq <- list()
+E_ZWSq <- list()
+
+
+E_ZE_W$mRNA <- E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+E_Z_SqE_W_Sq$mRNA <-
+    E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+E_ZSqE_WSq$mRNA <-
+    E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+
+E_ZWSq$mRNA <- E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 
 }
