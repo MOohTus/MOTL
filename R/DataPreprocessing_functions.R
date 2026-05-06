@@ -289,7 +289,7 @@ initTransferLearningParamaters <- function(YTrg,
     #' are transposed.
     #'
     #' Each parameter are extracted from the \code{Fctrzn} model created using
-    #' \code{\link{MOFA2}}.
+    #' \code{MOFA2}.
     #'
     #' \code{YTrg} matrices should have the same columns order.
     #'
@@ -765,9 +765,9 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #'
     #' @param viewsLrn the list of learning data views. For TCGA learning data
     #' it will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).
-    #' @param Fctrzn the learning dataset factorization from \code{\link{MOFA2}}.
+    #' @param Fctrzn the learning dataset factorization from \code{MOFA2}.
     #' @param InputModel the factorization model object of learning set
-    #' \code{\link{MOFA2}}
+    #' \code{MOFA2}
     #'
     #' @returns a named list of Tau matrices. Names correspond to the view
     #' names.

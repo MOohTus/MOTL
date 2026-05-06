@@ -252,8 +252,8 @@ ELBO_calculation <-
         #'
         #' @examples
         #'
-        #' view = "mRNA"
-        #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+        #' view <- "mRNA"
+        #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
         #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
         #'
         #' ELBO_L <-
@@ -368,7 +368,7 @@ E_ZSqE_WSq_update <-
         #'
         #' @param view current view name
         #' @param ZMu_0 vector of coefficients for weight intercepts
-        #' @param ZMu matrix of Z values
+        #' @param ZMuSq matrix of squared Z values
         #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
         #' matrices
         #' @param Fctrzn_Lrn_WSq  list of factorized learning set weight squared
