@@ -48,7 +48,7 @@ are transposed.
 }
 \details{
 Each parameter are extracted from the \code{Fctrzn} model created using
-\code{\link{MOFA2}}.
+\code{MOFA2}.
 
 \code{YTrg} matrices should have the same columns order.
 }

@@ -31,7 +31,8 @@ Imports:
     stats,
     stats4,
     SummarizedExperiment,
-    utils
+    utils,
+    methods
 Suggests: 
     knitr,
     rmarkdown,

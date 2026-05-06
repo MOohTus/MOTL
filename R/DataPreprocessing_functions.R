@@ -543,7 +543,7 @@ TCGATargetDataPreparation <- function(views,
     #' geometric means calculated on the target dataset.
     #'
     #' Normalization is performed in the \code{\link{countsNormalization}}
-    #' function using \code{\link{estimateSizeFactors}} from
+    #' function using \code{estimateSizeFactors} from
     #' \code{\link{DESeq2}} package. And transformation is perform using
     #' \code{\link{countsTransformation}} with a log2 transformation.
     #'
@@ -974,6 +974,8 @@ intercepts_calculation <- function(expdat_meta,
     #' @return a file, named EstimatedIntercepts.rds and saved into
     #' \code{FctrznDir} directory.
     #'
+    #' @import methods
+    #'
     #' @examples
     #' #
     #' intercepts_calculation(expdat_meta,
@@ -1057,7 +1059,7 @@ intercepts_calculation <- function(expdat_meta,
                 # interceptMLEfit = try(as.vector(stats4::mle(nLL, start=list(interceptMLE=0))@coef[1]))
                 interceptMLEfit <- try(as.vector(stats4::mle(nLL, start = list(interceptMLE = InterceptsNaive[d]))@coef[1]))
 
-                if (is(interceptMLEfit, "try-error")) {
+                if (methods::is(interceptMLEfit, "try-error")) {
                     InterceptsTmp <- InterceptsNaive[d]
                     InterceptsMethodTmp <- "Naive"
                 } else {
@@ -1111,7 +1113,7 @@ intercepts_calculation <- function(expdat_meta,
                     interceptMLEfit <-
                         try(stats4::mle(nLL, start = list(InterceptMLE = InterceptsNaive[d]))@coef[1])
 
-                    if (is(interceptMLEfit, "try-error")) {
+                    if (methods::is(interceptMLEfit, "try-error")) {
                         InterceptsTmp <- InterceptsNaive[d]
                         InterceptsMethodTmp <- "Naive"
                     } else {

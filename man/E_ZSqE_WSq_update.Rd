@@ -11,13 +11,13 @@ E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
 
 \item{ZMu_0}{vector of coefficients for weight intercepts}
 
+\item{ZMuSq}{matrix of squared Z values}
+
 \item{Fctrzn_Lrn_W0}{list of factorized learning set weight intercept
 matrices}
 
 \item{Fctrzn_Lrn_WSq}{list of factorized learning set weight squared
 matrices}
-
-\item{ZMu}{matrix of Z values}
 }
 \value{
 E_ZSqE_WSq for current view

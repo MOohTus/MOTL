@@ -51,8 +51,8 @@ for gaussian it is expanded gaussian log likelihood
 }
 \examples{
 
-view = "mRNA"
-likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+view <- "mRNA"
+likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
 
 ELBO_L <-

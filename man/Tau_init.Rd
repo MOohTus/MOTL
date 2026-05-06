@@ -10,10 +10,10 @@ Tau_init(viewsLrn, Fctrzn, InputModel)
 \item{viewsLrn}{the list of learning data views. For TCGA learning data
 it will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).}
 
-\item{Fctrzn}{the learning dataset factorization from \code{\link{MOFA2}}.}
+\item{Fctrzn}{the learning dataset factorization from \code{MOFA2}.}
 
 \item{InputModel}{the factorization model object of learning set
-\code{\link{MOFA2}}}
+\code{MOFA2}}
 }
 \value{
 a named list of Tau matrices. Names correspond to the view
