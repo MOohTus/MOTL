@@ -33,7 +33,7 @@ Imports:
     SummarizedExperiment,
     utils,
     methods,
-    MOFA2
+    MOFA2 
 Suggests: 
     knitr,
     rmarkdown,

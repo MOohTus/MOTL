@@ -28,6 +28,7 @@ matrix with the squared expected values of W matrix
 }
 \examples{
 
+data(TL_param)
 view <- "mRNA"
 ZMu <- TL_param$ZMu
 ZMu_0 <- TL_param$ZMu_0

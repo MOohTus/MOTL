@@ -27,6 +27,7 @@ expected values of W matrix \eqn{E[Z]E[W]}.
 }
 \examples{
 
+data(TL_param)
 view <- "mRNA"
 ZMu <- TL_param$ZMu
 ZMu_0 <- TL_param$ZMu_0
