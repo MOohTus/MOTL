@@ -335,7 +335,7 @@ test_that("TauLn_calculation_TRUE", {
 test_that("TauLn_calculation_FALSE", {
   # skip_issue_2_solve("miRNA length is different between model and imported TauLn file")
   ## LrnSimple = FALSE / USE LrnFctrnDir TAU FILES
-    print(Lrn_ModelDir)
+    Lrn_ModelDir <- base::system.file("tests/testthat/fixtures/", package = "MOTL")
   mRNA <- TauLn_calculation(
     view = "mRNA",
     likelihoods,
@@ -392,6 +392,7 @@ test_that("WSq_calculation_FALSE", {
   # skip_issue_2_solve("W files contain 84 samples and model contains 91 samples ... wrong files")
   ## LrnSimple = FALSE / USE LrnFctrnDir W FILES
   # WSq = lapply(views, WSq_calculation, Lrn_Fctrzn_init, Lrn_ModelDir, LrnSimple = FALSE)
+    Lrn_ModelDir <- base::system.file("tests/testthat/fixtures/", package = "MOTL")
   mRNA <- WSq_calculation(
     view = "mRNA",
     Lrn_Fctrzn_init,

@@ -328,6 +328,7 @@ E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
     #' @examples
     #'
+    #' data(TL_param)
     #' view <- "mRNA"
     #' ZMu <- TL_param$ZMu
     #' ZMu_0 <- TL_param$ZMu_0
@@ -363,6 +364,7 @@ E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
     #' @examples
     #'
+    #' data(TL_param)
     #' view <- "mRNA"
     #' ZMu <- TL_param$ZMu
     #' ZMu_0 <- TL_param$ZMu_0
@@ -401,6 +403,7 @@ E_ZSqE_WSq_update <-
         #'
         #' @examples
         #'
+        #' data(TL_param)
         #' view <- "mRNA"
         #' ZMuSq <- TL_param$ZMuSq
         #' ZMu_0 <- TL_param$ZMu_0
