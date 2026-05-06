@@ -7,8 +7,6 @@ Lrn_ModelDir <- base::system.file("tests/testthat/fixtures/", package = "MOTL")
 ## LEARNING DATASET METADATA
 ## LEARNING DATASET FACTORIZATION MODEL
 ## LEARNING DATASET FACTORIZATION INITIALIZED BEFORE TRANSFER LEARNING
-#data(Lrn, package = "MOTL")
-#Lrn <- MOTL::Lrn
 load(system.file("data/Lrn.rda", package = "MOTL"))
 Lrn_meta <- Lrn$Lrn_meta
 Lrn_Fctrzn <- Lrn$Fctrzn
@@ -17,8 +15,7 @@ Lrn_Fctrzn_init <- Lrn$Fctrzn_init
 ## TARGET DATASET METADATA
 ## TARGET DATASET LIST
 ## TARGET DATASET LIST PREPARED FOR TRANSFER LEARNING
-#data(Trg, package = "MOTL")
-Trg <- MOTL::Trg
+load(system.file("data/Trg.rda", package = "MOTL"))
 Trg_meta <- Trg$Trg_meta
 YTrg_list <- Trg$YTrg_list
 YTrg_prep <- Trg$YTrg_prep
@@ -32,8 +29,7 @@ PoisRateCstnt <- 0.0001
 
 ## TRANSFER LEARNING
 ##
-#data(TL_param, package = "MOTL")
-TL_param <- MOTL::TL_param
+load(system.file("data/TL_param.rda", package = "MOTL"))
 YTrg <- TL_param$YTrg
 Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
 Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
