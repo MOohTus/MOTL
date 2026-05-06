@@ -38,14 +38,7 @@ Suggests:
     testthat (>= 3.0.0),
     withr,
     BiocStyle,
-    MOFA2,
-    fgsea,
-    msigdbr,
-    ggplot2,
-    pheatmap,
-    RColorBrewer,
-    stringr,
-    GSA
+    MOFA2
 VignetteBuilder: 
     knitr
 biocViews: DimensionReduction, FeatureExtraction, Bayesian, Normalization
