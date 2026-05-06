@@ -8,7 +8,8 @@ Lrn_ModelDir <- base::system.file("tests/testthat/fixtures/", package = "MOTL")
 ## LEARNING DATASET FACTORIZATION MODEL
 ## LEARNING DATASET FACTORIZATION INITIALIZED BEFORE TRANSFER LEARNING
 #data(Lrn, package = "MOTL")
-Lrn <- MOTL::Lrn
+#Lrn <- MOTL::Lrn
+load(system.file("data/Lrn.rda", package = "MOTL"))
 Lrn_meta <- Lrn$Lrn_meta
 Lrn_Fctrzn <- Lrn$Fctrzn
 Lrn_Fctrzn_init <- Lrn$Fctrzn_init
