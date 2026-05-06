@@ -162,7 +162,7 @@ ZVar_calculation <- function(view, Tau, Fctrzn_Lrn_WSq) {
     #'
     #' Z variances is calculation using initialized or updated Tau values
     #' and the squared weight values WSq values
-    #' based on the appendix of the \link{MOFA2} paper and [Github code](https://github.com/bioFAM/MOFA2)
+    #' based on the appendix of the `MOFA2` paper and [Github code](https://github.com/bioFAM/MOFA2)
     #'
     #' @param view a character of current view name data
     #' @param Tau list of Tau matrices

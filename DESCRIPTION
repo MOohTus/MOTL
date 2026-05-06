@@ -38,8 +38,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     withr,
-    BiocStyle,
-    MOFA2
+    BiocStyle
 VignetteBuilder: 
     knitr
 biocViews: DimensionReduction, FeatureExtraction, Bayesian, Normalization

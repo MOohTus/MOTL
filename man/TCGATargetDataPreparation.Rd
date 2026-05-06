@@ -78,7 +78,7 @@ geometric means calculated on the target dataset.
 }
 
 Normalization is performed in the \code{\link{countsNormalization}}
-function using \code{\link{estimateSizeFactors}} from
+function using \code{estimateSizeFactors} from
 \code{\link{DESeq2}} package. And transformation is perform using
 \code{\link{countsTransformation}} with a log2 transformation.
 
