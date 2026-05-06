@@ -1005,7 +1005,6 @@ intercepts_calculation <- function(expdat_meta,
     intercepts_list <- lapply(views, function(view,
                                               likelihoods,
                                               D,
-                                              YTmp,
                                               expdat_meta,
                                               Fctrzn) {
         ## print(view)
@@ -1144,7 +1143,7 @@ intercepts_calculation <- function(expdat_meta,
         )
 
         return(intercepts_list)
-    }, likelihoods, D, YTmp, expdat_meta, Fctrzn)
+    }, likelihoods, D, expdat_meta, Fctrzn)
 
     ## save the intercepts in the relevant factorization folder
 
