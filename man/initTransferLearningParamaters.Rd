@@ -53,9 +53,11 @@ Each parameter are extracted from the \code{Fctrzn} model created using
 \code{YTrg} matrices should have the same columns order.
 }
 \examples{
-views = c("mRNA", "miRNA", "DNAme", "SNV")
-likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+views <- c("mRNA", "miRNA", "DNAme", "SNV")
+likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+Fctrzn <- Lrn$Fctrzn_init
+YTrg <- Trg$YTrg_prep
 
 TLparameter <-
     initTransferLearningParamaters(YTrg = YTrg,

@@ -42,13 +42,19 @@ function.}{\eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]}, so
 view <- "mRNA"
 likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
-E_ZE_W <-
+
+E_ZE_W <- list()
+E_Z_SqE_W_Sq <- list()
+E_ZSqE_WSq <- list()
+E_ZWSq <- list()
+
+E_ZE_W$mRNA <-
     E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-E_Z_SqE_W_Sq <-
+E_Z_SqE_W_Sq$mRNA <-
     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-E_ZSqE_WSq <-
+E_ZSqE_WSq$mRNA <-
     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-E_ZWSq <-
+E_ZWSq$mRNA <-
     E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 
 Zeta <- Zeta_calculation(view = "mRNA",

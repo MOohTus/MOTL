@@ -21,9 +21,3 @@ precalculated Geometric means of the learning dataset
 Retrieve the Geometric means calculated for the learning dataset during
 counts normalization
 }
-\examples{
-
-GeoMeans_Lrn <-
-        GeoMeans_Lrn_init(view = "mRNA", expdat_meta_Lrn, YTrgFtrs)
-
-}

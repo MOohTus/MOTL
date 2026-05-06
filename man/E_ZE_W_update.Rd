@@ -27,6 +27,8 @@ expected values of W matrix \eqn{E[Z]E[W]}.
 }
 \examples{
 
+view <- "mRNA"
+
 E_ZE_W <- E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
 
 

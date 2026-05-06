@@ -141,6 +141,7 @@ To create the \code{TL_param} variable, see the
 }
 \examples{
 
+\dontrun{
 TL_data <- transferLearning_function(TL_param, MaxIterations,
                                     MinIterations, minFactors,
                                     views, likelihoods, Fctrzn,
@@ -151,6 +152,7 @@ TL_data <- transferLearning_function(TL_param, MaxIterations,
                                     CenterTrg, PoisRateCstnt = 0.0001,
                                     ss_start_time = NULL,
                                     outputDir = "./")
+}
 
 
 }

@@ -18,6 +18,14 @@ data.frame of the log2 transformed and filtered data
 Log2 transform and select top data based on variance
 }
 \examples{
+
+##
+expdat_count <- matrix(rexp(200, rate = .1), ncol = 20)
+expdat_count <- apply(expdat_count, MARGIN = 2, round)
+
+## input matrix
+TopD <- 20
+
 expdat_counts_fltr <- countsTransformation(expdat_count, TopD)
 
 

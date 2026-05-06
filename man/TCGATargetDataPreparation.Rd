@@ -88,15 +88,19 @@ how learning Geometric means are calculated.
 \examples{
 # see to create input data
 
+YTrgFull <- Trg$YTrg_list
+brcds_SS <- Trg$brcds_SS
+SS <- 1
+
 YTrg_prep <- TCGATargetDataPreparation(views,
                                         YTrgFull,
                                         brcds_SS,
                                         SS,
                                         Fctrzn,
                                         smpls,
-                                        normalization = "LrnGeoMeans",
+                                        normalization = FALSE,
                                         expdat_meta_Lrn,
-                                        transformation = TRUE)
+                                        transformation = FALSE)
 YTrg_prep$mRNA[c(1:5), c(1:5)]
 YTrg_prep$DNAme[c(1:5), c(1:5)]
 

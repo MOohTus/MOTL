@@ -35,6 +35,16 @@ Then, the input dataset is normalized using these Geometric means.
 }
 \examples{
 
+## Create a matrix with "counts" data
+## Then, create a summarized experiment object
+expdat <- matrix(rexp(200, rate = .1), ncol = 20)
+expdat <- apply(expdat, MARGIN = 2, round)
+expdat <- SummarizedExperiment::SummarizedExperiment(expdat)
+
+## With "newGeoMeans", geometric means will be calculated based on the
+## input matrix
+GeoMeans <- "newGeoMeans"
+
 expdat_counts_norm <- countsNormalization(expdat, GeoMeans)
 
 }

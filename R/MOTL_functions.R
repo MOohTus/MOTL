@@ -33,13 +33,19 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     #' view <- "mRNA"
     #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
-    #' E_ZE_W <-
+    #'
+    #' E_ZE_W <- list()
+    #' E_Z_SqE_W_Sq <- list()
+    #' E_ZSqE_WSq <- list()
+    #' E_ZWSq <- list()
+    #'
+    #' E_ZE_W$mRNA <-
     #'     E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-    #' E_Z_SqE_W_Sq <-
+    #' E_Z_SqE_W_Sq$mRNA <-
     #'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-    #' E_ZSqE_WSq <-
+    #' E_ZSqE_WSq$mRNA <-
     #'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-    #' E_ZWSq <-
+    #' E_ZWSq$mRNA <-
     #'     E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
     #'
     #' Zeta <- Zeta_calculation(view = "mRNA",
@@ -199,6 +205,12 @@ ZMu_calculation <-
         #'
         #' @examples
         #'
+        #' \dontrun{
+        #' k <- 10
+        #' view = "mRNA"
+        #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+        #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+        #'
         #' ZMu <- ZMu_calculation(view,
         #'                         k,
         #'                         Fctrzn_Lrn_W,
@@ -207,6 +219,7 @@ ZMu_calculation <-
         #'                         ZMu_0,
         #'                         ZMu,
         #'                         YGauss)
+        #' }
         #'
         #' @export
 
@@ -252,13 +265,11 @@ ELBO_calculation <-
         #'
         #' @examples
         #'
-        #' view <- "mRNA"
-        #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
-        #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
-        #'
+        #' \dontrun{
         #' ELBO_L <-
         #'     ELBO_calculation(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W,
         #'                         Zeta, YTrg, YGauss, PoisRateCstnt)
+        #' }
         #'
         #'
         #' @export
@@ -317,6 +328,8 @@ E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
     #' @examples
     #'
+    #' view <- "mRNA"
+    #'
     #' E_ZE_W <- E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
     #'
     #'
@@ -345,6 +358,8 @@ E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #' @returns `E_Z_SqE_W_Sq` for current view
     #'
     #' @examples
+    #'
+    #' view <- "mRNA"
     #'
     #' E_Z_SqE_W_Sq <-
     #'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
@@ -378,6 +393,8 @@ E_ZSqE_WSq_update <-
         #'
         #' @examples
         #'
+        #' view <- "mRNA"
+        #'
         #' E_ZSqE_WSq <-
         #'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
         #'
@@ -406,6 +423,8 @@ E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
     #'
     #' @examples
     #'
+    #' view <- "mRNA"
+    #'
     #' E_ZWSq <- E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
     #'
     #' @export
@@ -430,8 +449,10 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     #'
     #' @examples
     #'
+    #' \dontrun{
     #' VarExpl <-
     #'     VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
+    #'}
     #'
     #' @export
 
@@ -559,6 +580,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #'
     #' @examples
     #'
+    #' \dontrun{
     #' TL_data <- transferLearning_function(TL_param, MaxIterations,
     #'                                     MinIterations, minFactors,
     #'                                     views, likelihoods, Fctrzn,
@@ -569,6 +591,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #'                                     CenterTrg, PoisRateCstnt = 0.0001,
     #'                                     ss_start_time = NULL,
     #'                                     outputDir = "./")
+    #' }
     #'
     #'
     #' @export

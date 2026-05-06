@@ -30,8 +30,12 @@ the shared features are kept.
 }
 }
 \examples{
-#
-TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
+
+view <- "mRNA"
+YTrg_list <- Trg$YTrg_prep
+Fctrzn <- Lrn$Fctrzn
+
+mRNA_prep <- TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
 
 
 }

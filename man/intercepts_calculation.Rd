@@ -35,10 +35,11 @@ the maximum likelihood and the \code{\link{mle}} function.
 }
 \examples{
 #
+\dontrun{
 intercepts_calculation(expdat_meta,
                         Fctrzn,
                         FctrznDir,
                         ExpDataDir,
                         Seed)
-
+}
 }

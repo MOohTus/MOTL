@@ -32,6 +32,12 @@ Z matrix \code{ZMu} calculation for the current data
 }
 \examples{
 
+\dontrun{
+k <- 10
+view = "mRNA"
+likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+                "DNAme" = "gaussian", "SNV" = "bernoulli")
+
 ZMu <- ZMu_calculation(view,
                         k,
                         Fctrzn_Lrn_W,
@@ -40,5 +46,6 @@ ZMu <- ZMu_calculation(view,
                         ZMu_0,
                         ZMu,
                         YGauss)
+}
 
 }

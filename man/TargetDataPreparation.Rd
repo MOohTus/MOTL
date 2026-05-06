@@ -62,6 +62,9 @@ using Geometric means (from learning or target dataset) and transformation
 is a log2 transformation of the counts.
 }
 \examples{
+
+YTrg_list <- Trg$YTrg_prep
+
 YTrg_prep <- TargetDataPreparation(views = c("mRNA", "miRNA", "DNAme"),
                                     YTrg_list = YTrg_list,
                                     Fctrzn = Fctrzn, smpls = smpls,

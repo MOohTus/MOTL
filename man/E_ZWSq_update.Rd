@@ -26,6 +26,8 @@ weight squared W matrix \eqn{E[(ZW)^2]}.
 }
 \examples{
 
+view <- "mRNA"
+
 E_ZWSq <- E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 
 }

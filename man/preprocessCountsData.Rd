@@ -41,10 +41,14 @@ Transformation is performed using the \code{\link{countsTransformation}}
 function with log2.
 }
 \examples{
+
+expdat_meta_Lrn <- Lrn$Fctrzn@data
+YTrg_list <- Trg$YTrg_list
+
 mRNA <- preprocessCountsData(view = "mRNA", YTrg_list = YTrg_list,
-                           normalization = "newGeoMeans",
+                           normalization = FALSE,
                            expdat_meta_Lrn = expdat_meta_Lrn,
-                           transformation = TRUE)
+                           transformation = FALSE)
 
 
 }

@@ -54,6 +54,9 @@ brcds_SS_ex <-
 
 # See the doc to create the input parameter
 
+brcds_SS <- Trg$brcds_SS
+YTrg_list <- Trg$YTrg_list
+
 expdat_mRNA <- TCGATargetDataPrefiltering(view = "mRNA",
 brcds_SS = brcds_SS, SS = 1, YTrgFull = YTrg_list, Fctrzn = Lrn_Fctrzn)
 expdat_mRNA[c(1:5), c(1:5)]

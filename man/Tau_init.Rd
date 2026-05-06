@@ -24,6 +24,7 @@ Extract the Tau matrix from the MOFA object \code{Fctrzn} for each view.
 More explanation about Tau.
 }
 \examples{
+\dontrun{
 viewsLrn = c("mRNA", "miRNA", "DNAme", "SNV")
 InputModel <- "Model.hdf5"
 Fctrzn <- load_model(file = InputModel)
@@ -31,5 +32,5 @@ Fctrzn <- load_model(file = InputModel)
 Tau_list <- Tau_init(viewsLrn = viewsLrn,
                     Fctrzn = Fctrzn,
                     InputModel = InputModel)
-
+}
 }

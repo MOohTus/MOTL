@@ -13,6 +13,11 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
     #'
     #' @examples
     #'
+    #' data("Lrn", package = "MOTL)
+    #'
+    #' expdat_meta_Lrn <- Lrn$Fctrzn@data
+    #' YTrgFtrs <- Lrn$Fctrzn@features_metadata
+    #'
     #' GeoMeans_Lrn <-
     #'         GeoMeans_Lrn_init(view = "mRNA", expdat_meta_Lrn, YTrgFtrs)
     #'
@@ -74,6 +79,16 @@ countsNormalization <- function(expdat, GeoMeans) {
     #'
     #' @examples
     #'
+    #' ## Create a matrix with "counts" data
+    #' ## Then, create a summarized experiment object
+    #' expdat <- matrix(rexp(200, rate = .1), ncol = 20)
+    #' expdat <- apply(expdat, MARGIN = 2, round)
+    #' expdat <- SummarizedExperiment::SummarizedExperiment(expdat)
+    #'
+    #' ## With "newGeoMeans", geometric means will be calculated based on the
+    #' ## input matrix
+    #' GeoMeans <- "newGeoMeans"
+    #'
     #' expdat_counts_norm <- countsNormalization(expdat, GeoMeans)
     #'
     #' @export
@@ -108,6 +123,14 @@ countsTransformation <- function(expdat_count, TopD) {
     #' @returns data.frame of the log2 transformed and filtered data
     #'
     #' @examples
+    #'
+    #' ##
+    #' expdat_count <- matrix(rexp(200, rate = .1), ncol = 20)
+    #' expdat_count <- apply(expdat_count, MARGIN = 2, round)
+    #'
+    #' ## input matrix
+    #' TopD <- 20
+    #'
     #' expdat_counts_fltr <- countsTransformation(expdat_count, TopD)
     #'
     #'
@@ -152,10 +175,14 @@ preprocessCountsData <- function(view,
     #' @returns Preprocessed counts data for the current view
     #'
     #' @examples
+    #'
+    #' expdat_meta_Lrn <- Lrn$Fctrzn@data
+    #' YTrg_list <- Trg$YTrg_list
+    #'
     #' mRNA <- preprocessCountsData(view = "mRNA", YTrg_list = YTrg_list,
-    #'                            normalization = "newGeoMeans",
+    #'                            normalization = FALSE,
     #'                            expdat_meta_Lrn = expdat_meta_Lrn,
-    #'                            transformation = TRUE)
+    #'                            transformation = FALSE)
     #'
     #'
     #' @export
@@ -241,6 +268,9 @@ TargetDataPreparation <- function(views,
     #' @returns a list of prepared target data
     #'
     #' @examples
+    #'
+    #' YTrg_list <- Trg$YTrg_prep
+    #'
     #' YTrg_prep <- TargetDataPreparation(views = c("mRNA", "miRNA", "DNAme"),
     #'                                     YTrg_list = YTrg_list,
     #'                                     Fctrzn = Fctrzn, smpls = smpls,
@@ -315,9 +345,11 @@ initTransferLearningParamaters <- function(YTrg,
     #' YTrg
     #'
     #' @examples
-    #' views = c("mRNA", "miRNA", "DNAme", "SNV")
-    #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+    #' views <- c("mRNA", "miRNA", "DNAme", "SNV")
+    #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+    #' Fctrzn <- Lrn$Fctrzn_init
+    #' YTrg <- Trg$YTrg_prep
     #'
     #' TLparameter <-
     #'     initTransferLearningParamaters(YTrg = YTrg,
@@ -472,6 +504,9 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     #'
     #' # See the doc to create the input parameter
     #'
+    #' brcds_SS <- Trg$brcds_SS
+    #' YTrg_list <- Trg$YTrg_list
+    #'
     #' expdat_mRNA <- TCGATargetDataPrefiltering(view = "mRNA",
     #' brcds_SS = brcds_SS, SS = 1, YTrgFull = YTrg_list, Fctrzn = Lrn_Fctrzn)
     #' expdat_mRNA[c(1:5), c(1:5)]
@@ -574,15 +609,19 @@ TCGATargetDataPreparation <- function(views,
     #' @examples
     #' # see to create input data
     #'
+    #' YTrgFull <- Trg$YTrg_list
+    #' brcds_SS <- Trg$brcds_SS
+    #' SS <- 1
+    #'
     #' YTrg_prep <- TCGATargetDataPreparation(views,
     #'                                         YTrgFull,
     #'                                         brcds_SS,
     #'                                         SS,
     #'                                         Fctrzn,
     #'                                         smpls,
-    #'                                         normalization = "LrnGeoMeans",
+    #'                                         normalization = FALSE,
     #'                                         expdat_meta_Lrn,
-    #'                                         transformation = TRUE)
+    #'                                         transformation = FALSE)
     #' YTrg_prep$mRNA[c(1:5), c(1:5)]
     #' YTrg_prep$DNAme[c(1:5), c(1:5)]
     #'
@@ -723,8 +762,12 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     #' with the sample ordered.
     #'
     #' @examples
-    #' #
-    #' TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
+    #'
+    #' view <- "mRNA"
+    #' YTrg_list <- Trg$YTrg_prep
+    #' Fctrzn <- Lrn$Fctrzn
+    #'
+    #' mRNA_prep <- TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
     #'
     #'
     #' @export
@@ -773,6 +816,7 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #' names.
     #'
     #' @examples
+    #' \dontrun{
     #' viewsLrn = c("mRNA", "miRNA", "DNAme", "SNV")
     #' InputModel <- "Model.hdf5"
     #' Fctrzn <- load_model(file = InputModel)
@@ -780,7 +824,7 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #' Tau_list <- Tau_init(viewsLrn = viewsLrn,
     #'                     Fctrzn = Fctrzn,
     #'                     InputModel = InputModel)
-    #'
+    #' }
     #' @export
 
     ## Extract Tau from the factorization of the learning set
@@ -978,12 +1022,13 @@ intercepts_calculation <- function(expdat_meta,
     #'
     #' @examples
     #' #
+    #' \dontrun{
     #' intercepts_calculation(expdat_meta,
     #'                         Fctrzn,
     #'                         FctrznDir,
     #'                         ExpDataDir,
     #'                         Seed)
-    #'
+    #' }
     #' @export
     #'
 

@@ -51,13 +51,11 @@ for gaussian it is expanded gaussian log likelihood
 }
 \examples{
 
-view <- "mRNA"
-likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
-                "DNAme" = "gaussian", "SNV" = "bernoulli")
-
+\dontrun{
 ELBO_L <-
     ELBO_calculation(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W,
                         Zeta, YTrg, YGauss, PoisRateCstnt)
+}
 
 
 }

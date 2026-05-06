@@ -28,7 +28,9 @@ Calculate the variance explained by each factor for each view
 }
 \examples{
 
+\dontrun{
 VarExpl <-
     VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
+}
 
 }
