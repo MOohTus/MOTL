@@ -20,7 +20,8 @@ defined views. The list contains matrices.}
 
 \item{normalization}{if FALSE, no normalization. If "LrnGeoMeans",
 normalization using the pre-calculated Geometric means. If "newGeoMeans",
-normalization using Geometric means from dataset. By default, it's set to FALSE.}
+normalization using Geometric means from dataset. By default, it's set
+to FALSE.}
 
 \item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 

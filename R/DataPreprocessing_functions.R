@@ -59,17 +59,19 @@ countsNormalization <- function(expdat, GeoMeans) {
     #' Normalize counts data using DESeq2 normalization.
     #' Two ways of normalization:
     #' 1. Use the pre-calculated Geometric means of the learning dataset
-    #' 2. Use calculated Geometric means of the \code{expdat} dataset given in input
+    #' 2. Use calculated Geometric means of the \code{expdat} dataset given
+    #' in input
     #'
     #' If \code{is.numeric(GeoMeans) == TRUE}, input data are normalized with
     #' pre-calculated Geometric means (from learning dataset).
-    #' If non values are provided, Geometric means is calculated based on the input dataset
-    #' using \code{\link{GeoMeanFun}} function.
+    #' If non values are provided, Geometric means is calculated based on the
+    #' input dataset using \code{\link{GeoMeanFun}} function.
     #' Then, the input dataset is normalized using these Geometric means.
     #'
     #' @param expdat SE object of experimental data (could be miRNA or mRNA)
-    #' @param GeoMeans if it's a character, Geometric means will be calculated for the
-    #' \code{expdat} variable given in input (learning or target dataset).
+    #' @param GeoMeans if it's a character, Geometric means will be calculated
+    #' for the \code{expdat} variable given in input (learning or target
+    #' dataset).
     #' If it's a numerical vector, given Geometric means will be used for
     #' the normalization (the ones pre-calculated from the learning dataset)
     #'
@@ -140,7 +142,9 @@ countsTransformation <- function(expdat_count, TopD) {
     ## log transform and filter to keep only most variable
     expdat_counts_log <- log2(expdat_count + 1)
     FtrsKeep <-
-        base::rank(-matrixStats::rowVars(expdat_counts_log, na.rm = TRUE, useNames = FALSE),
+        base::rank(-matrixStats::rowVars(expdat_counts_log,
+                                         na.rm = TRUE,
+                                         useNames = FALSE),
                    ties.method = "first"
         ) <= TopD
     expdat_counts_fltr <- expdat_counts_log[FtrsKeep, ]
@@ -168,7 +172,8 @@ preprocessCountsData <- function(view,
     #' defined views. The list contains matrices.
     #' @param normalization if FALSE, no normalization. If "LrnGeoMeans",
     #' normalization using the pre-calculated Geometric means. If "newGeoMeans",
-    #' normalization using Geometric means from dataset. By default, it's set to FALSE.
+    #' normalization using Geometric means from dataset. By default, it's set
+    #' to FALSE.
     #' @param expdat_meta_Lrn the list of learning set factorization metadata
     #' @param transformation if FALSE, no transformation. If TRUE, log2
     #' normalization.
@@ -196,11 +201,13 @@ preprocessCountsData <- function(view,
 
     if (view %in% c("mRNA", "miRNA")) {
         ## Normalization
-        ## if "LrnGeoMeans", retrieve the learning set geometric means and normalize with it
+        ## if "LrnGeoMeans", retrieve the learning set geometric means and
+        ## normalize with it
         ## if "newGeoMeans", calculate the Geometric means of the input data
         if (is.character(normalization)) {
             if (normalization == "LrnGeoMeans") {
-                message("Normalize using the pre-calculated learning dataset Geometric means")
+                message("Normalize using the pre-calculated learning dataset
+                        Geometric means")
                 GeoMeans <-
                     GeoMeans_Lrn_init(view, expdat_meta_Lrn, rownames(YTrg))
             }
@@ -262,9 +269,10 @@ TargetDataPreparation <- function(views,
     #' @param Fctrzn the learning factorization model object (from \code{MOFA})
     #' @param smpls a vector of sample names (i.e. column names of the
     #' \code{YTrgFull})
-    #' @param normalization if FALSE, no normalization. If "LrnGeoMeans", normalization
-    #' using the learning Geometric means. If "newGeoMeans", Geometric means are
-    #' calculated using the input data. By default it's set to FALSE.
+    #' @param normalization if FALSE, no normalization. If "LrnGeoMeans",
+    #' normalization using the learning Geometric means. If "newGeoMeans",
+    #' Geometric means are calculated using the input data. By default it's
+    #' set to FALSE.
     #' @param expdat_meta_Lrn the list of learning set factorization metadata
     #' @param transformation if FALSE, no transformation. If TRUE, log2
     #' transformation of counts data. By default it's set to FALSE.
@@ -320,20 +328,21 @@ initTransferLearningParamaters <- function(YTrg,
     #' 2. Extract the factorized learning set weights \code{W}
     #' 3. Extract the factorized learning set squared weights \code{Wsq}
     #' 4. Extract the learning set \code{Tau} and log(Tau) \code{TauLn}
-    #' For each extracted parameter, common features between learning dataset and target
-    #' dataset are kept. Then target data \code{YTrg}, \code{Tau} and \code{TauLn}
-    #' are transposed.
+    #' For each extracted parameter, common features between learning dataset
+    #' and target dataset are kept. Then target data \code{YTrg}, \code{Tau}
+    #' and \code{TauLn} are transposed.
     #'
     #' Each parameter are extracted from the \code{Fctrzn} model created using
     #' \code{MOFA2}.
     #'
     #' \code{YTrg} matrices should have the same columns order.
     #'
-    #' @param YTrg a named list of target dataset matrices. Names correspond to the
-    #' defined views.
+    #' @param YTrg a named list of target dataset matrices. Names correspond to
+    #' the defined views.
     #' @param views a vector of target dataset view names (e.g.
     #' \code{c("mRNA", "miRNA")})
-    #' @param Fctrzn the learning dataset factorization model object (from \code{MOFA})
+    #' @param Fctrzn the learning dataset factorization model object
+    #' (from \code{MOFA})
     #' @param likelihoods a named list of data types. The list can contain
     #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
     #' type. Names are the view names.
@@ -584,10 +593,10 @@ TCGATargetDataPreparation <- function(views,
     #' Finally, counts data (e.g. mRNA and miRNA) can be normalized and/or
     #' transformed using \code{\link{preprocessCountsData}} function.
     #' - if \code{normalization = FALSE}: counts data are not normalized
-    #' - if \code{normalization = "LrnGeoMeans"}: counts data are normalized using
-    #' the learning dataset Geometric means calculated
-    #' - if \code{normalization = "newGeoMeans"}: counts data are normalized using the
-    #' geometric means calculated on the target dataset.
+    #' - if \code{normalization = "LrnGeoMeans"}: counts data are normalized
+    #' using the learning dataset Geometric means calculated
+    #' - if \code{normalization = "newGeoMeans"}: counts data are normalized
+    #' using the geometric means calculated on the target dataset.
     #'
     #' Normalization is performed in the \code{\link{countsNormalization}}
     #' function using \code{estimateSizeFactors} from
@@ -609,9 +618,9 @@ TCGATargetDataPreparation <- function(views,
     #' @param Fctrzn the learning factorization model object (from \code{MOFA})
     #' @param smpls a vector of sample names (i.e. column names of the
     #' \code{YTrgFull})
-    #' @param normalization if FALSE, no normalization. If "LrnGeoMeans", normalization
-    #' using the learning Geometric means. If "newGeoMeans", normalization with
-    #' target Geometric means. By default it's set to "FALSE".
+    #' @param normalization if FALSE, no normalization. If "LrnGeoMeans",
+    #' normalization using the learning Geometric means. If "newGeoMeans",
+    #' normalization with target Geometric means. By default it's set to "FALSE".
     #' @param expdat_meta_Lrn the list of learning set factorization metadata
     #' @param transformation if FALSE, no transformation. If TRUE, log2
     #' transformation of counts data. By default it's set to "FALSE"
@@ -771,7 +780,8 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     #' @param view current view data name (e.g. "mRNA", or "DNAme")
     #' @param YTrg_list a named list of target data. Names correspond to the
     #' views defined and the corresponding data are saved into \code{matrix}.
-    #' @param Fctrzn the learning dataset factorization model object (from \code{MOFA})
+    #' @param Fctrzn the learning dataset factorization model object (from
+    #' \code{MOFA})
     #' @param smpls an ordered vector of sample names
     #'
     #' @returns a matrix that contains the prepared data for the current view
@@ -884,7 +894,8 @@ TauLn_calculation <- function(view,
     #' type. Names are the view names.
     #' @param LrnSimple if TRUE, initialization uses the Tau values. If FALSE,
     #' imports values from a .csv file. By default is set to "TRUE".
-    #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
+    #' @param Fctrzn learning dataset factorization model object (from
+    #' \code{MOFA})
     #' @param LrnFctrnDir directory where log(Tau) values are saved. Files
     #' should be named like \code{"TauLn_mRNA.csv"}.
     #'
@@ -941,8 +952,10 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     #' @param LrnSimple if TRUE, calculates the squared weight values \code{WSq}.
     #' If FALSE, imports values from a .csv file. By default is set to "TRUE".
     #' \eqn{E[W^2]} using the weight values \code{W} \eqn{E[W]}.
-    #' If FALSE, load squared weight values from a file. By default, it's set to TRUE.
-    #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
+    #' If FALSE, load squared weight values from a file. By default, it's set
+    #' to TRUE.
+    #' @param Fctrzn learning dataset factorization model object (from
+    #' \code{MOFA})
     #' @param LrnFctrnDir directory where \code{WSq} values are saved
     #'
     #' @returns the squared weight matrix for the current view
@@ -989,10 +1002,11 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     #' matrix. The weight matrix is set to zero.
     #'
     #' @param view a character of current view name data
-    #' @param CenterTrg if FALSE, use the estimated feature weight intercept from
-    #' the \code{EstimatedIntercepts.rds} file. If TRUE, don't use the
+    #' @param CenterTrg if FALSE, use the estimated feature weight intercept
+    #' from the \code{EstimatedIntercepts.rds} file. If TRUE, don't use the
     #' estimated feature weight intercept.
-    #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
+    #' @param Fctrzn learning dataset factorization model object (from
+    #' \code{MOFA})
     #' @param LrnFctrnDir directory where the extimated intercepts file is.
     #'
     #' @returns a feature weight intercept values matrix for the current data
@@ -1035,13 +1049,15 @@ intercepts_calculation <- function(expdat_meta,
     #' and then for the factorization of the target dataset with transfer
     #' learning.
     #'
-    #' For Gaussian observed data, weight intercepts are the weight mean for each feature.
-    #' For Poisson and Bernoulli observed data, weight intercepts are calculated using
-    #' the maximum likelihood and the \code{\link{mle}} function.
+    #' For Gaussian observed data, weight intercepts are the weight mean for
+    #' each feature.
+    #' For Poisson and Bernoulli observed data, weight intercepts are calculated
+    #' using the maximum likelihood and the \code{\link{mle}} function.
     #'
     #' @param expdat_meta the named list of learning dataset factorization
     #' metadata
-    #' @param Fctrzn learning dataset factorization model object (from \code{MOFA})
+    #' @param Fctrzn learning dataset factorization model object (from
+    #' \code{MOFA})
     #' @param FctrznDir the learning dataset factorization directory name
     #' @param ExpDataDir the learning dataset directory name
     #' @param Seed random seed number

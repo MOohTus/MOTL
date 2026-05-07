@@ -13,7 +13,8 @@ E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 
 \item{ZMuSq}{matrix of squared ZMu values for current view}
 
-\item{E_Z_SqE_W_Sq}{matrix of \eqn{((E[Z])^2)((E[W])^2)} values for current view}
+\item{E_Z_SqE_W_Sq}{matrix of \eqn{((E[Z])^2)((E[W])^2)} values for
+current view}
 
 \item{E_ZSqE_WSq}{matrix of \eqn{E[Z^2]E[W^2]} values for current view}
 }

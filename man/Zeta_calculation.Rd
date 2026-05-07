@@ -27,13 +27,13 @@ For the current data view, calculate the Zeta matrix \code{Zeta}.
 }
 \details{
 \describe{
-\item{For bernoulli data, Zeta is calculated using the expected values
-of Z matrix and W squared matrix \code{E_ZWSq}. \code{E_ZWSq} is calculated
-using the \code{\link{E_ZWSq_update}} function.}{\eqn{Zeta_{nd}
-     = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}}
-\item{For other data type, Zeta is calculated using the expected values
-of Z matrix and the expected values of W matrix \code{E_ZE_W}. \code{E_ZE_W}
-is calculated using the \code{\link{E_ZE_W_update}}
+\item{For bernoulli data, Zeta is calculated using the expected
+values of Z matrix and W squared matrix \code{E_ZWSq}. \code{E_ZWSq}
+is calculated using the \code{\link{E_ZWSq_update}}
+function.}{\eqn{Zeta_{nd} = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}}
+\item{For other data type, Zeta is calculated using the expected
+values of Z matrix and the expected values of W matrix \code{E_ZE_W}.
+\code{E_ZE_W} is calculated using the \code{\link{E_ZE_W_update}}
 function.}{\eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]}, so
 \eqn{Zeta = ZMu \%*\% t(W)}}
 }

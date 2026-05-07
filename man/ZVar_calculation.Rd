@@ -19,7 +19,8 @@ calculated Z variances matrix for the current data
 \description{
 Z variances is calculation using initialized or updated Tau values
 and the squared weight values WSq values
-based on the appendix of the \code{MOFA2} paper and \href{https://github.com/bioFAM/MOFA2}{Github code}
+based on the appendix of the \code{MOFA2} paper
+and \href{https://github.com/bioFAM/MOFA2}{Github code}
 }
 \examples{
 

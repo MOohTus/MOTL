@@ -21,18 +21,20 @@ ELBO_calculation(
 \item{view}{a character of current view name data}
 
 \item{likelihoods}{a named list of data types. The list can contain
-\code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
-type. Names are the view names.}
+\code{gaussian}, \code{poisson} or \code{bernoulli} depending of the
+data type. Names are the view names.}
 
 \item{Tau}{list of Tau matrices}
 
 \item{TauLn}{list of log(Tau) matrices}
 
-\item{E_ZWSq}{expected values of the multiplication of the Z matrix with
-weight squared W matrix. See \code{\link{E_ZWSq_update}} function.}
+\item{E_ZWSq}{expected values of the multiplication of the Z matrix
+with weight squared W matrix. See \code{\link{E_ZWSq_update}}
+function.}
 
-\item{E_ZE_W}{multiplication of the expected values of Z matrix with the
-expected values of W matrix. Seed \code{\link{E_ZE_W_update}} function.}
+\item{E_ZE_W}{multiplication of the expected values of Z matrix
+with the expected values of W matrix. Seed
+\code{\link{E_ZE_W_update}} function.}
 
 \item{Zeta}{list of Zeta matrices}
 
@@ -40,7 +42,8 @@ expected values of W matrix. Seed \code{\link{E_ZE_W_update}} function.}
 
 \item{YGauss}{list of pseudo Y value matrices}
 
-\item{PoisRateCstnt}{small constant added for Poisson data to avoid errors}
+\item{PoisRateCstnt}{small constant added for Poisson data to
+avoid errors}
 }
 \value{
 the ELBO value for the current view/iteration

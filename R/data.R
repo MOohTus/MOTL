@@ -16,7 +16,8 @@
 #' MOFA2 object is a S4 class and contains the following main slots (the ones
 #' relevant and used for the transfer learning):
 #' \describe{
-#' \item{data}{input data used for the factorization analysis (mRNA, miRNA, DNAme and SNV)}
+#' \item{data}{input data used for the factorization analysis (mRNA, miRNA,
+#' DNAme and SNV)}
 #' \item{samples_metadata}{sample metadata (i.e. sample names and group)}
 #' \item{features_metadata}{features metadata (feature identifiers and views)}
 #' \item{expectations}{expected values of the factors and the loadings}
@@ -24,7 +25,8 @@
 #' \item{data_options}{data processing options}
 #' \item{model_options}{model options}
 #' \item{training_options}{model training options}
-#' \item{dimensions}{dimensions of the model (e.g. \code{M} number of views, \code{N} number of samples, \code{D} number of features)}}
+#' \item{dimensions}{dimensions of the model (e.g. \code{M} number of views,
+#' \code{N} number of samples, \code{D} number of features)}}
 #'
 #' For more information about the structure of MOFA object, see the
 #' [\code{MOFA2}](https://bioconductor.org/packages/release/bioc/manuals/MOFA2/man/MOFA2.pdf) vignette.
@@ -43,19 +45,26 @@
 #' \item{YTrg_list}{list of the target dataset - Samples are in columns and
 #' features are in rows.
 #' \describe{
-#' \item{\code{mRNA}:}{data stored into a \code{\link{SummarizedExperiment}} object}
-#' \item{\code{miRNA}:}{data stored into a \code{\link{SummarizedExperiment}} object}
-#' \item{\code{DNAme}:}{data stored into a \code{\link{SummarizedExperiment}} object}
+#' \item{\code{mRNA}:}{data stored into a \code{\link{SummarizedExperiment}}
+#' object}
+#' \item{\code{miRNA}:}{data stored into a \code{\link{SummarizedExperiment}}
+#' object}
+#' \item{\code{DNAme}:}{data stored into a \code{\link{SummarizedExperiment}}
+#' object}
 #' \item{\code{SNV}:}{data stored into a \code{matrix}}
 #' }
 #' }
 #' \item{Trg_meta}{list of metadata:
 #' \describe{
-#' \item{Five \code{character}}{smpls, ftrs_mRNA, ftrs_miRNA, ftrs_DNAme, ftrs_SNV}
-#' \item{Four \code{data.frame}}{with three variables (brcds, submittor, prjct) - brcds_mRNA, brcds_miRNA, brcds_DNAme, brcds_SNV}
-#' \item{Six \code{integer}}{Seed, ElbowK_Total, ElbowK_mRNA, ElbowK_miRNA, ElbowK_DNAme, ElbowK_SNV}
+#' \item{Five \code{character}}{smpls, ftrs_mRNA, ftrs_miRNA, ftrs_DNAme,
+#' ftrs_SNV}
+#' \item{Four \code{data.frame}}{with three variables (brcds, submittor, prjct)
+#' - brcds_mRNA, brcds_miRNA, brcds_DNAme, brcds_SNV}
+#' \item{Six \code{integer}}{Seed, ElbowK_Total, ElbowK_mRNA, ElbowK_miRNA,
+#' ElbowK_DNAme, ElbowK_SNV}
 #' \item{One \code{logical}}{if_vst}
-#' \item{Four \code{numeric}}{PCVarPrcnt_mRNA, PCVarPrcnt_miRNA, PCVarPrcnt_DNAme, PCVarPrcnt_SNV}
+#' \item{Four \code{numeric}}{PCVarPrcnt_mRNA, PCVarPrcnt_miRNA,
+#' PCVarPrcnt_DNAme, PCVarPrcnt_SNV}
 #' }
 #' }
 #' \item{brcds_SS}{a list of 4 list of \code{data.frame} with the sample names.}

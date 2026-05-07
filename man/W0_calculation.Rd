@@ -9,11 +9,12 @@ W0_calculation(view, CenterTrg, Fctrzn, LrnFctrnDir)
 \arguments{
 \item{view}{a character of current view name data}
 
-\item{CenterTrg}{if FALSE, use the estimated feature weight intercept from
-the \code{EstimatedIntercepts.rds} file. If TRUE, don't use the
+\item{CenterTrg}{if FALSE, use the estimated feature weight intercept
+from the \code{EstimatedIntercepts.rds} file. If TRUE, don't use the
 estimated feature weight intercept.}
 
-\item{Fctrzn}{learning dataset factorization model object (from \code{MOFA})}
+\item{Fctrzn}{learning dataset factorization model object (from
+\code{MOFA})}
 
 \item{LrnFctrnDir}{directory where the extimated intercepts file is.}
 }

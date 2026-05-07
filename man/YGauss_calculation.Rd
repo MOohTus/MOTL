@@ -27,10 +27,12 @@ type. Names are the view names.}
 
 \item{Tau}{list of Tau matrices}
 
-\item{CenterTrg}{if FALSE, use the estimated feature weight intercept from
-the \code{EstimatedIntercepts.rds} file. If TRUE, use the feature weight means.}
+\item{CenterTrg}{if FALSE, use the estimated feature weight intercept
+from the \code{EstimatedIntercepts.rds} file. If TRUE, use the feature
+weight means.}
 
-\item{PoisRateCstnt}{small constant added when transforming Poisson data to avoid errors}
+\item{PoisRateCstnt}{small constant added when transforming Poisson data
+to avoid errors}
 }
 \value{
 pseudo Y values for the current view

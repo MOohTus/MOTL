@@ -7,13 +7,13 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     #' For the current data view, calculate the Zeta matrix \code{Zeta}.
     #'
     #' \describe{
-    #'      \item{For bernoulli data, Zeta is calculated using the expected values
-    #'      of Z matrix and W squared matrix \code{E_ZWSq}. \code{E_ZWSq} is calculated
-    #'      using the \code{\link{E_ZWSq_update}} function.}{\eqn{Zeta_{nd}
-    #'      = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}}
-    #'      \item{For other data type, Zeta is calculated using the expected values
-    #'      of Z matrix and the expected values of W matrix \code{E_ZE_W}. \code{E_ZE_W}
-    #'      is calculated using the \code{\link{E_ZE_W_update}}
+    #'      \item{For bernoulli data, Zeta is calculated using the expected
+    #'      values of Z matrix and W squared matrix \code{E_ZWSq}. \code{E_ZWSq}
+    #'      is calculated using the \code{\link{E_ZWSq_update}}
+    #'      function.}{\eqn{Zeta_{nd} = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}}
+    #'      \item{For other data type, Zeta is calculated using the expected
+    #'      values of Z matrix and the expected values of W matrix \code{E_ZE_W}.
+    #'      \code{E_ZE_W} is calculated using the \code{\link{E_ZE_W_update}}
     #'      function.}{\eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]}, so
     #'      \eqn{Zeta = ZMu \%*\% t(W)}}
     #' }
@@ -143,9 +143,11 @@ YGauss_calculation <- function(view,
     #' @param YTrg current data matrix
     #' @param Zeta list of Zeta matrices
     #' @param Tau list of Tau matrices
-    #' @param CenterTrg if FALSE, use the estimated feature weight intercept from
-    #' the \code{EstimatedIntercepts.rds} file. If TRUE, use the feature weight means.
-    #' @param PoisRateCstnt small constant added when transforming Poisson data to avoid errors
+    #' @param CenterTrg if FALSE, use the estimated feature weight intercept
+    #' from the \code{EstimatedIntercepts.rds} file. If TRUE, use the feature
+    #' weight means.
+    #' @param PoisRateCstnt small constant added when transforming Poisson data
+    #' to avoid errors
     #'
     #' @returns pseudo Y values for the current view
     #'
@@ -190,7 +192,8 @@ ZVar_calculation <- function(view, Tau, Fctrzn_Lrn_WSq) {
     #'
     #' Z variances is calculation using initialized or updated Tau values
     #' and the squared weight values WSq values
-    #' based on the appendix of the `MOFA2` paper and [Github code](https://github.com/bioFAM/MOFA2)
+    #' based on the appendix of the `MOFA2` paper
+    #' and [Github code](https://github.com/bioFAM/MOFA2)
     #'
     #' @param view a character of current view name data
     #' @param Tau list of Tau matrices
@@ -280,18 +283,21 @@ ELBO_calculation <-
         #'
         #' @param view a character of current view name data
         #' @param likelihoods a named list of data types. The list can contain
-        #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
-        #' type. Names are the view names.
+        #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the
+        #' data type. Names are the view names.
         #' @param Tau list of Tau matrices
         #' @param TauLn list of log(Tau) matrices
-        #' @param E_ZWSq expected values of the multiplication of the Z matrix with
-        #' weight squared W matrix. See \code{\link{E_ZWSq_update}} function.
-        #' @param E_ZE_W multiplication of the expected values of Z matrix with the
-        #' expected values of W matrix. Seed \code{\link{E_ZE_W_update}} function.
+        #' @param E_ZWSq expected values of the multiplication of the Z matrix
+        #' with weight squared W matrix. See \code{\link{E_ZWSq_update}}
+        #' function.
+        #' @param E_ZE_W multiplication of the expected values of Z matrix
+        #' with the expected values of W matrix. Seed
+        #' \code{\link{E_ZE_W_update}} function.
         #' @param Zeta list of Zeta matrices
         #' @param YTrg list of data
         #' @param YGauss list of pseudo Y value matrices
-        #' @param PoisRateCstnt small constant added for Poisson data to avoid errors
+        #' @param PoisRateCstnt small constant added for Poisson data to
+        #' avoid errors
         #'
         #' @returns the ELBO value for the current view/iteration
         #'
@@ -419,8 +425,8 @@ E_ZSqE_WSq_update <-
         #'
         #' Calculate `E_ZSqE_WSq`
         #'
-        #' `E_ZSqE_WSq` is the multiplication of the expected values of the squared Z
-        #' matrix with the expected values of the squared W matrix
+        #' `E_ZSqE_WSq` is the multiplication of the expected values of the
+        #' squared Z matrix with the expected values of the squared W matrix
         #' \eqn{E[Z^2]*E[W^2]}
         #'
         #' @param view current view name
@@ -463,7 +469,8 @@ E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
     #' @param view current view name
     #' @param E_ZE_W matrix of \eqn{E[Z]E[W]} values for current view
     #' @param ZMuSq matrix of squared ZMu values for current view
-    #' @param E_Z_SqE_W_Sq matrix of \eqn{((E[Z])^2)((E[W])^2)} values for current view
+    #' @param E_Z_SqE_W_Sq matrix of \eqn{((E[Z])^2)((E[W])^2)} values for
+    #' current view
     #' @param E_ZSqE_WSq matrix of \eqn{E[Z^2]E[W^2]} values for current view
     #'
     #' @returns `E_ZWSq` values for current view
@@ -586,9 +593,9 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #' \code{\link{initTransferLearningParamaters}} function.
     #'
     #' @param TL_param a named list of initialized parameters and data objects
-    #" for transfer learning. It contains target dataset, weigths and scores matrices from
-    #' matrix factorization of the learning dataset calculated using MOFA. See
-    #' the detail section for more informations.
+    #' for transfer learning. It contains target dataset, weigths and scores
+    #' matrices from matrix factorization of the learning dataset calculated
+    #' using MOFA. See the detail section for more informations.
     #' @param MaxIterations the maximum number of iterations for the matrix
     #' factorization convergence. After this number, the factorization is
     #' stopped.
@@ -610,10 +617,12 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #' @param StartELBO number after which iteration to start checking ELBO on
     #' @param FreqELBO number that correspond to how often to assess the ELBO
     #' @param DropFactorTH threshold number to drop or not factors. If factor
-    #' with lowest maximum variance explained is below this threshold, it's dropped.
-    #' @param ConvergenceIts number of consecutive iterations that change in ELBO is
-    #" below threshold before convergence
-    #' @param ConvergenceTH threshold number for change in ELBO for checking convergence
+    #' with lowest maximum variance explained is below this threshold, it's
+    #' dropped.
+    #' @param ConvergenceIts number of consecutive iterations that change in
+    #' ELBO is below threshold before convergence
+    #' @param ConvergenceTH threshold number for change in ELBO for checking
+    #' convergence
     #' @param CenterTrg if TRUE, center the target dataset during processing, if
     #' FALSE, leave target dataset uncentered and use estimated learning dataset
     #' intercepts.
@@ -648,7 +657,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #'
     #' \donttest{
     #'
-    #' data("TL_param", package = "MOTL)
+    #' data("TL_param", package = "MOTL")
     #'
     #' ss_start_time <- Sys.time()
     #' minFactors <- 13

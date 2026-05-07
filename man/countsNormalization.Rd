@@ -9,8 +9,9 @@ countsNormalization(expdat, GeoMeans)
 \arguments{
 \item{expdat}{SE object of experimental data (could be miRNA or mRNA)}
 
-\item{GeoMeans}{if it's a character, Geometric means will be calculated for the
-\code{expdat} variable given in input (learning or target dataset).
+\item{GeoMeans}{if it's a character, Geometric means will be calculated
+for the \code{expdat} variable given in input (learning or target
+dataset).
 If it's a numerical vector, given Geometric means will be used for
 the normalization (the ones pre-calculated from the learning dataset)}
 }
@@ -23,14 +24,15 @@ Normalize counts data using DESeq2 normalization.
 Two ways of normalization:
 \enumerate{
 \item Use the pre-calculated Geometric means of the learning dataset
-\item Use calculated Geometric means of the \code{expdat} dataset given in input
+\item Use calculated Geometric means of the \code{expdat} dataset given
+in input
 }
 }
 \details{
 If \code{is.numeric(GeoMeans) == TRUE}, input data are normalized with
 pre-calculated Geometric means (from learning dataset).
-If non values are provided, Geometric means is calculated based on the input dataset
-using \code{\link{GeoMeanFun}} function.
+If non values are provided, Geometric means is calculated based on the
+input dataset using \code{\link{GeoMeanFun}} function.
 Then, the input dataset is normalized using these Geometric means.
 }
 \examples{

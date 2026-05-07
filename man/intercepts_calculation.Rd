@@ -10,7 +10,8 @@ intercepts_calculation(expdat_meta, Fctrzn, FctrznDir, ExpDataDir, Seed)
 \item{expdat_meta}{the named list of learning dataset factorization
 metadata}
 
-\item{Fctrzn}{learning dataset factorization model object (from \code{MOFA})}
+\item{Fctrzn}{learning dataset factorization model object (from
+\code{MOFA})}
 
 \item{FctrznDir}{the learning dataset factorization directory name}
 
@@ -29,9 +30,10 @@ and then for the factorization of the target dataset with transfer
 learning.
 }
 \details{
-For Gaussian observed data, weight intercepts are the weight mean for each feature.
-For Poisson and Bernoulli observed data, weight intercepts are calculated using
-the maximum likelihood and the \code{\link{mle}} function.
+For Gaussian observed data, weight intercepts are the weight mean for
+each feature.
+For Poisson and Bernoulli observed data, weight intercepts are calculated
+using the maximum likelihood and the \code{\link{mle}} function.
 }
 \examples{
 #

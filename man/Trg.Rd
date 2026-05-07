@@ -9,24 +9,33 @@
 \item{YTrg_list}{list of the target dataset - Samples are in columns and
 features are in rows.
 \describe{
-\item{\code{mRNA}:}{data stored into a \code{\link{SummarizedExperiment}} object}
-\item{\code{miRNA}:}{data stored into a \code{\link{SummarizedExperiment}} object}
-\item{\code{DNAme}:}{data stored into a \code{\link{SummarizedExperiment}} object}
+\item{\code{mRNA}:}{data stored into a \code{\link{SummarizedExperiment}}
+object}
+\item{\code{miRNA}:}{data stored into a \code{\link{SummarizedExperiment}}
+object}
+\item{\code{DNAme}:}{data stored into a \code{\link{SummarizedExperiment}}
+object}
 \item{\code{SNV}:}{data stored into a \code{matrix}}
 }
 }
 \item{Trg_meta}{list of metadata:
 \describe{
-\item{Five \code{character}}{smpls, ftrs_mRNA, ftrs_miRNA, ftrs_DNAme, ftrs_SNV}
-\item{Four \code{data.frame}}{with three variables (brcds, submittor, prjct) - brcds_mRNA, brcds_miRNA, brcds_DNAme, brcds_SNV}
-\item{Six \code{integer}}{Seed, ElbowK_Total, ElbowK_mRNA, ElbowK_miRNA, ElbowK_DNAme, ElbowK_SNV}
+\item{Five \code{character}}{smpls, ftrs_mRNA, ftrs_miRNA, ftrs_DNAme,
+ftrs_SNV}
+\item{Four \code{data.frame}}{with three variables (brcds, submittor, prjct)
+\itemize{
+\item brcds_mRNA, brcds_miRNA, brcds_DNAme, brcds_SNV}
+\item{Six \code{integer}}{Seed, ElbowK_Total, ElbowK_mRNA, ElbowK_miRNA,
+ElbowK_DNAme, ElbowK_SNV}
 \item{One \code{logical}}{if_vst}
-\item{Four \code{numeric}}{PCVarPrcnt_mRNA, PCVarPrcnt_miRNA, PCVarPrcnt_DNAme, PCVarPrcnt_SNV}
+\item{Four \code{numeric}}{PCVarPrcnt_mRNA, PCVarPrcnt_miRNA,
+PCVarPrcnt_DNAme, PCVarPrcnt_SNV}
 }
 }
 \item{brcds_SS}{a list of 4 list of \code{data.frame} with the sample names.}
 \item{YTrg_prep}{list of the prepared input target dataset (mRNA,
 miRNA, DNAme, SNV). Samples are in columns and features are in rows.}
+}
 }
 }
 \usage{

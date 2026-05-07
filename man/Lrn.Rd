@@ -11,7 +11,8 @@ List of two \code{MOFA} objects: \code{Fctrzn} and
 MOFA2 object is a S4 class and contains the following main slots (the ones
 relevant and used for the transfer learning):
 \describe{
-\item{data}{input data used for the factorization analysis (mRNA, miRNA, DNAme and SNV)}
+\item{data}{input data used for the factorization analysis (mRNA, miRNA,
+DNAme and SNV)}
 \item{samples_metadata}{sample metadata (i.e. sample names and group)}
 \item{features_metadata}{features metadata (feature identifiers and views)}
 \item{expectations}{expected values of the factors and the loadings}
@@ -19,7 +20,8 @@ relevant and used for the transfer learning):
 \item{data_options}{data processing options}
 \item{model_options}{model options}
 \item{training_options}{model training options}
-\item{dimensions}{dimensions of the model (e.g. \code{M} number of views, \code{N} number of samples, \code{D} number of features)}}
+\item{dimensions}{dimensions of the model (e.g. \code{M} number of views,
+\code{N} number of samples, \code{D} number of features)}}
 
 For more information about the structure of MOFA object, see the
 \href{https://bioconductor.org/packages/release/bioc/manuals/MOFA2/man/MOFA2.pdf}{\code{MOFA2}} vignette.

@@ -7,13 +7,14 @@
 initTransferLearningParamaters(YTrg, views, Fctrzn, likelihoods)
 }
 \arguments{
-\item{YTrg}{a named list of target dataset matrices. Names correspond to the
-defined views.}
+\item{YTrg}{a named list of target dataset matrices. Names correspond to
+the defined views.}
 
 \item{views}{a vector of target dataset view names (e.g.
 \code{c("mRNA", "miRNA")})}
 
-\item{Fctrzn}{the learning dataset factorization model object (from \code{MOFA})}
+\item{Fctrzn}{the learning dataset factorization model object
+(from \code{MOFA})}
 
 \item{likelihoods}{a named list of data types. The list can contain
 \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
@@ -41,9 +42,9 @@ The function performs the following steps:
 \item Extract the factorized learning set weights \code{W}
 \item Extract the factorized learning set squared weights \code{Wsq}
 \item Extract the learning set \code{Tau} and log(Tau) \code{TauLn}
-For each extracted parameter, common features between learning dataset and target
-dataset are kept. Then target data \code{YTrg}, \code{Tau} and \code{TauLn}
-are transposed.
+For each extracted parameter, common features between learning dataset
+and target dataset are kept. Then target data \code{YTrg}, \code{Tau}
+and \code{TauLn} are transposed.
 }
 }
 \details{

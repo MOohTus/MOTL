@@ -23,8 +23,8 @@ matrices}
 E_ZSqE_WSq for current view
 }
 \description{
-\code{E_ZSqE_WSq} is the multiplication of the expected values of the squared Z
-matrix with the expected values of the squared W matrix
+\code{E_ZSqE_WSq} is the multiplication of the expected values of the
+squared Z matrix with the expected values of the squared W matrix
 \eqn{E[Z^2]*E[W^2]}
 }
 \examples{

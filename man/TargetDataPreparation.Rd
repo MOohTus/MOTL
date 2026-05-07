@@ -27,9 +27,10 @@ defined views. The list contains matrices.}
 
 \item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 
-\item{normalization}{if FALSE, no normalization. If "LrnGeoMeans", normalization
-using the learning Geometric means. If "newGeoMeans", Geometric means are
-calculated using the input data. By default it's set to FALSE.}
+\item{normalization}{if FALSE, no normalization. If "LrnGeoMeans",
+normalization using the learning Geometric means. If "newGeoMeans",
+Geometric means are calculated using the input data. By default it's
+set to FALSE.}
 
 \item{transformation}{if FALSE, no transformation. If TRUE, log2
 transformation of counts data. By default it's set to FALSE.}

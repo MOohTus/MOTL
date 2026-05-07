@@ -35,9 +35,9 @@ for each view. Each dataframe contains at least one column named "brcds"
 \item{smpls}{a vector of sample names (i.e. column names of the
 \code{YTrgFull})}
 
-\item{normalization}{if FALSE, no normalization. If "LrnGeoMeans", normalization
-using the learning Geometric means. If "newGeoMeans", normalization with
-target Geometric means. By default it's set to "FALSE".}
+\item{normalization}{if FALSE, no normalization. If "LrnGeoMeans",
+normalization using the learning Geometric means. If "newGeoMeans",
+normalization with target Geometric means. By default it's set to "FALSE".}
 
 \item{expdat_meta_Lrn}{the list of learning set factorization metadata}
 
@@ -71,10 +71,10 @@ Finally, counts data (e.g. mRNA and miRNA) can be normalized and/or
 transformed using \code{\link{preprocessCountsData}} function.
 \itemize{
 \item if \code{normalization = FALSE}: counts data are not normalized
-\item if \code{normalization = "LrnGeoMeans"}: counts data are normalized using
-the learning dataset Geometric means calculated
-\item if \code{normalization = "newGeoMeans"}: counts data are normalized using the
-geometric means calculated on the target dataset.
+\item if \code{normalization = "LrnGeoMeans"}: counts data are normalized
+using the learning dataset Geometric means calculated
+\item if \code{normalization = "newGeoMeans"}: counts data are normalized
+using the geometric means calculated on the target dataset.
 }
 
 Normalization is performed in the \code{\link{countsNormalization}}
