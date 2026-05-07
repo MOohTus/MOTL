@@ -905,11 +905,11 @@ TauLn_calculation <- function(view,
     #'
     #' data("Lrn", package = "MOTL")
     #'
-    #' Fctrzn <- Lrn$Fctrzn
+    #' Fctrzn <- Lrn$Fctrzn_init
     #' likelihoodsLrn <- get_default_model_options(Fctrzn)$likelihoods
     #'
     #' TauLn_mRNA = TauLn_calculation(view = "mRNA",
-    #'                                 likelihoodsLrn = likelihoods,
+    #'                                 likelihoodsLrn = likelihoodsLrn,
     #'                                 Fctrzn = Fctrzn,
     #'                                 LrnSimple = TRUE,
     #'                                 LrnFctrnDir = LrnFctrnDir)

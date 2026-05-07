@@ -304,6 +304,44 @@ ELBO_calculation <-
         #' @examples
         #'
         #' \donttest{
+        #'
+        #' data("TL_param", package = "MOTL")
+        #'
+        #' view <- "mRNA"
+        #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
+        #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+        #' Tau <- TL_param$Tau
+        #' TauLn <- TL_param$TauLn
+        #' Zeta <- TL_param$Zeta
+        #' YTrg <- TL_param$YTrg
+        #' ZMu <- TL_param$ZMu
+        #' CenterTrg <- FALSE
+        #' PoisRateCstnt <- 0.0001
+        #'
+        #' YGauss <- YGauss_calculation(view = view,
+        #'                                likelihoods = likelihoods,
+        #'                                YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
+        #'
+        #' ZMuSq <- TL_param$ZMuSq
+        #' ZMu_0 <- TL_param$ZMu_0
+        #' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+        #' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+        #' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
+        #'
+        #' E_ZE_W <- list()
+        #' E_Z_SqE_W_Sq <- list()
+        #' E_ZSqE_WSq <- list()
+        #' E_ZWSq <- list()
+        #'
+        #' E_ZE_W$mRNA <-
+        #'     E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+        #' E_Z_SqE_W_Sq$mRNA <-
+        #'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+        #' E_ZSqE_WSq$mRNA <-
+        #'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+        #' E_ZWSq$mRNA <-
+        #'     E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+        #'
         #' ELBO_L <-
         #'     ELBO_calculation(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W,
         #'                         Zeta, YTrg, YGauss, PoisRateCstnt)
