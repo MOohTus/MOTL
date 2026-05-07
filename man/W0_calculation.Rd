@@ -33,6 +33,10 @@ matrix. The weight matrix is set to zero.
 }
 \examples{
 
+data("Lrn", package = "MOTL")
+
+Fctrzn <- Lrn$Fctrzn
+
 W0_mRNA = W0_calculation(view = "mRNA",
                             CenterTrg = TRUE,
                             Fctrzn = Fctrzn,

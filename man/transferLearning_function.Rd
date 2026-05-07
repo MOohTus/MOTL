@@ -139,20 +139,3 @@ corresponds to each omic data.
 To create the \code{TL_param} variable, see the
 \code{\link{initTransferLearningParamaters}} function.
 }
-\examples{
-
-\dontrun{
-TL_data <- transferLearning_function(TL_param, MaxIterations,
-                                    MinIterations, minFactors,
-                                    views, likelihoods, Fctrzn,
-                                    StartDropFactor, FreqDropFactor,
-                                    StartELBO, FreqELBO,
-                                    DropFactorTH, ConvergenceIts,
-                                    ConvergenceTH,
-                                    CenterTrg, PoisRateCstnt = 0.0001,
-                                    ss_start_time = NULL,
-                                    outputDir = "./")
-}
-
-
-}

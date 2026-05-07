@@ -26,7 +26,7 @@ weight squared W matrix \eqn{E[(ZW)^2]}.
 }
 \examples{
 
-data(TL_param)
+data("TL_param", package = "MOTL")
 view <- "mRNA"
 ZMuSq <- TL_param$ZMuSq
 ZMu <- TL_param$ZMu

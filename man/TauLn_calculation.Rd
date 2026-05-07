@@ -39,12 +39,15 @@ For gaussian data, \eqn{TauLn <- log(Tau)}
 }
 \examples{
 
-likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
-                "DNAme" = "gaussian", "SNV" = "bernoulli")
+data("Lrn", package = "MOTL")
+
+Fctrzn <- Lrn$Fctrzn
+likelihoodsLrn <- get_default_model_options(Fctrzn)$likelihoods
 
 TauLn_mRNA = TauLn_calculation(view = "mRNA",
                                 likelihoodsLrn = likelihoods,
                                 Fctrzn = Fctrzn,
+                                LrnSimple = TRUE,
                                 LrnFctrnDir = LrnFctrnDir)
 
 

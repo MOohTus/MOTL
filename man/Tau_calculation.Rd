@@ -29,9 +29,15 @@ Tau values are updated using the following equation:
 \eqn{Tau = (\frac{1}{2})*(\frac{1}{Zeta[[view]]})*tanh(\frac{Zeta[[view]]}{2})}
 }
 \examples{
-view = "mRNA"
-likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+
+data("TL_param", package = "MOTL")
+
+view <- "mRNA"
+likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+Zeta <- TL_param$Zeta
+Tau <- TL_param$Tau
+
 
 Tau <- Tau_calculation(view = view,
                         likelihoods = likelihoods,

@@ -36,6 +36,11 @@ are saved in the \code{Fctrzn} variable. See the documentation.
 }
 \examples{
 
+data("Lrn", package = "MOTL")
+
+Fctrzn <- Lrn$Fctrzn
+likelihoodsLrn <- get_default_model_options(Fctrzn)$likelihoods
+
 WSq_mRNA = WSq_calculation(view = "mRNA",
                             Fctrzn = Fctrzn,
                             LrnFctrnDir = LrnFctrnDir,

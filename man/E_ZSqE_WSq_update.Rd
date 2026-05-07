@@ -29,7 +29,7 @@ matrix with the expected values of the squared W matrix
 }
 \examples{
 
-data(TL_param)
+data("TL_param", package = "MOTL")
 view <- "mRNA"
 ZMuSq <- TL_param$ZMuSq
 ZMu_0 <- TL_param$ZMu_0

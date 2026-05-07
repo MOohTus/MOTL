@@ -31,6 +31,9 @@ the shared features are kept.
 }
 \examples{
 
+data("Lrn", package = "MOTL")
+data("Trg", package = "MOTL")
+
 view <- "mRNA"
 YTrg_list <- Trg$YTrg_prep
 Fctrzn <- Lrn$Fctrzn

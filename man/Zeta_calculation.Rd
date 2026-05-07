@@ -39,7 +39,16 @@ function.}{\eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]}, so
 }
 }
 \examples{
+
+data("TL_param", package = "MOTL")
+
 view <- "mRNA"
+ZMuSq <- TL_param$ZMuSq
+ZMu <- TL_param$ZMu
+ZMu_0 <- TL_param$ZMu_0
+Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
 likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
 

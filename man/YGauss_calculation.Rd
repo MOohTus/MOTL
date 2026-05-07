@@ -45,9 +45,16 @@ For gaussian data this is done for each iteration \code{It>=0}, for others
 it is done for each iteration, exept the first one \code{It>0}.
 }
 \examples{
-view = "mRNA"
-likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+
+data("TL_param", package = "MOTL")
+
+view <- "mRNA"
+likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+CenterTrg <- FALSE
+YTrg <- TL_param$YTrg
+Zeta <- TL_param$Zeta
+PoisRateCstnt <- 0.0001
 
 YGauss <- YGauss_calculation(view = view,
                                likelihoods = likelihoods,

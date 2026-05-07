@@ -35,7 +35,7 @@ the maximum likelihood and the \code{\link{mle}} function.
 }
 \examples{
 #
-\dontrun{
+\donttest{
 intercepts_calculation(expdat_meta,
                         Fctrzn,
                         FctrznDir,

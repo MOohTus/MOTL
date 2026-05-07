@@ -23,6 +23,11 @@ based on the appendix of the \code{MOFA2} paper and \href{https://github.com/bio
 }
 \examples{
 
+data("TL_param", package = "MOTL")
+
+Tau <- TL_param$Tau
+Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
+
 ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
 
 }

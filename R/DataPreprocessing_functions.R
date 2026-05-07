@@ -177,6 +177,9 @@ preprocessCountsData <- function(view,
     #'
     #' @examples
     #'
+    #' data("Lrn", package = "MOTL")
+    #' data("Trg", package = "MOTL")
+    #'
     #' expdat_meta_Lrn <- Lrn$Fctrzn@data
     #' YTrg_list <- Trg$YTrg_list
     #'
@@ -270,6 +273,8 @@ TargetDataPreparation <- function(views,
     #'
     #' @examples
     #'
+    #' data("Trg", package = "MOTL")
+    #'
     #' YTrg_list <- Trg$YTrg_prep
     #'
     #' YTrg_prep <- TargetDataPreparation(views = c("mRNA", "miRNA", "DNAme"),
@@ -346,6 +351,10 @@ initTransferLearningParamaters <- function(YTrg,
     #' YTrg
     #'
     #' @examples
+    #'
+    #' data("Lrn", package = "MOTL")
+    #' data("Trg", package = "MOTL")
+    #'
     #' views <- c("mRNA", "miRNA", "DNAme", "SNV")
     #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
@@ -770,6 +779,9 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     #'
     #' @examples
     #'
+    #' data("Lrn", package = "MOTL")
+    #' data("Trg", package = "MOTL")
+    #'
     #' view <- "mRNA"
     #' YTrg_list <- Trg$YTrg_prep
     #' Fctrzn <- Lrn$Fctrzn
@@ -823,7 +835,7 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #' names.
     #'
     #' @examples
-    #' \dontrun{
+    #' \donttest{
     #' viewsLrn = c("mRNA", "miRNA", "DNAme", "SNV")
     #' InputModel <- "Model.hdf5"
     #' Fctrzn <- load_model(file = InputModel)
@@ -880,12 +892,15 @@ TauLn_calculation <- function(view,
     #'
     #' @examples
     #'
-    #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
-    #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+    #' data("Lrn", package = "MOTL")
+    #'
+    #' Fctrzn <- Lrn$Fctrzn
+    #' likelihoodsLrn <- get_default_model_options(Fctrzn)$likelihoods
     #'
     #' TauLn_mRNA = TauLn_calculation(view = "mRNA",
     #'                                 likelihoodsLrn = likelihoods,
     #'                                 Fctrzn = Fctrzn,
+    #'                                 LrnSimple = TRUE,
     #'                                 LrnFctrnDir = LrnFctrnDir)
     #'
     #'
@@ -934,6 +949,11 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     #'
     #' @examples
     #'
+    #' data("Lrn", package = "MOTL")
+    #'
+    #' Fctrzn <- Lrn$Fctrzn
+    #' likelihoodsLrn <- get_default_model_options(Fctrzn)$likelihoods
+    #'
     #' WSq_mRNA = WSq_calculation(view = "mRNA",
     #'                             Fctrzn = Fctrzn,
     #'                             LrnFctrnDir = LrnFctrnDir,
@@ -978,6 +998,10 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     #' @returns a feature weight intercept values matrix for the current data
     #'
     #' @examples
+    #'
+    #' data("Lrn", package = "MOTL")
+    #'
+    #' Fctrzn <- Lrn$Fctrzn
     #'
     #' W0_mRNA = W0_calculation(view = "mRNA",
     #'                             CenterTrg = TRUE,
@@ -1029,7 +1053,7 @@ intercepts_calculation <- function(expdat_meta,
     #'
     #' @examples
     #' #
-    #' \dontrun{
+    #' \donttest{
     #' intercepts_calculation(expdat_meta,
     #'                         Fctrzn,
     #'                         FctrznDir,

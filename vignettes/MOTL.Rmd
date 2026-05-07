@@ -273,7 +273,7 @@ FreqDropFactor <- 1
 StartELBO <- 1 
 FreqELBO <- 5 
 DropFactorTH <- 0.01 
-MaxIterations <- 10
+MaxIterations <- 1000
 MinIterations <- 2 
 ConvergenceIts <- 2 
 ConvergenceTH <- 0.0005 

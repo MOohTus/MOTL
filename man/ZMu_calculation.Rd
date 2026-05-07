@@ -11,7 +11,7 @@ ZMu_calculation(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss)
 
 \item{k}{feature index in the current data}
 
-\item{Fctrzn_Lrn_W}{list of Factorized learning set weight matrices}
+\item{Fctrzn_Lrn_W}{list of factorized learning set weight matrices}
 
 \item{Fctrzn_Lrn_W0}{list of factorized learning set weight intercept
 matrices}
@@ -32,11 +32,17 @@ Z matrix \code{ZMu} calculation for the current data
 }
 \examples{
 
-\dontrun{
+data("TL_param", package = "MOTL")
+
 k <- 10
-view = "mRNA"
-likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
-                "DNAme" = "gaussian", "SNV" = "bernoulli")
+view <- "mRNA"
+Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+Tau <- TL_param$Tau
+ZMu_0 <- TL_param$ZMu_0
+ZMu <- TL_param$ZMu
+YGauss <- TL_param$YTrg
+ZMu <- TL_param$ZMu
 
 ZMu <- ZMu_calculation(view,
                         k,
@@ -46,6 +52,5 @@ ZMu <- ZMu_calculation(view,
                         ZMu_0,
                         ZMu,
                         YGauss)
-}
 
 }

@@ -30,7 +30,16 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     #' @returns Zeta matrix for the current data view
     #'
     #' @examples
+    #'
+    #' data("TL_param", package = "MOTL")
+    #'
     #' view <- "mRNA"
+    #' ZMuSq <- TL_param$ZMuSq
+    #' ZMu <- TL_param$ZMu
+    #' ZMu_0 <- TL_param$ZMu_0
+    #' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+    #' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+    #' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
     #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
     #'
@@ -84,9 +93,15 @@ Tau_calculation <- function(view, likelihoods, Zeta, Tau) {
     #' @returns (updated) Tau matrix for the current view data
     #'
     #' @examples
-    #' view = "mRNA"
-    #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+    #'
+    #' data("TL_param", package = "MOTL")
+    #'
+    #' view <- "mRNA"
+    #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+    #' Zeta <- TL_param$Zeta
+    #' Tau <- TL_param$Tau
+    #'
     #'
     #' Tau <- Tau_calculation(view = view,
     #'                         likelihoods = likelihoods,
@@ -135,9 +150,16 @@ YGauss_calculation <- function(view,
     #' @returns pseudo Y values for the current view
     #'
     #' @examples
-    #' view = "mRNA"
-    #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
+    #'
+    #' data("TL_param", package = "MOTL")
+    #'
+    #' view <- "mRNA"
+    #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
     #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+    #' CenterTrg <- FALSE
+    #' YTrg <- TL_param$YTrg
+    #' Zeta <- TL_param$Zeta
+    #' PoisRateCstnt <- 0.0001
     #'
     #' YGauss <- YGauss_calculation(view = view,
     #'                                likelihoods = likelihoods,
@@ -178,6 +200,11 @@ ZVar_calculation <- function(view, Tau, Fctrzn_Lrn_WSq) {
     #'
     #' @examples
     #'
+    #' data("TL_param", package = "MOTL")
+    #'
+    #' Tau <- TL_param$Tau
+    #' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
+    #'
     #' ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
     #'
     #' @export
@@ -193,7 +220,7 @@ ZMu_calculation <-
         #'
         #' @param view a character of current view name data
         #' @param k feature index in the current data
-        #' @param Fctrzn_Lrn_W list of Factorized learning set weight matrices
+        #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
         #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
         #' matrices
         #' @param Tau list of Tau matrices
@@ -205,11 +232,17 @@ ZMu_calculation <-
         #'
         #' @examples
         #'
-        #' \dontrun{
+        #' data("TL_param", package = "MOTL")
+        #'
         #' k <- 10
-        #' view = "mRNA"
-        #' likelihoods = c("mRNA" = "gaussian", "miRNA" = "gaussian",
-        #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+        #' view <- "mRNA"
+        #' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+        #' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+        #' Tau <- TL_param$Tau
+        #' ZMu_0 <- TL_param$ZMu_0
+        #' ZMu <- TL_param$ZMu
+        #' YGauss <- TL_param$YTrg
+        #' ZMu <- TL_param$ZMu
         #'
         #' ZMu <- ZMu_calculation(view,
         #'                         k,
@@ -219,7 +252,6 @@ ZMu_calculation <-
         #'                         ZMu_0,
         #'                         ZMu,
         #'                         YGauss)
-        #' }
         #'
         #' @export
 
@@ -265,7 +297,7 @@ ELBO_calculation <-
         #'
         #' @examples
         #'
-        #' \dontrun{
+        #' \donttest{
         #' ELBO_L <-
         #'     ELBO_calculation(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W,
         #'                         Zeta, YTrg, YGauss, PoisRateCstnt)
@@ -328,7 +360,7 @@ E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
     #' @examples
     #'
-    #' data(TL_param)
+    #' data("TL_param", package = "MOTL")
     #' view <- "mRNA"
     #' ZMu <- TL_param$ZMu
     #' ZMu_0 <- TL_param$ZMu_0
@@ -364,7 +396,7 @@ E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     #'
     #' @examples
     #'
-    #' data(TL_param)
+    #' data("TL_param", package = "MOTL")
     #' view <- "mRNA"
     #' ZMu <- TL_param$ZMu
     #' ZMu_0 <- TL_param$ZMu_0
@@ -403,7 +435,7 @@ E_ZSqE_WSq_update <-
         #'
         #' @examples
         #'
-        #' data(TL_param)
+        #' data("TL_param", package = "MOTL")
         #' view <- "mRNA"
         #' ZMuSq <- TL_param$ZMuSq
         #' ZMu_0 <- TL_param$ZMu_0
@@ -438,7 +470,7 @@ E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
     #'
     #' @examples
     #'
-    #' data(TL_param)
+    #' data("TL_param", package = "MOTL")
     #' view <- "mRNA"
     #' ZMuSq <- TL_param$ZMuSq
     #' ZMu <- TL_param$ZMu
@@ -483,7 +515,7 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     #'
     #' @examples
     #'
-    #' \dontrun{
+    #' \donttest{
     #' VarExpl <-
     #'     VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
     #'}
@@ -614,7 +646,23 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #'
     #' @examples
     #'
-    #' \dontrun{
+    #' \donttest{
+    #'
+    #' data("TL_param", package = "MOTL)
+    #'
+    #' ss_start_time <- Sys.time()
+    #' minFactors <- 13
+    #' StartDropFactor <- 1
+    #' FreqDropFactor <- 1
+    #' StartELBO <- 1
+    #' FreqELBO <- 5
+    #' DropFactorTH <- 0.01
+    #' MaxIterations <- 10
+    #' MinIterations <- 2
+    #' ConvergenceIts <- 2
+    #' ConvergenceTH <- 0.0005
+    #' PoisRateCstnt <- 0.0001
+    #'
     #' TL_data <- transferLearning_function(TL_param, MaxIterations,
     #'                                     MinIterations, minFactors,
     #'                                     views, likelihoods, Fctrzn,

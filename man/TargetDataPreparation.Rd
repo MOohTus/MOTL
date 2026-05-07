@@ -63,6 +63,8 @@ is a log2 transformation of the counts.
 }
 \examples{
 
+data("Trg", package = "MOTL")
+
 YTrg_list <- Trg$YTrg_prep
 
 YTrg_prep <- TargetDataPreparation(views = c("mRNA", "miRNA", "DNAme"),

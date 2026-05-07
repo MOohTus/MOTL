@@ -42,6 +42,9 @@ function with log2.
 }
 \examples{
 
+data("Lrn", package = "MOTL")
+data("Trg", package = "MOTL")
+
 expdat_meta_Lrn <- Lrn$Fctrzn@data
 YTrg_list <- Trg$YTrg_list
 

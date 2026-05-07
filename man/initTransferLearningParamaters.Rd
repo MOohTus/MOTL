@@ -53,6 +53,10 @@ Each parameter are extracted from the \code{Fctrzn} model created using
 \code{YTrg} matrices should have the same columns order.
 }
 \examples{
+
+data("Lrn", package = "MOTL")
+data("Trg", package = "MOTL")
+
 views <- c("mRNA", "miRNA", "DNAme", "SNV")
 likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
                 "DNAme" = "gaussian", "SNV" = "bernoulli")
