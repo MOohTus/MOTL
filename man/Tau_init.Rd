@@ -25,6 +25,9 @@ More explanation about Tau.
 }
 \examples{
 \donttest{
+
+library("MOFA2")
+
 viewsLrn <- c("mRNA", "miRNA", "DNAme", "SNV")
 InputModel <- "Model.hdf5"
 Fctrzn <- load_model(file = InputModel)
