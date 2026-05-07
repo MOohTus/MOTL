@@ -21,3 +21,15 @@ precalculated Geometric means of the learning dataset
 Retrieve the Geometric means calculated for the learning dataset during
 counts normalization
 }
+\examples{
+
+data("Lrn", package = "MOTL")
+data("Trg", package = "MOTL")
+
+expdat_meta_Lrn <- Lrn$Fctrzn@data
+YTrgFtrs <- Trg$Trg_meta$ftrs_mRNA
+
+GeoMeans_Lrn <-
+        GeoMeans_Lrn_init(view = "mRNA", expdat_meta_Lrn, YTrgFtrs)
+
+}

@@ -13,10 +13,11 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
     #'
     #' @examples
     #'
-    #' data("Lrn", package = "MOTL)
+    #' data("Lrn", package = "MOTL")
+    #' data("Trg", package = "MOTL")
     #'
     #' expdat_meta_Lrn <- Lrn$Fctrzn@data
-    #' YTrgFtrs <- Lrn$Fctrzn@features_metadata
+    #' YTrgFtrs <- Trg$Trg_meta$ftrs_mRNA
     #'
     #' GeoMeans_Lrn <-
     #'         GeoMeans_Lrn_init(view = "mRNA", expdat_meta_Lrn, YTrgFtrs)
@@ -504,6 +505,8 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     #'
     #' # See the doc to create the input parameter
     #'
+    #' data("Trg", package = "MOTL")
+    #'
     #' brcds_SS <- Trg$brcds_SS
     #' YTrg_list <- Trg$YTrg_list
     #'
@@ -609,9 +612,13 @@ TCGATargetDataPreparation <- function(views,
     #' @examples
     #' # see to create input data
     #'
+    #' data("Trg", package = "MOTL")
+    #' data("Lrn", package = "MOTL")
+    #'
     #' YTrgFull <- Trg$YTrg_list
     #' brcds_SS <- Trg$brcds_SS
     #' SS <- 1
+    #' Fctrzn <- Lrn$Fctrzn
     #'
     #' YTrg_prep <- TCGATargetDataPreparation(views,
     #'                                         YTrgFull,

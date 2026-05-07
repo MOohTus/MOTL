@@ -88,9 +88,13 @@ how learning Geometric means are calculated.
 \examples{
 # see to create input data
 
+data("Trg", package = "MOTL")
+data("Lrn", package = "MOTL")
+
 YTrgFull <- Trg$YTrg_list
 brcds_SS <- Trg$brcds_SS
 SS <- 1
+Fctrzn <- Lrn$Fctrzn
 
 YTrg_prep <- TCGATargetDataPreparation(views,
                                         YTrgFull,

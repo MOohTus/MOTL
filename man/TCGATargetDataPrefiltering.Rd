@@ -54,6 +54,8 @@ brcds_SS_ex <-
 
 # See the doc to create the input parameter
 
+data("Trg", package = "MOTL")
+
 brcds_SS <- Trg$brcds_SS
 YTrg_list <- Trg$YTrg_list
 
