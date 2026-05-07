@@ -139,9 +139,9 @@ You need to retrieve some information from the learning dataset factorization mo
 - `MLrn`: dimension (number of views) of the learning dataset
 
 ```{r init}
-viewsLrn <- Fctrzn@data_options$views
-likelihoodsLrn <- Fctrzn@model_options$likelihoods
-MLrn <- Fctrzn@dimensions$M
+viewsLrn <- get_default_data_options(Fctrzn)$views
+likelihoodsLrn <- get_default_model_options(Fctrzn)$likelihoods
+MLrn <- get_dimensions(Fctrzn)$M
 ```
 
 ```{r init-1}
