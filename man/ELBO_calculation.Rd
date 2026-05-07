@@ -68,6 +68,7 @@ YTrg <- TL_param$YTrg
 ZMu <- TL_param$ZMu
 CenterTrg <- FALSE
 PoisRateCstnt <- 0.0001
+YGauss <- TL_param$YTrg
 
 YGauss <- YGauss_calculation(view = view,
                                likelihoods = likelihoods,

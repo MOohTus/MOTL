@@ -524,9 +524,12 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     #' # See the doc to create the input parameter
     #'
     #' data("Trg", package = "MOTL")
+    #' data("Lrn", package = "MOTL")
     #'
     #' brcds_SS <- Trg$brcds_SS
     #' YTrg_list <- Trg$YTrg_list
+    #' Lrn_Fctrzn <- Lrn$Fctrzn
+    #'
     #'
     #' expdat_mRNA <- TCGATargetDataPrefiltering(view = "mRNA",
     #' brcds_SS = brcds_SS, SS = 1, YTrgFull = YTrg_list, Fctrzn = Lrn_Fctrzn)
