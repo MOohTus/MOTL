@@ -915,6 +915,8 @@ TauLn_calculation <- function(view,
     #'
     #' @examples
     #'
+    #' library("MOFA2")
+    #'
     #' data("Lrn", package = "MOTL")
     #'
     #' Fctrzn <- Lrn$Fctrzn_init
@@ -973,6 +975,8 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     #' @returns the squared weight matrix for the current view
     #'
     #' @examples
+    #'
+    #' library("MOFA2")
     #'
     #' data("Lrn", package = "MOTL")
     #'

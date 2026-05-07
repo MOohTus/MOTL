@@ -38,6 +38,8 @@ are saved in the \code{Fctrzn} variable. See the documentation.
 }
 \examples{
 
+library("MOFA2")
+
 data("Lrn", package = "MOTL")
 
 Fctrzn <- Lrn$Fctrzn

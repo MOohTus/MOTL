@@ -40,6 +40,8 @@ For gaussian data, \eqn{TauLn <- log(Tau)}
 }
 \examples{
 
+library("MOFA2")
+
 data("Lrn", package = "MOTL")
 
 Fctrzn <- Lrn$Fctrzn_init
