@@ -636,6 +636,7 @@ TCGATargetDataPreparation <- function(views,
     #' data("Trg", package = "MOTL")
     #' data("Lrn", package = "MOTL")
     #'
+    #' views <- c("mRNA", "miRNA", "DNAme", "SNV")
     #' YTrgFull <- Trg$YTrg_list
     #' brcds_SS <- Trg$brcds_SS
     #' SS <- 1
@@ -849,7 +850,7 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #'
     #' @examples
     #' \donttest{
-    #' viewsLrn = c("mRNA", "miRNA", "DNAme", "SNV")
+    #' viewsLrn <- c("mRNA", "miRNA", "DNAme", "SNV")
     #' InputModel <- "Model.hdf5"
     #' Fctrzn <- load_model(file = InputModel)
     #'

@@ -91,6 +91,7 @@ how learning Geometric means are calculated.
 data("Trg", package = "MOTL")
 data("Lrn", package = "MOTL")
 
+views <- c("mRNA", "miRNA", "DNAme", "SNV")
 YTrgFull <- Trg$YTrg_list
 brcds_SS <- Trg$brcds_SS
 SS <- 1

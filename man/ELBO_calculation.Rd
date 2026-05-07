@@ -70,7 +70,7 @@ CenterTrg <- FALSE
 PoisRateCstnt <- 0.0001
 YGauss <- TL_param$YTrg
 
-YGauss <- YGauss_calculation(view = view,
+YGauss$mRNA <- YGauss_calculation(view = view,
                                likelihoods = likelihoods,
                                YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
 

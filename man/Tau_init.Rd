@@ -25,7 +25,7 @@ More explanation about Tau.
 }
 \examples{
 \donttest{
-viewsLrn = c("mRNA", "miRNA", "DNAme", "SNV")
+viewsLrn <- c("mRNA", "miRNA", "DNAme", "SNV")
 InputModel <- "Model.hdf5"
 Fctrzn <- load_model(file = InputModel)
 
