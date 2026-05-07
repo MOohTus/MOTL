@@ -11,8 +11,7 @@ List of two \code{MOFA} objects: \code{Fctrzn} and
 MOFA2 object is a S4 class and contains the following main slots (the ones
 relevant and used for the transfer learning):
 \describe{
-\item{data}{input data used for the factorization analysis (mRNA, miRNA,
-DNAme and SNV)}
+\item{data}{input data used for the factorization analysis (mRNA, miRNA, DNAme and SNV)}
 \item{samples_metadata}{sample metadata (i.e. sample names and group)}
 \item{features_metadata}{features metadata (feature identifiers and views)}
 \item{expectations}{expected values of the factors and the loadings}

@@ -19,8 +19,7 @@ SNV). Each contains features in columns.}
 \item{TauLn}{list of 4 \code{data.frame} (mRNA, miRNA, DNAme and
 SNV). Each contains features in columns.}
 \item{ZVar}{\code{data.frame} with factors in columns.}
-\item{ZMu}{\code{data.frame} with factors in columns and samples in
-rows.}
+\item{ZMu}{\code{data.frame} with factors in columns and samples in rows.}
 \item{ZMu_0}{vector of numerics}
 \item{ZMuSq}{\code{data.frame} with factors in columns.}}
 }
