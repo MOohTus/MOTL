@@ -38,6 +38,15 @@ using the maximum likelihood and the \code{\link{mle}} function.
 \examples{
 #
 \donttest{
+
+data("Lrn", package = "MOTL")
+
+expdat_meta <- Lrn$Lrn_meta
+Fctrzn <- Lrn$Fctrzn
+FctrznDir <- "FctrznDir"
+ExpDataDir <- "ExpDataDir"
+Seed <- 1234567
+
 intercepts_calculation(expdat_meta,
                         Fctrzn,
                         FctrznDir,

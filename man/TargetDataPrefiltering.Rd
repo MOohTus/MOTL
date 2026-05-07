@@ -38,6 +38,7 @@ data("Trg", package = "MOTL")
 view <- "mRNA"
 YTrg_list <- Trg$YTrg_prep
 Fctrzn <- Lrn$Fctrzn
+smpls <- colnames(YTrg_list$mRNA)
 
 mRNA_prep <- TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
 

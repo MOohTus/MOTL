@@ -268,7 +268,7 @@ TargetDataPreparation <- function(views,
     #' defined views. The list contains matrices.
     #' @param Fctrzn the learning factorization model object (from \code{MOFA})
     #' @param smpls a vector of sample names (i.e. column names of the
-    #' \code{YTrgFull})
+    #' \code{YTrg_list})
     #' @param normalization if FALSE, no normalization. If "LrnGeoMeans",
     #' normalization using the learning Geometric means. If "newGeoMeans",
     #' Geometric means are calculated using the input data. By default it's
@@ -281,9 +281,14 @@ TargetDataPreparation <- function(views,
     #'
     #' @examples
     #'
+    #' data("Lrn", package = "MOTL")
     #' data("Trg", package = "MOTL")
     #'
     #' YTrg_list <- Trg$YTrg_prep
+    #' Fctrzn <- Lrn$Fctrzn
+    #' smpls <- colnames(YTrg_list$mRNA)
+    #' expdat_meta_Lrn <- Lrn$Lrn_meta
+    #'
     #'
     #' YTrg_prep <- TargetDataPreparation(views = c("mRNA", "miRNA", "DNAme"),
     #'                                     YTrg_list = YTrg_list,
@@ -641,6 +646,8 @@ TCGATargetDataPreparation <- function(views,
     #' brcds_SS <- Trg$brcds_SS
     #' SS <- 1
     #' Fctrzn <- Lrn$Fctrzn
+    #' smpls <- colnames(YTrgFull$mRNA)
+    #' expdat_meta_Lrn <- Lrn$Lrn_meta
     #'
     #' YTrg_prep <- TCGATargetDataPreparation(views,
     #'                                         YTrgFull,
@@ -799,6 +806,7 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     #' view <- "mRNA"
     #' YTrg_list <- Trg$YTrg_prep
     #' Fctrzn <- Lrn$Fctrzn
+    #' smpls <- colnames(YTrg_list$mRNA)
     #'
     #' mRNA_prep <- TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
     #'
@@ -1074,6 +1082,15 @@ intercepts_calculation <- function(expdat_meta,
     #' @examples
     #' #
     #' \donttest{
+    #'
+    #' data("Lrn", package = "MOTL")
+    #'
+    #' expdat_meta <- Lrn$Lrn_meta
+    #' Fctrzn <- Lrn$Fctrzn
+    #' FctrznDir <- "FctrznDir"
+    #' ExpDataDir <- "ExpDataDir"
+    #' Seed <- 1234567
+    #'
     #' intercepts_calculation(expdat_meta,
     #'                         Fctrzn,
     #'                         FctrznDir,

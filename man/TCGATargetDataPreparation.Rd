@@ -96,6 +96,8 @@ YTrgFull <- Trg$YTrg_list
 brcds_SS <- Trg$brcds_SS
 SS <- 1
 Fctrzn <- Lrn$Fctrzn
+smpls <- colnames(YTrgFull$mRNA)
+expdat_meta_Lrn <- Lrn$Lrn_meta
 
 YTrg_prep <- TCGATargetDataPreparation(views,
                                         YTrgFull,
