@@ -15,10 +15,10 @@ Description: A transfer learning algorithm for multi-omics matrix
     inferred with a 'MOFA' factorization of a large, heterogeneous,
     learning dataset.
 License: GPL-3 + file LICENCE
-URL: https://github.com/david-hirst/MOTL,
-    https://github.com/MOohTus/MOTL-pkg
-BugReports: https://github.com/david-hirst/MOTL/issues,
-    https://github.com/MOohTus/MOTL-pkg/issues
+URL: https://github.com/MOohTus/MOTL-pkg,
+    https://github.com/david-hirst/MOTL
+BugReports: https://github.com/MOohTus/MOTL-pkg/issues, 
+    https://github.com/david-hirst/MOTL/issues
 Depends:
     R (>= 4.2.0)
 Imports: 
