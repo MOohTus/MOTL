@@ -46,7 +46,7 @@ You can install the development version of MOTL from
 
 ``` r
 install.packages("devtools")
-devtools::install_github("MOohTus/MOTL-pkg")
+devtools::install_github("MOohTus/MOTL")
 ```
 
 ## How to use MOTL
