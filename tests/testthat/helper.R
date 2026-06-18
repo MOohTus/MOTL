@@ -2,7 +2,7 @@
 ##
 
 ## DIRECTORIES FOR TEST FILES
-Lrn_ModelDir <- base::system.file("tests/testthat/fixtures/", package = "MOTL")
+Lrn_ModelDir <- base::system.file("fixtures/", package = "MOTL")
 
 ## LEARNING DATASET METADATA
 ## LEARNING DATASET FACTORIZATION MODEL
