@@ -81,10 +81,6 @@ test_that("GeoMeanFun", {
 })
 
 test_that("GeoMeans_Lrn_init", {
-  # YTrg_list$mRNA <- assay(YTrg_list$mRNA)
-  # YTrg_list$miRNA <- assay(YTrg_list$miRNA)
-  # YTrg_list$DNAme <- assay(YTrg_list$DNAme)
-  # YTrg_prep <- lapply(views, TargetDataPrefiltering, YTrg_list, Lrn_Fctrzn, smpls)
   GeoMeans <- GeoMeans_Lrn_init("mRNA", Lrn_meta, rownames(YTrg_prep$mRNA))
   expect_equal(length(GeoMeans), length(rownames(YTrg_prep$mRNA)))
   expect_in(GeoMeans, Lrn_meta$GeoMeans_mRNA)
@@ -107,8 +103,6 @@ test_that("countsTransformation", {
 })
 
 test_that("countsNormalization_newGeoMeans", {
-  # YTrg_list$mRNA <- assay(YTrg_list$mRNA)
-  # expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Lrn_Fctrzn, smpls)
   expdat <- apply(YTrg_prep$mRNA, MARGIN = 2, round)
   expdat <- SummarizedExperiment::SummarizedExperiment(assays = expdat)
   expdat_norm <- countsNormalization(expdat, GeoMeans = "newGeoMeans")
@@ -119,8 +113,6 @@ test_that("countsNormalization_newGeoMeans", {
 })
 
 test_that("countsNormalization_num", {
-  # YTrg_list$mRNA <- assay(YTrg_list$mRNA)
-  # expdat = TargetDataPrefiltering(view = "mRNA", YTrg_list, Lrn_Fctrzn, smpls)
   expdat <- apply(YTrg_prep$mRNA, MARGIN = 2, round)
   expdat <- SummarizedExperiment::SummarizedExperiment(assays = expdat)
   GeoMeans <- GeoMeans_Lrn_init("mRNA", Lrn_meta, rownames(expdat))
@@ -174,7 +166,6 @@ test_that("preprocessCountsData_SIMPLE", {
 })
 
 test_that("preprocessCountsData_TRANS", {
-  # YTrg_pre = lapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
   ## TRANSFORMATION NO NORMALIZATION
   YTrg <- lapply(
     views,
@@ -312,10 +303,11 @@ test_that("Tau_init", {
 
 ##
 test_that("TauLn_calculation_TRUE", {
+  ## LrnSimple = TRUE / DON'T USE LrnFctrnDir TAU FILES
   ## PARAMS
   D_exp <- Lrn_Fctrzn_init@dimensions$D
   Tau_exp <- Lrn_Fctrzn_init@expectations$Tau
-  ## LrnSimple = TRUE / DON'T USE LrnFctrnDir TAU FILES
+  ##
   TauLn <- lapply(views,
                   TauLn_calculation,
                   likelihoods,
@@ -333,9 +325,7 @@ test_that("TauLn_calculation_TRUE", {
 })
 
 test_that("TauLn_calculation_FALSE", {
-  # skip_issue_2_solve("miRNA length is different between model and imported TauLn file")
   ## LrnSimple = FALSE / USE LrnFctrnDir TAU FILES
-    Lrn_ModelDir <- base::system.file("tests/testthat/fixtures/", package = "MOTL")
   mRNA <- TauLn_calculation(
     view = "mRNA",
     likelihoods,
@@ -389,10 +379,7 @@ test_that("WSq_calculation_TRUE", {
 })
 
 test_that("WSq_calculation_FALSE", {
-  # skip_issue_2_solve("W files contain 84 samples and model contains 91 samples ... wrong files")
   ## LrnSimple = FALSE / USE LrnFctrnDir W FILES
-  # WSq = lapply(views, WSq_calculation, Lrn_Fctrzn_init, Lrn_ModelDir, LrnSimple = FALSE)
-    Lrn_ModelDir <- base::system.file("tests/testthat/fixtures/", package = "MOTL")
   mRNA <- WSq_calculation(
     view = "mRNA",
     Lrn_Fctrzn_init,

@@ -857,7 +857,7 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     #' names.
     #'
     #' @examples
-    #' \donttest{
+    #' \dontrun{
     #'
     #' library("MOFA2")
     #'
@@ -1088,7 +1088,7 @@ intercepts_calculation <- function(expdat_meta,
     #'
     #' @examples
     #' #
-    #' \donttest{
+    #' \dontrun{
     #'
     #' data("Lrn", package = "MOTL")
     #'

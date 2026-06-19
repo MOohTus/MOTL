@@ -303,7 +303,7 @@ ELBO_calculation <-
         #'
         #' @examples
         #'
-        #' \donttest{
+        #' \dontrun{
         #'
         #' data("TL_param", package = "MOTL")
         #'
@@ -561,7 +561,7 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     #'
     #' @examples
     #'
-    #' \donttest{
+    #' \dontrun{
     #' VarExpl <-
     #'     VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
     #'}
@@ -694,7 +694,7 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
     #'
     #' @examples
     #'
-    #' \donttest{
+    #' \dontrun{
     #'
     #' data("TL_param", package = "MOTL")
     #'
