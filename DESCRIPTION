@@ -1,6 +1,6 @@
 Package: MOTL
 Title: Multi-omics matrix factorization with transfer learning
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: c(
     person("David", "Hirst", role = "aut",
            comment = c(ORCID = "0000-0001-7574-5531")),
