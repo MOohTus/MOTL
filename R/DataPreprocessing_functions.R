@@ -21,7 +21,8 @@
 #' GeoMeans_Lrn <-
 #'         GeoMeans_Lrn_init(view = "mRNA", expdat_meta_Lrn, YTrgFtrs)
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
     if (is.element(view, c("mRNA", "miRNA"))) {
         GeoMeans_Lrn <- expdat_meta_Lrn[[paste0("GeoMeans_", view)]]
@@ -44,7 +45,8 @@ GeoMeans_Lrn_init <- function(view, expdat_meta_Lrn, YTrgFtrs) {
 #' x <- c(125,12,4545,7878,6777,454545,88979)
 #' GeoMeans <- GeoMeanFun(x)
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 GeoMeanFun <- function(x) {
     GeoMeans <- exp(sum(log(x[x > 0])) / length(x))
     return(GeoMeans)
@@ -90,7 +92,8 @@ GeoMeanFun <- function(x) {
 #'
 #' expdat_counts_norm <- countsNormalization(expdat, GeoMeans)
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 countsNormalization <- function(expdat, GeoMeans) {
     ## Create DESeq object
     expdat_dds <- DESeqDataSet(expdat, design = ~1)
@@ -132,7 +135,8 @@ countsNormalization <- function(expdat, GeoMeans) {
 #' expdat_counts_fltr <- countsTransformation(expdat_count, TopD)
 #'
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 countsTransformation <- function(expdat_count, TopD) {
     ## log transform and filter to keep only most variable
     expdat_counts_log <- log2(expdat_count + 1)
@@ -529,7 +533,8 @@ initTransferLearningParamaters <- function(YTrg,
 #' expdat_mRNA[c(1:5), c(1:5)]
 #'
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     ## select samples and subset the YTrg
     brcds <- brcds_SS[[paste0("brcds_", view, "_SS")]][[SS]]
@@ -793,7 +798,8 @@ mRNA_addVersion <- function(expdat, Lrndat) {
 #' mRNA_prep <- TargetDataPrefiltering(view, YTrg_list, Fctrzn, smpls)
 #'
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
 
 

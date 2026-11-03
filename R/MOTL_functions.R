@@ -60,7 +60,8 @@
 #'                         E_ZWSq = E_ZWSq,
 #'                         E_ZE_W = E_ZE_W)
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     if (likelihoods[[view]] == "bernoulli") {
         Zeta <- sqrt(E_ZWSq[[view]])
@@ -155,7 +156,8 @@ Tau_calculation <- function(view, likelihoods, Zeta, Tau) {
 #'                                likelihoods = likelihoods,
 #'                                YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 YGauss_calculation <- function(view,
                                likelihoods,
                                YTrg,
@@ -202,7 +204,8 @@ YGauss_calculation <- function(view,
 #'
 #' ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 ZVar_calculation <- function(view, Tau, Fctrzn_Lrn_WSq) {
     ZVar_m <- Tau[[view]] %*% Fctrzn_Lrn_WSq[[view]]
     return(ZVar_m)
@@ -245,7 +248,8 @@ ZVar_calculation <- function(view, Tau, Fctrzn_Lrn_WSq) {
 #'                         ZMu,
 #'                         YGauss)
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 ZMu_calculation <-
     function(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss) {
         ZMu_tmp1 <- matrix(Fctrzn_Lrn_W[[view]][, k],
@@ -335,7 +339,8 @@ ZMu_calculation <-
 #' }
 #'
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 ELBO_calculation <-
     function(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss,
              PoisRateCstnt) {
@@ -402,7 +407,8 @@ ELBO_calculation <-
 #' E_ZE_W <- E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
 #'
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     E_ZE_W <-
         cbind(ZMu_0, ZMu) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]]))
@@ -436,7 +442,8 @@ E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
 #' E_Z_SqE_W_Sq <-
 #'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     E_Z_SqE_W_Sq <-
         (cbind(ZMu_0, ZMu)^2) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]])^2)
@@ -472,7 +479,8 @@ E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
 #' E_ZSqE_WSq <-
 #'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 E_ZSqE_WSq_update <-
     function(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq) {
         E_ZSqE_WSq <-
@@ -520,7 +528,8 @@ E_ZSqE_WSq_update <-
 #'
 #' E_ZWSq$mRNA <- E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
     E_ZWSq <- (E_ZE_W[[view]]^2) - E_Z_SqE_W_Sq[[view]] + E_ZSqE_WSq[[view]]
     return(E_ZWSq)
@@ -546,7 +555,8 @@ E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
 #'     VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
 #'}
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     names(views) <- views
 
