@@ -1,69 +1,67 @@
 ## ----------------------------- TRANSFER LEARNING FUNCTIONS ----
 
+#' Calculate the Zeta matrix for the current data view
+#'
+#' For the current data view, calculate the Zeta matrix \code{Zeta}.
+#'
+#' \describe{
+#'      \item{For bernoulli data, Zeta is calculated using the expected
+#'      values of Z matrix and W squared matrix \code{E_ZWSq}. \code{E_ZWSq}
+#'      is calculated using the \code{\link{E_ZWSq_update}}
+#'      function.}{\eqn{Zeta_{nd} = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}}
+#'      \item{For other data type, Zeta is calculated using the expected
+#'      values of Z matrix and the expected values of W matrix \code{E_ZE_W}.
+#'      \code{E_ZE_W} is calculated using the \code{\link{E_ZE_W_update}}
+#'      function.}{\eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]}, so
+#'      \eqn{Zeta = ZMu \%*\% t(W)}}
+#' }
+#'
+#' @param view a character of current view name data (e.g. \code{mRNA})
+#' @param likelihoods a named list of data types. The list can contain
+#' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+#' type. Names are the view names.
+#' @param E_ZWSq expected values of the multiplication of the Z matrix with
+#' weight squared W matrix.
+#' @param E_ZE_W multiplication of the expected values of Z matrix with the
+#' expected values of W matrix
+#'
+#' @returns Zeta matrix for the current data view
+#'
+#' @examples
+#'
+#' data("TL_param", package = "MOTL")
+#'
+#' view <- "mRNA"
+#' ZMuSq <- TL_param$ZMuSq
+#' ZMu <- TL_param$ZMu
+#' ZMu_0 <- TL_param$ZMu_0
+#' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+#' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+#' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
+#' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
+#'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+#'
+#' E_ZE_W <- list()
+#' E_Z_SqE_W_Sq <- list()
+#' E_ZSqE_WSq <- list()
+#' E_ZWSq <- list()
+#'
+#' E_ZE_W$mRNA <-
+#'     E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+#' E_Z_SqE_W_Sq$mRNA <-
+#'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+#' E_ZSqE_WSq$mRNA <-
+#'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+#' E_ZWSq$mRNA <-
+#'     E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+#'
+#' Zeta <- Zeta_calculation(view = "mRNA",
+#'                         likelihoods = likelihoods,
+#'                         E_ZWSq = E_ZWSq,
+#'                         E_ZE_W = E_ZE_W)
+#'
+#' @export
 Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
-    #'
-    #' Calculate the Zeta matrix for the current data view
-    #'
-    #' For the current data view, calculate the Zeta matrix \code{Zeta}.
-    #'
-    #' \describe{
-    #'      \item{For bernoulli data, Zeta is calculated using the expected
-    #'      values of Z matrix and W squared matrix \code{E_ZWSq}. \code{E_ZWSq}
-    #'      is calculated using the \code{\link{E_ZWSq_update}}
-    #'      function.}{\eqn{Zeta_{nd} = \sqrt(E[(\sum_{k} z_{n,k} w_{d,k})^2])}}
-    #'      \item{For other data type, Zeta is calculated using the expected
-    #'      values of Z matrix and the expected values of W matrix \code{E_ZE_W}.
-    #'      \code{E_ZE_W} is calculated using the \code{\link{E_ZE_W_update}}
-    #'      function.}{\eqn{Zeta_{nd} = E[\sum_{k} z_{n,k} w_{d,k}]}, so
-    #'      \eqn{Zeta = ZMu \%*\% t(W)}}
-    #' }
-    #'
-    #' @param view a character of current view name data (e.g. \code{mRNA})
-    #' @param likelihoods a named list of data types. The list can contain
-    #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
-    #' type. Names are the view names.
-    #' @param E_ZWSq expected values of the multiplication of the Z matrix with
-    #' weight squared W matrix.
-    #' @param E_ZE_W multiplication of the expected values of Z matrix with the
-    #' expected values of W matrix
-    #'
-    #' @returns Zeta matrix for the current data view
-    #'
-    #' @examples
-    #'
-    #' data("TL_param", package = "MOTL")
-    #'
-    #' view <- "mRNA"
-    #' ZMuSq <- TL_param$ZMuSq
-    #' ZMu <- TL_param$ZMu
-    #' ZMu_0 <- TL_param$ZMu_0
-    #' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
-    #' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
-    #' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
-    #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
-    #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
-    #'
-    #' E_ZE_W <- list()
-    #' E_Z_SqE_W_Sq <- list()
-    #' E_ZSqE_WSq <- list()
-    #' E_ZWSq <- list()
-    #'
-    #' E_ZE_W$mRNA <-
-    #'     E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-    #' E_Z_SqE_W_Sq$mRNA <-
-    #'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-    #' E_ZSqE_WSq$mRNA <-
-    #'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-    #' E_ZWSq$mRNA <-
-    #'     E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
-    #'
-    #' Zeta <- Zeta_calculation(view = "mRNA",
-    #'                         likelihoods = likelihoods,
-    #'                         E_ZWSq = E_ZWSq,
-    #'                         E_ZE_W = E_ZE_W)
-    #'
-    #' @export
-
     if (likelihoods[[view]] == "bernoulli") {
         Zeta <- sqrt(E_ZWSq[[view]])
     } else {
@@ -73,43 +71,41 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
     return(Zeta)
 }
 
+#' Update Tau values for the current view
+#'
+#' Tau values are updated only for bernoulli data.
+#'
+#' Tau values are updated using the following equation:
+#'
+#' \eqn{Tau = (\frac{1}{2})*(\frac{1}{Zeta[[view]]})*tanh(\frac{Zeta[[view]]}{2})}
+#'
+#' @param view a character of current view name data
+#' @param likelihoods a named list of data types. The list can contain
+#' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+#' type. Names are the view names.
+#' @param Zeta list of Zeta matrix for the current view
+#' @param Tau list of tau matrices
+#'
+#' @returns (updated) Tau matrix for the current view data
+#'
+#' @examples
+#'
+#' data("TL_param", package = "MOTL")
+#'
+#' view <- "mRNA"
+#' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
+#'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+#' Zeta <- TL_param$Zeta
+#' Tau <- TL_param$Tau
+#'
+#'
+#' Tau <- Tau_calculation(view = view,
+#'                         likelihoods = likelihoods,
+#'                         Zeta = Zeta, Tau = Tau)
+#'
+#'
+#' @export
 Tau_calculation <- function(view, likelihoods, Zeta, Tau) {
-    #'
-    #' Update Tau values for the current view
-    #'
-    #' Tau values are updated only for bernoulli data.
-    #'
-    #' Tau values are updated using the following equation:
-    #'
-    #' \eqn{Tau = (\frac{1}{2})*(\frac{1}{Zeta[[view]]})*tanh(\frac{Zeta[[view]]}{2})}
-    #'
-    #' @param view a character of current view name data
-    #' @param likelihoods a named list of data types. The list can contain
-    #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
-    #' type. Names are the view names.
-    #' @param Zeta list of Zeta matrix for the current view
-    #' @param Tau list of tau matrices
-    #'
-    #' @returns (updated) Tau matrix for the current view data
-    #'
-    #' @examples
-    #'
-    #' data("TL_param", package = "MOTL")
-    #'
-    #' view <- "mRNA"
-    #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
-    #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
-    #' Zeta <- TL_param$Zeta
-    #' Tau <- TL_param$Tau
-    #'
-    #'
-    #' Tau <- Tau_calculation(view = view,
-    #'                         likelihoods = likelihoods,
-    #'                         Zeta = Zeta, Tau = Tau)
-    #'
-    #'
-    #' @export
-
     if (likelihoods[[view]] == "bernoulli") {
         Tau <- (1 / 2) * (1 / Zeta[[view]]) * tanh(Zeta[[view]] / 2)
     } else {
@@ -118,6 +114,48 @@ Tau_calculation <- function(view, likelihoods, Zeta, Tau) {
     return(Tau)
 }
 
+#' Initialize or update pseudo Y values (YGauss)
+#'
+#' For gaussian data, Y values (observed data) are centered
+#' (if `CenterTrg = TRUE`) and will not change.
+#' For non gaussian, Y values are transformed and change after each
+#' update of Z matrix. The Y pseudo values are centered at each step if
+#' `CenterTrg = TRUE`.
+#' For gaussian data this is done for each iteration `It>=0`, for others
+#' it is done for each iteration, exept the first one `It>0`.
+#'
+#' @param view a character of current view name data
+#' @param likelihoods a named list of data types. The list can contain
+#' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+#' type. Names are the view names.
+#' @param YTrg current data matrix
+#' @param Zeta list of Zeta matrices
+#' @param Tau list of Tau matrices
+#' @param CenterTrg if FALSE, use the estimated feature weight intercept
+#' from the \code{EstimatedIntercepts.rds} file. If TRUE, use the feature
+#' weight means.
+#' @param PoisRateCstnt small constant added when transforming Poisson data
+#' to avoid errors
+#'
+#' @returns pseudo Y values for the current view
+#'
+#' @examples
+#'
+#' data("TL_param", package = "MOTL")
+#'
+#' view <- "mRNA"
+#' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
+#'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+#' CenterTrg <- FALSE
+#' YTrg <- TL_param$YTrg
+#' Zeta <- TL_param$Zeta
+#' PoisRateCstnt <- 0.0001
+#'
+#' YGauss <- YGauss_calculation(view = view,
+#'                                likelihoods = likelihoods,
+#'                                YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
+#'
+#' @export
 YGauss_calculation <- function(view,
                                likelihoods,
                                YTrg,
@@ -125,50 +163,6 @@ YGauss_calculation <- function(view,
                                Tau,
                                CenterTrg,
                                PoisRateCstnt) {
-    #'
-    #' Initialize or update pseudo Y values (YGauss)
-    #'
-    #' For gaussian data, Y values (observed data) are centered
-    #' (if `CenterTrg = TRUE`) and will not change.
-    #' For non gaussian, Y values are transformed and change after each
-    #' update of Z matrix. The Y pseudo values are centered at each step if
-    #' `CenterTrg = TRUE`.
-    #' For gaussian data this is done for each iteration `It>=0`, for others
-    #' it is done for each iteration, exept the first one `It>0`.
-    #'
-    #' @param view a character of current view name data
-    #' @param likelihoods a named list of data types. The list can contain
-    #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
-    #' type. Names are the view names.
-    #' @param YTrg current data matrix
-    #' @param Zeta list of Zeta matrices
-    #' @param Tau list of Tau matrices
-    #' @param CenterTrg if FALSE, use the estimated feature weight intercept
-    #' from the \code{EstimatedIntercepts.rds} file. If TRUE, use the feature
-    #' weight means.
-    #' @param PoisRateCstnt small constant added when transforming Poisson data
-    #' to avoid errors
-    #'
-    #' @returns pseudo Y values for the current view
-    #'
-    #' @examples
-    #'
-    #' data("TL_param", package = "MOTL")
-    #'
-    #' view <- "mRNA"
-    #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
-    #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
-    #' CenterTrg <- FALSE
-    #' YTrg <- TL_param$YTrg
-    #' Zeta <- TL_param$Zeta
-    #' PoisRateCstnt <- 0.0001
-    #'
-    #' YGauss <- YGauss_calculation(view = view,
-    #'                                likelihoods = likelihoods,
-    #'                                YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
-    #'
-    #' @export
-
     if (likelihoods[[view]] == "poisson") {
         YGauss <- Zeta[[view]] - stats::plogis(Zeta[[view]]) *
             (1 - YTrg[[view]] / (log(1 + exp(Zeta[[view]])) + PoisRateCstnt)) / Tau[[view]]
@@ -186,78 +180,74 @@ YGauss_calculation <- function(view,
     return(YGauss)
 }
 
+#' Calculation of the Z variances for the current data
+#'
+#' Z variances is calculation using initialized or updated Tau values
+#' and the squared weight values WSq values
+#' based on the appendix of the `MOFA2` paper
+#' and [Github code](https://github.com/bioFAM/MOFA2)
+#'
+#' @param view a character of current view name data
+#' @param Tau list of Tau matrices
+#' @param Fctrzn_Lrn_WSq Factorized learning set squared weights
+#'
+#' @returns calculated Z variances matrix for the current data
+#'
+#' @examples
+#'
+#' data("TL_param", package = "MOTL")
+#'
+#' Tau <- TL_param$Tau
+#' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
+#'
+#' ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
+#'
+#' @export
 ZVar_calculation <- function(view, Tau, Fctrzn_Lrn_WSq) {
-    #'
-    #' Calculation of the Z variances for the current data
-    #'
-    #' Z variances is calculation using initialized or updated Tau values
-    #' and the squared weight values WSq values
-    #' based on the appendix of the `MOFA2` paper
-    #' and [Github code](https://github.com/bioFAM/MOFA2)
-    #'
-    #' @param view a character of current view name data
-    #' @param Tau list of Tau matrices
-    #' @param Fctrzn_Lrn_WSq Factorized learning set squared weights
-    #'
-    #' @returns calculated Z variances matrix for the current data
-    #'
-    #' @examples
-    #'
-    #' data("TL_param", package = "MOTL")
-    #'
-    #' Tau <- TL_param$Tau
-    #' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
-    #'
-    #' ZVar <- ZVar_calculation(view = "mRNA", Tau, Fctrzn_Lrn_WSq)
-    #'
-    #' @export
-    #'
     ZVar_m <- Tau[[view]] %*% Fctrzn_Lrn_WSq[[view]]
     return(ZVar_m)
 }
 
+#' Z matrix `ZMu` calculation for the current data
+#'
+#' @param view a character of current view name data
+#' @param k feature index in the current data
+#' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
+#' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
+#' matrices
+#' @param Tau list of Tau matrices
+#' @param ZMu_0 vector of coefficients for weight intercepts
+#' @param ZMu matrix of Z values
+#' @param YGauss list of pseudo Y value matrices
+#'
+#' @returns ZMu values for the current view (Z matrix)
+#'
+#' @examples
+#'
+#' data("TL_param", package = "MOTL")
+#'
+#' k <- 10
+#' view <- "mRNA"
+#' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+#' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+#' Tau <- TL_param$Tau
+#' ZMu_0 <- TL_param$ZMu_0
+#' ZMu <- TL_param$ZMu
+#' YGauss <- TL_param$YTrg
+#' ZMu <- TL_param$ZMu
+#'
+#' ZMu <- ZMu_calculation(view,
+#'                         k,
+#'                         Fctrzn_Lrn_W,
+#'                         Fctrzn_Lrn_W0,
+#'                         Tau,
+#'                         ZMu_0,
+#'                         ZMu,
+#'                         YGauss)
+#'
+#' @export
 ZMu_calculation <-
     function(view, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss) {
-        #'
-        #' Z matrix `ZMu` calculation for the current data
-        #'
-        #' @param view a character of current view name data
-        #' @param k feature index in the current data
-        #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
-        #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
-        #' matrices
-        #' @param Tau list of Tau matrices
-        #' @param ZMu_0 vector of coefficients for weight intercepts
-        #' @param ZMu matrix of Z values
-        #' @param YGauss list of pseudo Y value matrices
-        #'
-        #' @returns ZMu values for the current view (Z matrix)
-        #'
-        #' @examples
-        #'
-        #' data("TL_param", package = "MOTL")
-        #'
-        #' k <- 10
-        #' view <- "mRNA"
-        #' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
-        #' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
-        #' Tau <- TL_param$Tau
-        #' ZMu_0 <- TL_param$ZMu_0
-        #' ZMu <- TL_param$ZMu
-        #' YGauss <- TL_param$YTrg
-        #' ZMu <- TL_param$ZMu
-        #'
-        #' ZMu <- ZMu_calculation(view,
-        #'                         k,
-        #'                         Fctrzn_Lrn_W,
-        #'                         Fctrzn_Lrn_W0,
-        #'                         Tau,
-        #'                         ZMu_0,
-        #'                         ZMu,
-        #'                         YGauss)
-        #'
-        #' @export
-
         ZMu_tmp1 <- matrix(Fctrzn_Lrn_W[[view]][, k],
                            nrow = dim(Tau[[view]])[1],
                            ncol = dim(Tau[[view]])[2],
@@ -272,85 +262,83 @@ ZMu_calculation <-
         return(ZMu_tmp3)
     }
 
+#' Calculate the ELBO value for the current view/iterations
+#'
+#' for poisson and bernoulli it is the bound which is used
+#' for gaussian it is expanded gaussian log likelihood
+#'
+#' @param view a character of current view name data
+#' @param likelihoods a named list of data types. The list can contain
+#' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the
+#' data type. Names are the view names.
+#' @param Tau list of Tau matrices
+#' @param TauLn list of log(Tau) matrices
+#' @param E_ZWSq expected values of the multiplication of the Z matrix
+#' with weight squared W matrix. See \code{\link{E_ZWSq_update}}
+#' function.
+#' @param E_ZE_W multiplication of the expected values of Z matrix
+#' with the expected values of W matrix. Seed
+#' \code{\link{E_ZE_W_update}} function.
+#' @param Zeta list of Zeta matrices
+#' @param YTrg list of data
+#' @param YGauss list of pseudo Y value matrices
+#' @param PoisRateCstnt small constant added for Poisson data to
+#' avoid errors
+#'
+#' @returns the ELBO value for the current view/iteration
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' data("TL_param", package = "MOTL")
+#'
+#' view <- "mRNA"
+#' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
+#'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
+#' Tau <- TL_param$Tau
+#' TauLn <- TL_param$TauLn
+#' Zeta <- TL_param$Zeta
+#' YTrg <- TL_param$YTrg
+#' ZMu <- TL_param$ZMu
+#' CenterTrg <- FALSE
+#' PoisRateCstnt <- 0.0001
+#' YGauss <- TL_param$YTrg
+#'
+#' YGauss$mRNA <- YGauss_calculation(view = view,
+#'                                likelihoods = likelihoods,
+#'                                YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
+#'
+#' ZMuSq <- TL_param$ZMuSq
+#' ZMu_0 <- TL_param$ZMu_0
+#' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+#' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+#' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
+#'
+#' E_ZE_W <- list()
+#' E_Z_SqE_W_Sq <- list()
+#' E_ZSqE_WSq <- list()
+#' E_ZWSq <- list()
+#'
+#' E_ZE_W$mRNA <-
+#'     E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+#' E_Z_SqE_W_Sq$mRNA <-
+#'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+#' E_ZSqE_WSq$mRNA <-
+#'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+#' E_ZWSq$mRNA <-
+#'     E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+#'
+#' ELBO_L <-
+#'     ELBO_calculation(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W,
+#'                         Zeta, YTrg, YGauss, PoisRateCstnt)
+#' }
+#'
+#'
+#' @export
 ELBO_calculation <-
     function(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrg, YGauss,
              PoisRateCstnt) {
-        #'
-        #' Calculate the ELBO value for the current view/iterations
-        #'
-        #' for poisson and bernoulli it is the bound which is used
-        #' for gaussian it is expanded gaussian log likelihood
-        #'
-        #' @param view a character of current view name data
-        #' @param likelihoods a named list of data types. The list can contain
-        #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the
-        #' data type. Names are the view names.
-        #' @param Tau list of Tau matrices
-        #' @param TauLn list of log(Tau) matrices
-        #' @param E_ZWSq expected values of the multiplication of the Z matrix
-        #' with weight squared W matrix. See \code{\link{E_ZWSq_update}}
-        #' function.
-        #' @param E_ZE_W multiplication of the expected values of Z matrix
-        #' with the expected values of W matrix. Seed
-        #' \code{\link{E_ZE_W_update}} function.
-        #' @param Zeta list of Zeta matrices
-        #' @param YTrg list of data
-        #' @param YGauss list of pseudo Y value matrices
-        #' @param PoisRateCstnt small constant added for Poisson data to
-        #' avoid errors
-        #'
-        #' @returns the ELBO value for the current view/iteration
-        #'
-        #' @examples
-        #'
-        #' \dontrun{
-        #'
-        #' data("TL_param", package = "MOTL")
-        #'
-        #' view <- "mRNA"
-        #' likelihoods <- c("mRNA" = "gaussian", "miRNA" = "gaussian",
-        #'                 "DNAme" = "gaussian", "SNV" = "bernoulli")
-        #' Tau <- TL_param$Tau
-        #' TauLn <- TL_param$TauLn
-        #' Zeta <- TL_param$Zeta
-        #' YTrg <- TL_param$YTrg
-        #' ZMu <- TL_param$ZMu
-        #' CenterTrg <- FALSE
-        #' PoisRateCstnt <- 0.0001
-        #' YGauss <- TL_param$YTrg
-        #'
-        #' YGauss$mRNA <- YGauss_calculation(view = view,
-        #'                                likelihoods = likelihoods,
-        #'                                YTrg, Zeta, Tau, CenterTrg, PoisRateCstnt)
-        #'
-        #' ZMuSq <- TL_param$ZMuSq
-        #' ZMu_0 <- TL_param$ZMu_0
-        #' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
-        #' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
-        #' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
-        #'
-        #' E_ZE_W <- list()
-        #' E_Z_SqE_W_Sq <- list()
-        #' E_ZSqE_WSq <- list()
-        #' E_ZWSq <- list()
-        #'
-        #' E_ZE_W$mRNA <-
-        #'     E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-        #' E_Z_SqE_W_Sq$mRNA <-
-        #'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-        #' E_ZSqE_WSq$mRNA <-
-        #'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-        #' E_ZWSq$mRNA <-
-        #'     E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
-        #'
-        #' ELBO_L <-
-        #'     ELBO_calculation(view, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W,
-        #'                         Zeta, YTrg, YGauss, PoisRateCstnt)
-        #' }
-        #'
-        #'
-        #' @export
-
         if (likelihoods[[view]] == "poisson") {
             # b_nd is an upper bound for -log(p(y|x))
             # b_nd = k_nd/2 * (x_nd - zeta_nd)^2 + (x_nd - zeta_nd)f'(zeta_nd) + f(zeta_nd)
@@ -387,187 +375,179 @@ ELBO_calculation <-
         return(ELBO_L_tmp)
     }
 
-E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
-    #'
-    #' Calculate `E_ZE_W`
-    #'
-    #' `E_ZE_W` is the multiplication of the expected values of Z matrix with the
-    #' expected values of W matrix \eqn{E[Z]E[W]}.
-    #'
-    #' @param view current view name
-    #' @param ZMu_0 vector of coefficients for weight intercepts
-    #' @param ZMu matrix of Z values
-    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
-    #' matrices
-    #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
-    #'
-    #' @returns `E_ZE_W` for current view
-    #'
-    #' @examples
-    #'
-    #' data("TL_param", package = "MOTL")
-    #' view <- "mRNA"
-    #' ZMu <- TL_param$ZMu
-    #' ZMu_0 <- TL_param$ZMu_0
-    #' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
-    #' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
-    #'
-    #' E_ZE_W <- E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-    #'
-    #'
-    #' @export
 
+#' Calculate `E_ZE_W`
+#'
+#' `E_ZE_W` is the multiplication of the expected values of Z matrix with the
+#' expected values of W matrix \eqn{E[Z]E[W]}.
+#'
+#' @param view current view name
+#' @param ZMu_0 vector of coefficients for weight intercepts
+#' @param ZMu matrix of Z values
+#' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
+#' matrices
+#' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
+#'
+#' @returns `E_ZE_W` for current view
+#'
+#' @examples
+#'
+#' data("TL_param", package = "MOTL")
+#' view <- "mRNA"
+#' ZMu <- TL_param$ZMu
+#' ZMu_0 <- TL_param$ZMu_0
+#' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+#' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+#'
+#' E_ZE_W <- E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+#'
+#'
+#' @export
+E_ZE_W_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
     E_ZE_W <-
         cbind(ZMu_0, ZMu) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]]))
     return(E_ZE_W)
 }
 
+#' Calculate `E_Z_SqE_W_Sq`
+#'
+#' `E_Z_SqE_W_Sq` is the multiplication of the squared expected values of Z
+#' matrix with the squared expected values of W matrix
+#' \eqn{((E[Z])^2)*((E[W])^2)}.
+#'
+#' @param view current view name
+#' @param ZMu_0 vector of coefficients for weight intercepts
+#' @param ZMu matrix of Z values
+#' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
+#' matrices
+#' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
+#'
+#' @returns `E_Z_SqE_W_Sq` for current view
+#'
+#' @examples
+#'
+#' data("TL_param", package = "MOTL")
+#' view <- "mRNA"
+#' ZMu <- TL_param$ZMu
+#' ZMu_0 <- TL_param$ZMu_0
+#' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+#' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+#'
+#' E_Z_SqE_W_Sq <-
+#'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+#'
+#' @export
 E_Z_SqE_W_Sq_update <- function(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W) {
-    #'
-    #' Calculate `E_Z_SqE_W_Sq`
-    #'
-    #' `E_Z_SqE_W_Sq` is the multiplication of the squared expected values of Z
-    #' matrix with the squared expected values of W matrix
-    #' \eqn{((E[Z])^2)*((E[W])^2)}.
-    #'
-    #' @param view current view name
-    #' @param ZMu_0 vector of coefficients for weight intercepts
-    #' @param ZMu matrix of Z values
-    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
-    #' matrices
-    #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
-    #'
-    #' @returns `E_Z_SqE_W_Sq` for current view
-    #'
-    #' @examples
-    #'
-    #' data("TL_param", package = "MOTL")
-    #' view <- "mRNA"
-    #' ZMu <- TL_param$ZMu
-    #' ZMu_0 <- TL_param$ZMu_0
-    #' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
-    #' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
-    #'
-    #' E_Z_SqE_W_Sq <-
-    #'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-    #'
-    #' @export
-
     E_Z_SqE_W_Sq <-
         (cbind(ZMu_0, ZMu)^2) %*% t(cbind(Fctrzn_Lrn_W0[[view]], Fctrzn_Lrn_W[[view]])^2)
 
     return(E_Z_SqE_W_Sq)
 }
 
+#' Calculate `E_ZSqE_WSq`
+#'
+#' `E_ZSqE_WSq` is the multiplication of the expected values of the
+#' squared Z matrix with the expected values of the squared W matrix
+#' \eqn{E[Z^2]*E[W^2]}
+#'
+#' @param view current view name
+#' @param ZMu_0 vector of coefficients for weight intercepts
+#' @param ZMuSq matrix of squared Z values
+#' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
+#' matrices
+#' @param Fctrzn_Lrn_WSq  list of factorized learning set weight squared
+#' matrices
+#'
+#' @returns E_ZSqE_WSq for current view
+#'
+#' @examples
+#'
+#' data("TL_param", package = "MOTL")
+#' view <- "mRNA"
+#' ZMuSq <- TL_param$ZMuSq
+#' ZMu_0 <- TL_param$ZMu_0
+#' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+#' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
+#'
+#' E_ZSqE_WSq <-
+#'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+#'
+#' @export
 E_ZSqE_WSq_update <-
     function(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq) {
-        #'
-        #' Calculate `E_ZSqE_WSq`
-        #'
-        #' `E_ZSqE_WSq` is the multiplication of the expected values of the
-        #' squared Z matrix with the expected values of the squared W matrix
-        #' \eqn{E[Z^2]*E[W^2]}
-        #'
-        #' @param view current view name
-        #' @param ZMu_0 vector of coefficients for weight intercepts
-        #' @param ZMuSq matrix of squared Z values
-        #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
-        #' matrices
-        #' @param Fctrzn_Lrn_WSq  list of factorized learning set weight squared
-        #' matrices
-        #'
-        #' @returns E_ZSqE_WSq for current view
-        #'
-        #' @examples
-        #'
-        #' data("TL_param", package = "MOTL")
-        #' view <- "mRNA"
-        #' ZMuSq <- TL_param$ZMuSq
-        #' ZMu_0 <- TL_param$ZMu_0
-        #' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
-        #' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
-        #'
-        #' E_ZSqE_WSq <-
-        #'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-        #'
-        #' @export
-
         E_ZSqE_WSq <-
             cbind(ZMu_0^2, ZMuSq) %*% t(cbind(Fctrzn_Lrn_W0[[view]]^2, Fctrzn_Lrn_WSq[[view]]))
 
         return(E_ZSqE_WSq)
     }
 
+#' Calculate `E_ZWSq`
+#'
+#' `E_ZWSq` is the expected values of the multiplication of the Z matrix with
+#' weight squared W matrix \eqn{E[(ZW)^2]}.
+#'
+#' @param view current view name
+#' @param E_ZE_W matrix of \eqn{E[Z]E[W]} values for current view
+#' @param ZMuSq matrix of squared ZMu values for current view
+#' @param E_Z_SqE_W_Sq matrix of \eqn{((E[Z])^2)((E[W])^2)} values for
+#' current view
+#' @param E_ZSqE_WSq matrix of \eqn{E[Z^2]E[W^2]} values for current view
+#'
+#' @returns `E_ZWSq` values for current view
+#'
+#' @examples
+#'
+#' data("TL_param", package = "MOTL")
+#' view <- "mRNA"
+#' ZMuSq <- TL_param$ZMuSq
+#' ZMu <- TL_param$ZMu
+#' ZMu_0 <- TL_param$ZMu_0
+#' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
+#' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
+#' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
+#'
+#' E_ZE_W <- list()
+#' E_Z_SqE_W_Sq <- list()
+#' E_ZSqE_WSq <- list()
+#' E_ZWSq <- list()
+#'
+#'
+#' E_ZE_W$mRNA <- E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+#' E_Z_SqE_W_Sq$mRNA <-
+#'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
+#' E_ZSqE_WSq$mRNA <-
+#'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
+#'
+#' E_ZWSq$mRNA <- E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
+#'
+#' @export
 E_ZWSq_update <- function(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq) {
-    #'
-    #' Calculate `E_ZWSq`
-    #'
-    #' `E_ZWSq` is the expected values of the multiplication of the Z matrix with
-    #' weight squared W matrix \eqn{E[(ZW)^2]}.
-    #'
-    #' @param view current view name
-    #' @param E_ZE_W matrix of \eqn{E[Z]E[W]} values for current view
-    #' @param ZMuSq matrix of squared ZMu values for current view
-    #' @param E_Z_SqE_W_Sq matrix of \eqn{((E[Z])^2)((E[W])^2)} values for
-    #' current view
-    #' @param E_ZSqE_WSq matrix of \eqn{E[Z^2]E[W^2]} values for current view
-    #'
-    #' @returns `E_ZWSq` values for current view
-    #'
-    #' @examples
-    #'
-    #' data("TL_param", package = "MOTL")
-    #' view <- "mRNA"
-    #' ZMuSq <- TL_param$ZMuSq
-    #' ZMu <- TL_param$ZMu
-    #' ZMu_0 <- TL_param$ZMu_0
-    #' Fctrzn_Lrn_W0 <- TL_param$Fctrzn_Lrn_W0
-    #' Fctrzn_Lrn_W <- TL_param$Fctrzn_Lrn_W
-    #' Fctrzn_Lrn_WSq <- TL_param$Fctrzn_Lrn_WSq
-    #'
-    #' E_ZE_W <- list()
-    #' E_Z_SqE_W_Sq <- list()
-    #' E_ZSqE_WSq <- list()
-    #' E_ZWSq <- list()
-    #'
-    #'
-    #' E_ZE_W$mRNA <- E_ZE_W_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-    #' E_Z_SqE_W_Sq$mRNA <-
-    #'     E_Z_SqE_W_Sq_update(view, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
-    #' E_ZSqE_WSq$mRNA <-
-    #'     E_ZSqE_WSq_update(view, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
-    #'
-    #' E_ZWSq$mRNA <- E_ZWSq_update(view, E_ZE_W, ZMuSq, E_Z_SqE_W_Sq, E_ZSqE_WSq)
-    #'
-    #' @export
-
     E_ZWSq <- (E_ZE_W[[view]]^2) - E_Z_SqE_W_Sq[[view]] + E_ZSqE_WSq[[view]]
     return(E_ZWSq)
 }
 
-VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
-    #'
-    #' Calculate the variance explained by each factor for each view
-    #'
-    #' @param views list of view names
-    #' @param YGauss list of pseudo Y value matrices
-    #' @param ZMu_0 vector of coefficients for weight intercepts
-    #' @param ZMu matrix of Z values
-    #' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
-    #' matrices
-    #' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
-    #'
-    #' @returns variance explained matrix
-    #'
-    #' @examples
-    #'
-    #' \dontrun{
-    #' VarExpl <-
-    #'     VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
-    #'}
-    #'
-    #' @export
 
+#' Calculate the variance explained by each factor for each view
+#'
+#' @param views list of view names
+#' @param YGauss list of pseudo Y value matrices
+#' @param ZMu_0 vector of coefficients for weight intercepts
+#' @param ZMu matrix of Z values
+#' @param Fctrzn_Lrn_W0 list of factorized learning set weight intercept
+#' matrices
+#' @param Fctrzn_Lrn_W list of factorized learning set weight matrices
+#'
+#' @returns variance explained matrix
+#'
+#' @examples
+#'
+#' \dontrun{
+#' VarExpl <-
+#'     VarExplFun(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W)
+#'}
+#'
+#' @export
+VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     names(views) <- views
 
     SS_tmp <- lapply(views, function(view, YGauss, ZMu_0, Fctrzn_Lrn_W0) {
@@ -589,6 +569,135 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
     return(VarExpl)
 }
 
+
+#' Transfer Learning with Variational Inference
+#'
+#' This function performs multi-omics matrix factorization with transfer
+#' learning. The target dataset is factorized using the latent factor values
+#' inferred from the previous factorization of a learning dataset.
+#'
+#' This function is called after target dataset is prepared (using
+#' \code{\link{TargetDataPreparation}}) and parameters initialized (using
+#' \code{\link{initTransferLearningParamaters}}).
+#'
+#' \code{TL_param} is a named list of the initialized parameters and
+#' data objects for transfer learning. It contains :
+#' 1. \code{YTrg}: a named list of matrices. Each matrix corresponds to
+#' the target dataset.
+#' 2. \code{Fctrzn_Lrn_W0}: a named list of vectors. Each vector contains
+#' the features mean weight matrix calculated for the learning dataset using
+#' MOFA.
+#' 3. \code{Fctrzn_Lrn_W}: a named list of matrices. Each matrix contains
+#' the weights matrix calculated for the learning dataset using MOFA.
+#' 4. \code{Fctrzn_Lrn_WSq}: a named list of matrices. Each matrix contains
+#' the squared weights matrix calculated for the learning dataset using
+#' MOFA.
+#' 5. \code{Tau}: a named list of matrices. Each matrix contains the Tau
+#' values matrix calculated for the learning dataset using MOFA.
+#' 6. \code{TauLn}: a named list of matrices. Each matrix contains the
+#' TauLn values matrix calculated for the learning dataset using MOFA.
+#'
+#' Names of each list should be identical (e.g.
+#' \code{c("mRNA", "miRNA", "DNAme", "SNV")}) and so each element
+#' corresponds to each omic data.
+#'
+#' To create the \code{TL_param} variable, see the
+#' \code{\link{initTransferLearningParamaters}} function.
+#'
+#' @param TL_param a named list of initialized parameters and data objects
+#' for transfer learning. It contains target dataset, weigths and scores
+#' matrices from matrix factorization of the learning dataset calculated
+#' using MOFA. See the detail section for more informations.
+#' @param MaxIterations the maximum number of iterations for the matrix
+#' factorization convergence. After this number, the factorization is
+#' stopped.
+#' @param MinIterations the minimum number of iterations for the matrix
+#' factorization convergence. Before this number, even if the function
+#' converges, the factorization is not stopped.
+#' @param minFactors the minimum number of factors to retain
+#' @param views a named vector of the target dataset. It should contains
+#' the same names used for inside the learning dataset.
+#' @param likelihoods a named vector of the target dataset types. It can
+#' contain \code{gaussian}, \code{poisson} or \code{bernoulli} depending of
+#' the data type. Names are the view names.
+#' @param Fctrzn the learning factorization model object (from \code{MOFA}).
+#' Creating using the \code{MOFA_functions.py} python script.
+#' @param StartDropFactor number after which iteration to start dropping
+#' factors
+#' @param FreqDropFactor number that corresponds to how often to check
+#' whether to drop factors
+#' @param StartELBO number after which iteration to start checking ELBO on
+#' @param FreqELBO number that correspond to how often to assess the ELBO
+#' @param DropFactorTH threshold number to drop or not factors. If factor
+#' with lowest maximum variance explained is below this threshold, it's
+#' dropped.
+#' @param ConvergenceIts number of consecutive iterations that change in
+#' ELBO is below threshold before convergence
+#' @param ConvergenceTH threshold number for change in ELBO for checking
+#' convergence
+#' @param CenterTrg if TRUE, center the target dataset during processing, if
+#' FALSE, leave target dataset uncentered and use estimated learning dataset
+#' intercepts.
+#' @param PoisRateCstnt amount number added to the Poisson rate function
+#' to avoid error. By default is equal to 0.0001. It's used in the pseudo
+#' gaussian values calculation \code{YGauss}, see
+#' \code{\link{YGauss_calculation}} and ELBO calculation, see
+#' \code{\link{ELBO_calculation}}.
+#' @param ss_start_time time recorded before the preprocessing step starts.
+#' Generated using \code{\link{Sys.time}} function. By default is NULL.
+#' @param outputDir output directory name where to save results. By default
+#' results are saved in the current directory.
+#'
+#' @returns a named list of results. It contains
+#' 1. \code{YTrgSS} list of matrices of target dataset
+#' 2. \code{YGauss} list of matrices of pseudo gaussian target dataset
+#' 3. \code{ZMu_0} list of ZMu intercepts matrices
+#' 4. \code{ZMu} list of ZMu
+#' 5. \code{Fctrzn_Lrn_W0} list of learning features mean weight matrix
+#' 6. \code{Fctrzn_Lrn_W} list of learning weights matrix
+#' 7. \code{ELBO} numeric value of ELBO
+#' 8. \code{VarExpl} variance explained by each target dataset
+#' 9. \code{ss_start_time} time when start the analysis (i.e. before the
+#' preprocessing step)
+#' 10. \code{ss_fit_start_time} time when start the transfer learning
+#' analysis
+#' 11. \code{ss_end_time} time when finish the transfer learning.
+#'
+#' Results are also saved into \code{TL_data.rds} file.
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' data("TL_param", package = "MOTL")
+#'
+#' ss_start_time <- Sys.time()
+#' minFactors <- 13
+#' StartDropFactor <- 1
+#' FreqDropFactor <- 1
+#' StartELBO <- 1
+#' FreqELBO <- 5
+#' DropFactorTH <- 0.01
+#' MaxIterations <- 10
+#' MinIterations <- 2
+#' ConvergenceIts <- 2
+#' ConvergenceTH <- 0.0005
+#' PoisRateCstnt <- 0.0001
+#'
+#' TL_data <- transferLearning_function(TL_param, MaxIterations,
+#'                                     MinIterations, minFactors,
+#'                                     views, likelihoods, Fctrzn,
+#'                                     StartDropFactor, FreqDropFactor,
+#'                                     StartELBO, FreqELBO,
+#'                                     DropFactorTH, ConvergenceIts,
+#'                                     ConvergenceTH,
+#'                                     CenterTrg, PoisRateCstnt = 0.0001,
+#'                                     ss_start_time = NULL,
+#'                                     outputDir = "./")
+#' }
+#'
+#'
+#' @export
 transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
                                       minFactors, views, likelihoods, Fctrzn,
                                       StartDropFactor, FreqDropFactor,
@@ -596,136 +705,6 @@ transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
                                       ConvergenceIts, ConvergenceTH,
                                       CenterTrg, PoisRateCstnt = 0.0001,
                                       ss_start_time = NULL, outputDir = "./") {
-    #'
-    #' Transfer Learning with Variational Inference
-    #'
-    #' This function performs multi-omics matrix factorization with transfer
-    #' learning. The target dataset is factorized using the latent factor values
-    #' inferred from the previous factorization of a learning dataset.
-    #'
-    #' This function is called after target dataset is prepared (using
-    #' \code{\link{TargetDataPreparation}}) and parameters initialized (using
-    #' \code{\link{initTransferLearningParamaters}}).
-    #'
-    #' \code{TL_param} is a named list of the initialized parameters and
-    #' data objects for transfer learning. It contains :
-    #' 1. \code{YTrg}: a named list of matrices. Each matrix corresponds to
-    #' the target dataset.
-    #' 2. \code{Fctrzn_Lrn_W0}: a named list of vectors. Each vector contains
-    #' the features mean weight matrix calculated for the learning dataset using
-    #' MOFA.
-    #' 3. \code{Fctrzn_Lrn_W}: a named list of matrices. Each matrix contains
-    #' the weights matrix calculated for the learning dataset using MOFA.
-    #' 4. \code{Fctrzn_Lrn_WSq}: a named list of matrices. Each matrix contains
-    #' the squared weights matrix calculated for the learning dataset using
-    #' MOFA.
-    #' 5. \code{Tau}: a named list of matrices. Each matrix contains the Tau
-    #' values matrix calculated for the learning dataset using MOFA.
-    #' 6. \code{TauLn}: a named list of matrices. Each matrix contains the
-    #' TauLn values matrix calculated for the learning dataset using MOFA.
-    #'
-    #' Names of each list should be identical (e.g.
-    #' \code{c("mRNA", "miRNA", "DNAme", "SNV")}) and so each element
-    #' corresponds to each omic data.
-    #'
-    #' To create the \code{TL_param} variable, see the
-    #' \code{\link{initTransferLearningParamaters}} function.
-    #'
-    #' @param TL_param a named list of initialized parameters and data objects
-    #' for transfer learning. It contains target dataset, weigths and scores
-    #' matrices from matrix factorization of the learning dataset calculated
-    #' using MOFA. See the detail section for more informations.
-    #' @param MaxIterations the maximum number of iterations for the matrix
-    #' factorization convergence. After this number, the factorization is
-    #' stopped.
-    #' @param MinIterations the minimum number of iterations for the matrix
-    #' factorization convergence. Before this number, even if the function
-    #' converges, the factorization is not stopped.
-    #' @param minFactors the minimum number of factors to retain
-    #' @param views a named vector of the target dataset. It should contains
-    #' the same names used for inside the learning dataset.
-    #' @param likelihoods a named vector of the target dataset types. It can
-    #' contain \code{gaussian}, \code{poisson} or \code{bernoulli} depending of
-    #' the data type. Names are the view names.
-    #' @param Fctrzn the learning factorization model object (from \code{MOFA}).
-    #' Creating using the \code{MOFA_functions.py} python script.
-    #' @param StartDropFactor number after which iteration to start dropping
-    #' factors
-    #' @param FreqDropFactor number that corresponds to how often to check
-    #' whether to drop factors
-    #' @param StartELBO number after which iteration to start checking ELBO on
-    #' @param FreqELBO number that correspond to how often to assess the ELBO
-    #' @param DropFactorTH threshold number to drop or not factors. If factor
-    #' with lowest maximum variance explained is below this threshold, it's
-    #' dropped.
-    #' @param ConvergenceIts number of consecutive iterations that change in
-    #' ELBO is below threshold before convergence
-    #' @param ConvergenceTH threshold number for change in ELBO for checking
-    #' convergence
-    #' @param CenterTrg if TRUE, center the target dataset during processing, if
-    #' FALSE, leave target dataset uncentered and use estimated learning dataset
-    #' intercepts.
-    #' @param PoisRateCstnt amount number added to the Poisson rate function
-    #' to avoid error. By default is equal to 0.0001. It's used in the pseudo
-    #' gaussian values calculation \code{YGauss}, see
-    #' \code{\link{YGauss_calculation}} and ELBO calculation, see
-    #' \code{\link{ELBO_calculation}}.
-    #' @param ss_start_time time recorded before the preprocessing step starts.
-    #' Generated using \code{\link{Sys.time}} function. By default is NULL.
-    #' @param outputDir output directory name where to save results. By default
-    #' results are saved in the current directory.
-    #'
-    #' @returns a named list of results. It contains
-    #' 1. \code{YTrgSS} list of matrices of target dataset
-    #' 2. \code{YGauss} list of matrices of pseudo gaussian target dataset
-    #' 3. \code{ZMu_0} list of ZMu intercepts matrices
-    #' 4. \code{ZMu} list of ZMu
-    #' 5. \code{Fctrzn_Lrn_W0} list of learning features mean weight matrix
-    #' 6. \code{Fctrzn_Lrn_W} list of learning weights matrix
-    #' 7. \code{ELBO} numeric value of ELBO
-    #' 8. \code{VarExpl} variance explained by each target dataset
-    #' 9. \code{ss_start_time} time when start the analysis (i.e. before the
-    #' preprocessing step)
-    #' 10. \code{ss_fit_start_time} time when start the transfer learning
-    #' analysis
-    #' 11. \code{ss_end_time} time when finish the transfer learning.
-    #'
-    #' Results are also saved into \code{TL_data.rds} file.
-    #'
-    #' @examples
-    #'
-    #' \dontrun{
-    #'
-    #' data("TL_param", package = "MOTL")
-    #'
-    #' ss_start_time <- Sys.time()
-    #' minFactors <- 13
-    #' StartDropFactor <- 1
-    #' FreqDropFactor <- 1
-    #' StartELBO <- 1
-    #' FreqELBO <- 5
-    #' DropFactorTH <- 0.01
-    #' MaxIterations <- 10
-    #' MinIterations <- 2
-    #' ConvergenceIts <- 2
-    #' ConvergenceTH <- 0.0005
-    #' PoisRateCstnt <- 0.0001
-    #'
-    #' TL_data <- transferLearning_function(TL_param, MaxIterations,
-    #'                                     MinIterations, minFactors,
-    #'                                     views, likelihoods, Fctrzn,
-    #'                                     StartDropFactor, FreqDropFactor,
-    #'                                     StartELBO, FreqELBO,
-    #'                                     DropFactorTH, ConvergenceIts,
-    #'                                     ConvergenceTH,
-    #'                                     CenterTrg, PoisRateCstnt = 0.0001,
-    #'                                     ss_start_time = NULL,
-    #'                                     outputDir = "./")
-    #' }
-    #'
-    #'
-    #' @export
-
     ss_fit_start_time <- Sys.time()
 
     ## RETRIEVE PARAMETERS
