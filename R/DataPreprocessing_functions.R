@@ -738,8 +738,6 @@ TCGATargetDataPreparation <- function(views,
 #'
 #' @returns the target mRNA matrix with versions attached
 #'
-#' @import dplyr
-#'
 #' @examples
 #' Lrn_names <-
 #'         c("ENSG00000122133.17", "ENSG00000122194.9", "ENSG00000119411.1")
