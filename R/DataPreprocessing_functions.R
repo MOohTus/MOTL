@@ -756,10 +756,16 @@ TCGATargetDataPreparation <- function(views,
 #' @export
 mRNA_addVersion <- function(expdat, Lrndat) {
     tmp <- as.data.frame(do.call(rbind, strsplit(rownames(Lrndat), "[.]")))
+    ##
+
+    idx <- match(rownames(expdat), tmp$V1)
+    tmp <- data.frame(V1 = rownames(expdat), V2 = tmp$V2[idx])
+
+
     # match to stripped ids from target set
-    tmp <- data.frame(V1 = rownames(expdat)) %>%
-        left_join(tmp, by = c("V1")) %>%
-        as.data.frame()
+    # tmp <- data.frame(V1 = rownames(expdat)) %>%
+    #   left_join(tmp, by = c("V1")) %>%
+    #   as.data.frame()
     # rename target dataset features
     rownames(expdat) <- paste0(tmp$V1, ".", tmp$V2)
 
