@@ -105,10 +105,10 @@ details about the format of these matrices.
 
 ``` r
 YTrg_list <- list(
-  mRNA = "expdat_mRNA",
-  miRNA = "expdat_miRNA",
-  DNAme = "expdat_DNAme",
-  SNV = "expdat_SNV"
+  mRNA = expdat_mRNA,
+  miRNA = expdat_miRNA,
+  DNAme = expdat_DNAme,
+  SNV = expdat_SNV
 )
 ```
 
