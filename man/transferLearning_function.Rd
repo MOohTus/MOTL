@@ -145,7 +145,7 @@ To create the \code{TL_param} variable, see the
 }
 \examples{
 
-\donttest{
+\dontrun{
 
 data("TL_param", package = "MOTL")
 

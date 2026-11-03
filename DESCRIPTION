@@ -22,7 +22,6 @@ BugReports: https://github.com/MOohTus/MOTL/issues,
 Depends:
     R (>= 4.2.0)
 Imports: 
-    base,
     data.table,
     DESeq2,
     dplyr,

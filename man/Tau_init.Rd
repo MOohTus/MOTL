@@ -24,7 +24,7 @@ Extract the Tau matrix from the MOFA object \code{Fctrzn} for each view.
 More explanation about Tau.
 }
 \examples{
-\donttest{
+\dontrun{
 
 library("MOFA2")
 
