@@ -21,7 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item David P Hirst (\href{https://orcid.org/0000-0001-7574-5531}{ORCID})
+  \item David Hirst (\href{https://orcid.org/0000-0001-7574-5531}{ORCID})
 }
 
 }
