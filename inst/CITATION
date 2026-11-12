@@ -1,7 +1,7 @@
 bibentry(
 	"Article",
 	title = "MOTL: enhancing multi-omics matrix factorization with transfer learning",
-	author = "David P Hirst, Morgane Térézol, Laura Cantini, Paul Villoutreix, Matthieu Vignes, Anaïs Baudot",
+	author = "David P Hirst, Morgane T\u00e9r\u00e9zol, Laura Cantini, Paul Villoutreix, Matthieu Vignes, Ana\u00efs Baudot",
 	year = 2025,
 	journal = "Genome Biology",
 	volume = 26,
