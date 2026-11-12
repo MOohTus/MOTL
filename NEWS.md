@@ -12,7 +12,9 @@
 * MOTL is ready for Bioconductor submission
 
 
-# MOTL - Before packaging
+# MOTL - 0.0.0
+
+## Version before the R packaging
 
 * Work published in Genome Biology - 2025
 https://genomebiology.biomedcentral.com/articles/10.1186/s13059-025-03675-7
