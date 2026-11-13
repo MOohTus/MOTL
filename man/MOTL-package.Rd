@@ -12,8 +12,7 @@ A transfer learning algorithm for multi-omics matrix factorization called 'MOTL'
 Useful links:
 \itemize{
   \item \url{https://github.com/MOohTus/MOTL}
-  \item \url{https://github.com/david-hirst/MOTL}
-  \item Report bugs at \url{https://github.com/MOohTus/MOTL/issues, https://github.com/david-hirst/MOTL/issues}
+  \item Report bugs at \url{https://github.com/MOohTus/MOTL/issues}
 }
 
 }

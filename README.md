@@ -41,7 +41,16 @@ $\boldsymbol{Z}$, with variational inference.
 
 ## Installation
 
-You can install the development version of MOTL from
+`MOTL` is available on Bioconductor:
+
+``` r
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")}
+
+BiocManager::install("MOTL")
+```
+
+You can also install the development version of `MOTL` from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -105,10 +114,10 @@ details about the format of these matrices.
 
 ``` r
 YTrg_list <- list(
-  mRNA = "expdat_mRNA",
-  miRNA = "expdat_miRNA",
-  DNAme = "expdat_DNAme",
-  SNV = "expdat_SNV"
+  mRNA = expdat_mRNA,
+  miRNA = expdat_miRNA,
+  DNAme = expdat_DNAme,
+  SNV = expdat_SNV
 )
 ```
 

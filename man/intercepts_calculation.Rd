@@ -37,7 +37,7 @@ using the maximum likelihood and the \code{\link{mle}} function.
 }
 \examples{
 #
-\donttest{
+\dontrun{
 
 data("Lrn", package = "MOTL")
 
