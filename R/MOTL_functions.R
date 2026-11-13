@@ -618,13 +618,6 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
 #' for transfer learning. It contains target dataset, weigths and scores
 #' matrices from matrix factorization of the learning dataset calculated
 #' using MOFA. See the detail section for more informations.
-#' @param MaxIterations the maximum number of iterations for the matrix
-#' factorization convergence. After this number, the factorization is
-#' stopped.
-#' @param MinIterations the minimum number of iterations for the matrix
-#' factorization convergence. Before this number, even if the function
-#' converges, the factorization is not stopped.
-#' @param minFactors the minimum number of factors to retain
 #' @param views a named vector of the target dataset. It should contains
 #' the same names used for inside the learning dataset.
 #' @param likelihoods a named vector of the target dataset types. It can
@@ -632,22 +625,31 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
 #' the data type. Names are the view names.
 #' @param Fctrzn the learning factorization model object (from \code{MOFA}).
 #' Creating using the \code{MOFA_functions.py} python script.
-#' @param StartDropFactor number after which iteration to start dropping
-#' factors
-#' @param FreqDropFactor number that corresponds to how often to check
-#' whether to drop factors
-#' @param StartELBO number after which iteration to start checking ELBO on
-#' @param FreqELBO number that correspond to how often to assess the ELBO
-#' @param DropFactorTH threshold number to drop or not factors. If factor
-#' with lowest maximum variance explained is below this threshold, it's
-#' dropped.
-#' @param ConvergenceIts number of consecutive iterations that change in
-#' ELBO is below threshold before convergence
-#' @param ConvergenceTH threshold number for change in ELBO for checking
-#' convergence
+#' @param MinIterations the minimum number of iterations for the matrix
+#' factorization convergence. Before this number, even if the function
+#' converges, the factorization is not stopped. Default 2.
+#' @param MaxIterations the maximum number of iterations for the matrix
+#' factorization convergence. After this number, the factorization is
+#' stopped. Default 10000.
+#' @param minFactors the minimum number of factors to retain. Default 6.
 #' @param CenterTrg if TRUE, center the target dataset during processing, if
 #' FALSE, leave target dataset uncentered and use estimated learning dataset
-#' intercepts.
+#' intercepts. Default FALSE.
+#' @param ConvergenceIts number of consecutive iterations that change in
+#' ELBO is below threshold before convergence. Default 2.
+#' @param ConvergenceTH threshold number for change in ELBO for checking
+#' convergence. Default 0.0005.
+#' @param StartDropFactor number after which iteration to start dropping
+#' factors. Default 1.
+#' @param FreqDropFactor number that corresponds to how often to check
+#' whether to drop factors. Default 1.
+#' @param StartELBO number after which iteration to start checking ELBO on.
+#' Default 1.
+#' @param FreqELBO number that correspond to how often to assess the ELBO.
+#' Default 5.
+#' @param DropFactorTH threshold number to drop or not factors. If factor
+#' with lowest maximum variance explained is below this threshold, it's
+#' dropped. Default 0.01.
 #' @param PoisRateCstnt amount number added to the Poisson rate function
 #' to avoid error. By default is equal to 0.0001. It's used in the pseudo
 #' gaussian values calculation \code{YGauss}, see
@@ -708,13 +710,24 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
 #'
 #'
 #' @export
-transferLearning_function <- function(TL_param, MaxIterations, MinIterations,
-                                      minFactors, views, likelihoods, Fctrzn,
-                                      StartDropFactor, FreqDropFactor,
-                                      StartELBO, FreqELBO, DropFactorTH,
-                                      ConvergenceIts, ConvergenceTH,
-                                      CenterTrg, PoisRateCstnt = 0.0001,
-                                      ss_start_time = NULL, outputDir = "./") {
+transferLearning_function <- function(TL_param,
+                                      views,
+                                      likelihoods,
+                                      Fctrzn,
+                                      minFactors = 6,
+                                      CenterTrg = FALSE,
+                                      MinIterations = 2,
+                                      MaxIterations = 10000,
+                                      ConvergenceIts = 2,
+                                      ConvergenceTH = 0.0005,
+                                      StartDropFactor = 1,
+                                      FreqDropFactor = 1,
+                                      StartELBO = 1,
+                                      FreqELBO = 5,
+                                      DropFactorTH = 0.01,
+                                      PoisRateCstnt = 0.0001,
+                                      ss_start_time = NULL,
+                                      outputDir = "./") {
     ss_fit_start_time <- Sys.time()
 
     ## RETRIEVE PARAMETERS

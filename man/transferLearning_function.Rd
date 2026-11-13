@@ -6,20 +6,20 @@
 \usage{
 transferLearning_function(
   TL_param,
-  MaxIterations,
-  MinIterations,
-  minFactors,
   views,
   likelihoods,
   Fctrzn,
-  StartDropFactor,
-  FreqDropFactor,
-  StartELBO,
-  FreqELBO,
-  DropFactorTH,
-  ConvergenceIts,
-  ConvergenceTH,
-  CenterTrg,
+  minFactors = 6,
+  CenterTrg = FALSE,
+  MinIterations = 2,
+  MaxIterations = 10000,
+  ConvergenceIts = 2,
+  ConvergenceTH = 5e-04,
+  StartDropFactor = 1,
+  FreqDropFactor = 1,
+  StartELBO = 1,
+  FreqELBO = 5,
+  DropFactorTH = 0.01,
   PoisRateCstnt = 1e-04,
   ss_start_time = NULL,
   outputDir = "./"
@@ -31,16 +31,6 @@ for transfer learning. It contains target dataset, weigths and scores
 matrices from matrix factorization of the learning dataset calculated
 using MOFA. See the detail section for more informations.}
 
-\item{MaxIterations}{the maximum number of iterations for the matrix
-factorization convergence. After this number, the factorization is
-stopped.}
-
-\item{MinIterations}{the minimum number of iterations for the matrix
-factorization convergence. Before this number, even if the function
-converges, the factorization is not stopped.}
-
-\item{minFactors}{the minimum number of factors to retain}
-
 \item{views}{a named vector of the target dataset. It should contains
 the same names used for inside the learning dataset.}
 
@@ -51,29 +41,41 @@ the data type. Names are the view names.}
 \item{Fctrzn}{the learning factorization model object (from \code{MOFA}).
 Creating using the \code{MOFA_functions.py} python script.}
 
-\item{StartDropFactor}{number after which iteration to start dropping
-factors}
-
-\item{FreqDropFactor}{number that corresponds to how often to check
-whether to drop factors}
-
-\item{StartELBO}{number after which iteration to start checking ELBO on}
-
-\item{FreqELBO}{number that correspond to how often to assess the ELBO}
-
-\item{DropFactorTH}{threshold number to drop or not factors. If factor
-with lowest maximum variance explained is below this threshold, it's
-dropped.}
-
-\item{ConvergenceIts}{number of consecutive iterations that change in
-ELBO is below threshold before convergence}
-
-\item{ConvergenceTH}{threshold number for change in ELBO for checking
-convergence}
+\item{minFactors}{the minimum number of factors to retain. Default 6.}
 
 \item{CenterTrg}{if TRUE, center the target dataset during processing, if
 FALSE, leave target dataset uncentered and use estimated learning dataset
-intercepts.}
+intercepts. Default FALSE.}
+
+\item{MinIterations}{the minimum number of iterations for the matrix
+factorization convergence. Before this number, even if the function
+converges, the factorization is not stopped. Default 2.}
+
+\item{MaxIterations}{the maximum number of iterations for the matrix
+factorization convergence. After this number, the factorization is
+stopped. Default 10000.}
+
+\item{ConvergenceIts}{number of consecutive iterations that change in
+ELBO is below threshold before convergence. Default 2.}
+
+\item{ConvergenceTH}{threshold number for change in ELBO for checking
+convergence. Default 0.0005.}
+
+\item{StartDropFactor}{number after which iteration to start dropping
+factors. Default 1.}
+
+\item{FreqDropFactor}{number that corresponds to how often to check
+whether to drop factors. Default 1.}
+
+\item{StartELBO}{number after which iteration to start checking ELBO on.
+Default 1.}
+
+\item{FreqELBO}{number that correspond to how often to assess the ELBO.
+Default 5.}
+
+\item{DropFactorTH}{threshold number to drop or not factors. If factor
+with lowest maximum variance explained is below this threshold, it's
+dropped. Default 0.01.}
 
 \item{PoisRateCstnt}{amount number added to the Poisson rate function
 to avoid error. By default is equal to 0.0001. It's used in the pseudo
