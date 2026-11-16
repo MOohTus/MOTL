@@ -861,7 +861,8 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
 #'                     Fctrzn = Fctrzn,
 #'                     InputModel = InputModel)
 #' }
-#' @export
+#' @keywords internal
+#' @noRd
 Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     ## Extract Tau from the factorization of the learning set
     Tau <- rhdf5::h5read(InputModel, "expectations/Tau")
@@ -918,7 +919,8 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
 #'                                 LrnFctrnDir = LrnFctrnDir)
 #'
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 TauLn_calculation <- function(view,
                               likelihoodsLrn,
                               Fctrzn,
@@ -980,7 +982,8 @@ TauLn_calculation <- function(view,
 #'                             LrnSimple = TRUE)
 #'
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     if (LrnSimple) {
         WSq <- (Fctrzn@expectations[["W"]][[view]])^2
@@ -1029,7 +1032,8 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
 #'                             LrnFctrnDir = LrnFctrnDir)
 #'
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     if (CenterTrg) {
         W0 <- Fctrzn@expectations[["W"]][[view]][, 1] * 0
@@ -1041,6 +1045,26 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
     }
     return(W0)
 }
+
+
+#' Initialization of the learning model
+#'
+#'
+#'
+#' @export
+initLearningModel <- function(viewsLrn, likelihoodsLrn, Fctrzn, InputModel, LrnFctrnDir, CenterTrg, LrnSimple){
+
+    Fctrzn@expectations[["Tau"]] <- Tau_init(viewsLrn, Fctrzn, InputModel)
+    Fctrzn@expectations[["TauLn"]] <- sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn, LrnFctrnDir)
+    Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn, LrnFctrnDir)
+    Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrnDir)
+
+    return(Fctrzn)
+}
+
+
+
+
 
 #' Intercepts calculation
 #'

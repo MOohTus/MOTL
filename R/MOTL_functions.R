@@ -105,7 +105,8 @@ Zeta_calculation <- function(view, likelihoods, E_ZWSq, E_ZE_W) {
 #'                         Zeta = Zeta, Tau = Tau)
 #'
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 Tau_calculation <- function(view, likelihoods, Zeta, Tau) {
     if (likelihoods[[view]] == "bernoulli") {
         Tau <- (1 / 2) * (1 / Zeta[[view]]) * tanh(Zeta[[view]] / 2)

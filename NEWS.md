@@ -1,7 +1,6 @@
 # MOTL 0.99.2
 
-*
-
+* Add initLearningModel()
 
 # MOTL 0.99.1
 
