@@ -686,16 +686,7 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
 #'
 #' ss_start_time <- Sys.time()
 #' minFactors <- 13
-#' StartDropFactor <- 1
-#' FreqDropFactor <- 1
-#' StartELBO <- 1
-#' FreqELBO <- 5
-#' DropFactorTH <- 0.01
 #' MaxIterations <- 10
-#' MinIterations <- 2
-#' ConvergenceIts <- 2
-#' ConvergenceTH <- 0.0005
-#' PoisRateCstnt <- 0.0001
 #'
 #' TL_data <- transferLearning_function(TL_param, MaxIterations,
 #'                                     MinIterations, minFactors,
@@ -912,14 +903,6 @@ transferLearning_function <- function(TL_param,
         "ss_end_time" = ss_end_time
     )
     saveRDS(TL_data, file.path(outputDir, "TL_data.rds"))
-
-    ## delete before next subset in case i've missed something in the loop
-    rm(list = c(
-        "YTrgSS", "YGauss", "ZMu_0", "ZMu", "Fctrzn_Lrn_W0", "Fctrzn_Lrn_W", "ELBO", "ELBO_P", "ELBO_Q", "ELBO_L",
-        "E_ZE_W", "E_Z_SqE_W_Sq", "E_ZSqE_WSq", "E_ZWSq", "ZMuSq", "Fctrzn_Lrn_WSq", "Tau", "TauLn", "ZVar", "Zeta"
-    ))
-
-    invisible(gc())
 
     return(TL_data)
 }

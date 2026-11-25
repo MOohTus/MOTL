@@ -1152,8 +1152,6 @@ intercepts_calculation <- function(expdat_meta,
         ZWTmp <- expectations$Z$group0 %*%
             t(expectations$W[[which(names(expectations$W) == view)]])
 
-        invisible(gc())
-
         if (likelihood == "gaussian") {
             InterceptsNaive <- colMeans(YTmp, na.rm = TRUE)
             Intercepts <- InterceptsNaive
