@@ -1073,9 +1073,6 @@ initLearningModel <- function(viewsLrn, likelihoodsLrn, Fctrzn, InputModel, LrnF
 }
 
 
-
-
-
 #' Intercepts calculation
 #'
 #' Calculate feature weight intercepts for a MOFA factorization based
@@ -1109,20 +1106,18 @@ initLearningModel <- function(viewsLrn, likelihoodsLrn, Fctrzn, InputModel, LrnF
 #'
 #' expdat_meta <- Lrn$Lrn_meta
 #' Fctrzn <- Lrn$Fctrzn
-#' FctrznDir <- "FctrznDir"
 #' ExpDataDir <- "ExpDataDir"
 #' Seed <- 1234567
 #'
-#' intercepts_calculation(expdat_meta,
+#' EstimatedIntercepts <- intercepts_calculation(expdat_meta,
 #'                         Fctrzn,
-#'                         FctrznDir,
 #'                         ExpDataDir,
 #'                         Seed)
 #' }
 #' @export
 intercepts_calculation <- function(expdat_meta,
                                    Fctrzn,
-                                   FctrznDir,
+                                   FctrznDir = NULL,
                                    ExpDataDir,
                                    Seed) {
     ## message("Estimation of the intercept")
@@ -1300,12 +1295,16 @@ intercepts_calculation <- function(expdat_meta,
         "fit_end_time" = fit_end_time
     )
 
-    saveRDS(
-        EstimatedIntercepts,
-        file.path(FctrznDir, "EstimatedIntercepts.rds")
-    )
-
     ## message("finished")
+
+    if (!is.null(FctrznDir)) {
+        saveRDS(
+            EstimatedIntercepts,
+            file.path(FctrznDir, "EstimatedIntercepts.rds")
+        )
+    }
+
+    return(EstimatedIntercepts)
 }
 
 ## --------------------------------------------------------------
