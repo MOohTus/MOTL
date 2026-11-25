@@ -660,6 +660,7 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
 #' Generated using \code{\link{Sys.time}} function. By default is NULL.
 #' @param outputDir output directory name where to save results. By default
 #' results are saved in the current directory.
+#' @param verbose
 #'
 #' @returns a named list of results. It contains
 #' 1. \code{YTrgSS} list of matrices of target dataset
@@ -719,6 +720,7 @@ transferLearning_function <- function(TL_param,
                                       DropFactorTH = 0.01,
                                       PoisRateCstnt = 0.0001,
                                       ss_start_time = NULL,
+                                      verbose = TRUE,
                                       outputDir = "./") {
     ss_fit_start_time <- Sys.time()
 
@@ -746,7 +748,7 @@ transferLearning_function <- function(TL_param,
         # r2[g][m, k] = 1.0 - Res / SS as per paper
         BegK <- dim(Fctrzn_Lrn_W[[1]])[2]
         if ((BegK > minFactors) & (It > 1) & (It > StartDropFactor) & (((It - StartDropFactor - 1) %% FreqDropFactor) == 0)) {
-            message("Drop factors")
+            if(verbose){message("Drop factors")}
 
             VarExpl <- VarExplFun(views = views, YGauss = YGauss, ZMu_0 = ZMu_0, Fctrzn_Lrn_W0 = Fctrzn_Lrn_W0, ZMu = ZMu, Fctrzn_Lrn_W = Fctrzn_Lrn_W)
 
@@ -787,7 +789,7 @@ transferLearning_function <- function(TL_param,
         }
 
         if (It > 0) {
-            message("Zeta, Tau, YGauss")
+            if(verbose){message("Zeta, Tau, YGauss")}
 
             ## Zeta values used for non-gaussian data
             Zeta <- lapply(views, Zeta_calculation, likelihoods, E_ZWSq, E_ZE_W)
@@ -800,13 +802,13 @@ transferLearning_function <- function(TL_param,
         }
 
         ## Z variances using initialised / updated tau values and W^2 values
-        message("Zeta")
+        if(verbose){message("Zeta")}
         ZVar <- Reduce("+", lapply(views, ZVar_calculation, Tau, Fctrzn_Lrn_WSq))
         ZVar <- 1 / (ZVar + 1)
 
         ## Initialize or update ZMu values
         if (It == 0) {
-            message("Init Z")
+            if(verbose){message("Init Z")}
             # initialise with means of learning set Z
             ZMu <- matrix(
                 data = as.vector(colMeans(Fctrzn@expectations$Z$group0)),
@@ -819,7 +821,7 @@ transferLearning_function <- function(TL_param,
             # vector of 1s to act as multiplier of W intercept term
             ZMu_0 <- rep(1, dim(ZVar)[1])
         } else {
-            message("update Z")
+            if(verbose){message("update Z")}
             # variational updates
             for (k in seq_len(dim(ZMu)[2])) {
                 ZMu_tmp <- Reduce("+", lapply(views, ZMu_calculation, k, Fctrzn_Lrn_W, Fctrzn_Lrn_W0, Tau, ZMu_0, ZMu, YGauss))
@@ -830,7 +832,7 @@ transferLearning_function <- function(TL_param,
         PrintMessage <- paste0(PrintMessage, " K=", dim(ZMu)[2])
 
         ## Z^2 values
-        message("Z squared")
+        if(verbose){message("Z squared")}
         ZMuSq <- ZVar + ZMu^2
 
         ## Some pre calculations - results used in various parts: E_ZE_W and ZZWW
@@ -842,7 +844,7 @@ transferLearning_function <- function(TL_param,
         ## And B_nd = \sum_{k} E[(z_{n,k})^2]E[(w_{d,k})^2]
         ## E_ZWSq_nd = (A + B)_nd = (square(ZMu%*%t(W)) - square(ZMu)%*%square(t(W)) + ZMuSq%*%t(WSq))_nd
 
-        message("Expected")
+        if(verbose){message("Expected")}
         E_ZE_W <- lapply(views, E_ZE_W_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
         E_Z_SqE_W_Sq <- lapply(views, E_Z_SqE_W_Sq_update, ZMu_0, ZMu, Fctrzn_Lrn_W0, Fctrzn_Lrn_W)
         E_ZSqE_WSq <- lapply(views, E_ZSqE_WSq_update, ZMu_0, ZMuSq, Fctrzn_Lrn_W0, Fctrzn_Lrn_WSq)
@@ -851,7 +853,7 @@ transferLearning_function <- function(TL_param,
         ## Calculate and check the ELBO
 
         if ((It > 0) & (It >= StartELBO) & (((It - StartELBO) %% FreqELBO) == 0)) {
-            message("ELBO")
+            if(verbose){message("ELBO")}
 
             ELBO_L <- do.call(sum, lapply(X = views, FUN = ELBO_calculation, likelihoods, Tau, TauLn, E_ZWSq, E_ZE_W, Zeta, YTrgSS, YGauss))
 
@@ -875,11 +877,11 @@ transferLearning_function <- function(TL_param,
             }
         }
 
-        message(PrintMessage)
+        if(verbose){message(PrintMessage)}
 
         ## can the algorithm be stopped?
         if ((It >= 2) & (It >= MinIterations) & (convergence_token >= ConvergenceIts)) {
-            message("converged")
+            if(verbose){message("converged")}
             break
         }
     }

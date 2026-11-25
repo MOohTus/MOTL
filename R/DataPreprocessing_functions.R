@@ -172,6 +172,7 @@ countsTransformation <- function(expdat_count, TopD) {
 #' @param expdat_meta_Lrn the list of learning set factorization metadata
 #' @param transformation if FALSE, no transformation. If TRUE, log2
 #' normalization.
+#' @param verbose
 #'
 #' @returns Preprocessed counts data for the current view
 #'
@@ -194,7 +195,8 @@ preprocessCountsData <- function(view,
                                  YTrg_list,
                                  normalization = FALSE,
                                  expdat_meta_Lrn,
-                                 transformation = FALSE) {
+                                 transformation = FALSE,
+                                 verbose = FALSE) {
     ## Select current data
     YTrg <- YTrg_list[[view]]
 
@@ -205,28 +207,32 @@ preprocessCountsData <- function(view,
         ## if "newGeoMeans", calculate the Geometric means of the input data
         if (is.character(normalization)) {
             if (normalization == "LrnGeoMeans") {
-                message("Normalize using the pre-calculated learning dataset
+                if(verbose){
+                    message("Normalize using the pre-calculated learning dataset
                         Geometric means")
+                }
                 GeoMeans <-
                     GeoMeans_Lrn_init(view, expdat_meta_Lrn, rownames(YTrg))
             }
             if (normalization == "newGeoMeans") {
-                message("Calculate Geometric means during the normalization")
+                if(verbose){
+                    message("Calculate Geometric means during the normalization")
+                }
                 GeoMeans <- normalization
             }
             YTrg <- SummarizedExperiment::SummarizedExperiment(assays = list(YTrg))
             YTrg <- countsNormalization(expdat = YTrg, GeoMeans = GeoMeans)
             YTrg <- YTrg$counts
         } else {
-            message("No normalization")
+            if(verbose){message("No normalization")}
         }
 
         ## Transformation
         if (transformation) {
-            message("Log transform data")
+            if(verbose){message("Log transform data")}
             YTrg <- countsTransformation(expdat_count = YTrg, TopD = nrow(YTrg))
         } else {
-            message("No transformation")
+            if(verbose){message("No transformation")}
         }
     }
     return(YTrg)
@@ -267,6 +273,7 @@ preprocessCountsData <- function(view,
 #' @param expdat_meta_Lrn the list of learning set factorization metadata
 #' @param transformation if FALSE, no transformation. If TRUE, log2
 #' transformation of counts data. By default it's set to FALSE.
+#' @param verbose
 #'
 #' @returns a list of prepared target data
 #'
@@ -296,15 +303,16 @@ TargetDataPreparation <- function(views,
                                   smpls,
                                   expdat_meta_Lrn,
                                   normalization = FALSE,
-                                  transformation = FALSE) {
+                                  transformation = FALSE,
+                                  verbose = FALSE) {
     names(views) <- views
 
     ## Feature variance prefiltering and feature harmonization
-    message("Feature prefiltering")
+    if(verbose){message("Feature prefiltering")}
     YTrg <- lapply(views, TargetDataPrefiltering, YTrg_list, Fctrzn, smpls)
 
     ## Normalization and transformation
-    message("Normalization and transformation")
+    if(verbose){message("Normalization and transformation")}
     YTrg <- lapply(
         views,
         preprocessCountsData,
@@ -343,6 +351,7 @@ TargetDataPreparation <- function(views,
 #' @param likelihoods a named list of data types. The list can contain
 #' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
 #' type. Names are the view names.
+#' @param verbose
 #'
 #' @returns a list of initialized parameters for transfer learning
 #' 1. \code{YTrg} - the transposed named list of target data
@@ -377,14 +386,15 @@ TargetDataPreparation <- function(views,
 initTransferLearningParamaters <- function(YTrg,
                                            views,
                                            Fctrzn,
-                                           likelihoods) {
+                                           likelihoods,
+                                           verbose = FALSE) {
     names(views) <- views
 
     ## Feature names in each data
     YTrgFtrs <- lapply(YTrg, rownames)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX ZERO
-    message("Factorized learning set weight intercepts")
+    if(verbose){message("Factorized learning set weight intercepts")}
     Fctrzn_Lrn_W0 <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_W0 <- Fctrzn@expectations[["W0"]][[view]]
         FtrsKeep <- is.element(names(Fctrzn_Lrn_W0), YTrgFtrs[[view]])
@@ -395,7 +405,7 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrgFtrs)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX
-    message("Factorized learning set weights")
+    if(verbose){message("Factorized learning set weights")}
     Fctrzn_Lrn_W <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_W <- Fctrzn@expectations[["W"]][[view]]
         FtrsKeep <- is.element(rownames(Fctrzn_Lrn_W), YTrgFtrs[[view]])
@@ -406,7 +416,7 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrgFtrs)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX SQUARED
-    message("Factorized learning set squared weights")
+    if(verbose){message("Factorized learning set squared weights")}
     Fctrzn_Lrn_WSq <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
         Fctrzn_Lrn_WSq <- Fctrzn@expectations[["WSq"]][[view]]
         FtrsKeep <- is.element(rownames(Fctrzn_Lrn_WSq), YTrgFtrs[[view]])
@@ -417,7 +427,7 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrgFtrs)
 
     ## TAU PARAMETER
-    message("Tau")
+    if(verbose){message("Tau")}
     Tau <- lapply(views, function(view, Fctrzn, YTrg, YTrgFtrs) {
         Tau <- Fctrzn@expectations[["Tau"]][[view]]$group0
         FtrsKeep <- is.element(rownames(Tau), YTrgFtrs[[view]])
@@ -434,7 +444,7 @@ initTransferLearningParamaters <- function(YTrg,
     }, Fctrzn, YTrg, YTrgFtrs)
 
     ## LOG TAU PARAMETER
-    message("LOG Tau")
+    if(verbose){message("LOG Tau")}
     TauLn <- lapply(views, function(view,
                                     likelihoods,
                                     Fctrzn,
@@ -1115,7 +1125,7 @@ intercepts_calculation <- function(expdat_meta,
                                    FctrznDir,
                                    ExpDataDir,
                                    Seed) {
-    message("Estimation of the intercept")
+    ## message("Estimation of the intercept")
 
     fit_start_time <- Sys.time()
 
@@ -1295,7 +1305,7 @@ intercepts_calculation <- function(expdat_meta,
         file.path(FctrznDir, "EstimatedIntercepts.rds")
     )
 
-    message("finished")
+    ## message("finished")
 }
 
 ## --------------------------------------------------------------
