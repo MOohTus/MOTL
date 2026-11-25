@@ -1035,21 +1035,25 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
 #' data("Lrn", package = "MOTL")
 #'
 #' Fctrzn <- Lrn$Fctrzn
+#' EstInts <- readRDS(file.path(LrnFctrnDir, "EstimatedIntercepts.rds"))
 #'
 #' W0_mRNA = W0_calculation(view = "mRNA",
 #'                             CenterTrg = TRUE,
 #'                             Fctrzn = Fctrzn,
-#'                             LrnFctrnDir = LrnFctrnDir)
+#'                             EstInts = EstInts)
 #'
 #'
 #' @keywords internal
 #' @noRd
-W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
+W0_calculation <- function(view, CenterTrg, Fctrzn, EstInts = NULL) {
     if (CenterTrg) {
         W0 <- Fctrzn@expectations[["W"]][[view]][, 1] * 0
     } else {
-        EstInts <-
-            base::readRDS(file.path(LrnFctrnDir, "EstimatedIntercepts.rds"))
+        if(is.null(EstInts)){
+            stop("EstInts must be provided when CenterTrg = FALSE")
+        }
+        ##EstInts <-
+        ##    base::readRDS(file.path(LrnFctrnDir, "EstimatedIntercepts.rds"))
         EstInts <- EstInts$Intercepts
         W0 <- EstInts[[view]]
     }
@@ -1062,11 +1066,11 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, LrnFctrnDir) {
 #'
 #'
 #' @export
-initLearningModel <- function(viewsLrn, likelihoodsLrn, Fctrzn, InputModel, LrnFctrnDir, CenterTrg, LrnSimple){
+initLearningModel <- function(viewsLrn, likelihoodsLrn, Fctrzn, EstInts, InputModel, LrnFctrnDir, CenterTrg, LrnSimple){
 
     Fctrzn@expectations[["Tau"]] <- Tau_init(viewsLrn, Fctrzn, InputModel)
     Fctrzn@expectations[["TauLn"]] <- sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn, LrnFctrnDir)
-    Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn, LrnFctrnDir)
+    Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn, EstInts)
     Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrnDir)
 
     return(Fctrzn)
