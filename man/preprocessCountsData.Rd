@@ -9,7 +9,8 @@ preprocessCountsData(
   YTrg_list,
   normalization = FALSE,
   expdat_meta_Lrn,
-  transformation = FALSE
+  transformation = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ to FALSE.}
 
 \item{transformation}{if FALSE, no transformation. If TRUE, log2
 normalization.}
+
+\item{verbose}{}
 }
 \value{
 Preprocessed counts data for the current view

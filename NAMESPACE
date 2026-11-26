@@ -2,11 +2,7 @@
 
 export(TCGATargetDataPreparation)
 export(TargetDataPreparation)
-export(TauLn_calculation)
-export(Tau_calculation)
-export(Tau_init)
-export(W0_calculation)
-export(WSq_calculation)
+export(initLearningModel)
 export(initTransferLearningParamaters)
 export(intercepts_calculation)
 export(mRNA_addVersion)

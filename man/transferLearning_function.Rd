@@ -22,6 +22,7 @@ transferLearning_function(
   DropFactorTH = 0.01,
   PoisRateCstnt = 1e-04,
   ss_start_time = NULL,
+  verbose = TRUE,
   outputDir = "./"
 )
 }
@@ -85,6 +86,8 @@ gaussian values calculation \code{YGauss}, see
 
 \item{ss_start_time}{time recorded before the preprocessing step starts.
 Generated using \code{\link{Sys.time}} function. By default is NULL.}
+
+\item{verbose}{}
 
 \item{outputDir}{output directory name where to save results. By default
 results are saved in the current directory.}
@@ -153,16 +156,7 @@ data("TL_param", package = "MOTL")
 
 ss_start_time <- Sys.time()
 minFactors <- 13
-StartDropFactor <- 1
-FreqDropFactor <- 1
-StartELBO <- 1
-FreqELBO <- 5
-DropFactorTH <- 0.01
 MaxIterations <- 10
-MinIterations <- 2
-ConvergenceIts <- 2
-ConvergenceTH <- 0.0005
-PoisRateCstnt <- 0.0001
 
 TL_data <- transferLearning_function(TL_param, MaxIterations,
                                     MinIterations, minFactors,

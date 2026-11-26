@@ -11,7 +11,8 @@ TargetDataPreparation(
   smpls,
   expdat_meta_Lrn,
   normalization = FALSE,
-  transformation = FALSE
+  transformation = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ set to FALSE.}
 
 \item{transformation}{if FALSE, no transformation. If TRUE, log2
 transformation of counts data. By default it's set to FALSE.}
+
+\item{verbose}{}
 }
 \value{
 a list of prepared target data

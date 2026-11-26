@@ -4,7 +4,7 @@
 \alias{intercepts_calculation}
 \title{Intercepts calculation}
 \usage{
-intercepts_calculation(expdat_meta, Fctrzn, FctrznDir, ExpDataDir, Seed)
+intercepts_calculation(expdat_meta, Fctrzn, FctrznDir = NULL, ExpDataDir, Seed)
 }
 \arguments{
 \item{expdat_meta}{the named list of learning dataset factorization
@@ -43,13 +43,11 @@ data("Lrn", package = "MOTL")
 
 expdat_meta <- Lrn$Lrn_meta
 Fctrzn <- Lrn$Fctrzn
-FctrznDir <- "FctrznDir"
 ExpDataDir <- "ExpDataDir"
 Seed <- 1234567
 
-intercepts_calculation(expdat_meta,
+EstimatedIntercepts <- intercepts_calculation(expdat_meta,
                         Fctrzn,
-                        FctrznDir,
                         ExpDataDir,
                         Seed)
 }

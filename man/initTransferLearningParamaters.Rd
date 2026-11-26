@@ -4,7 +4,13 @@
 \alias{initTransferLearningParamaters}
 \title{Transfer learning parameters and data objects initialization}
 \usage{
-initTransferLearningParamaters(YTrg, views, Fctrzn, likelihoods)
+initTransferLearningParamaters(
+  YTrg,
+  views,
+  Fctrzn,
+  likelihoods,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{YTrg}{a named list of target dataset matrices. Names correspond to
@@ -19,6 +25,8 @@ the defined views.}
 \item{likelihoods}{a named list of data types. The list can contain
 \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
 type. Names are the view names.}
+
+\item{verbose}{}
 }
 \value{
 a list of initialized parameters for transfer learning

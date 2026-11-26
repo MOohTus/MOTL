@@ -1026,7 +1026,7 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
 #' estimated feature weight intercept.
 #' @param Fctrzn learning dataset factorization model object (from
 #' \code{MOFA})
-#' @param LrnFctrnDir directory where the extimated intercepts file is.
+#' @param EstInts
 #'
 #' @returns a feature weight intercept values matrix for the current data
 #'
@@ -1063,6 +1063,25 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, EstInts = NULL) {
 
 #' Initialization of the learning model
 #'
+#' @param viewsLrn the list of learning data views. For TCGA learning data
+#' it will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).
+#' @param likelihoodsLrn a named list of data types. The list can contain
+#' \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+#' type. Names are the view names.
+#' @param Fctrzn the learning dataset factorization from \code{MOFA2}.
+#' @param EstInts estimated intercept matrix
+#' @param InputModel the factorization model object of learning set
+#' \code{MOFA2}
+#' @param LrnFctrnDir directory where log(Tau) values are saved. Files
+#' should be named like \code{"TauLn_mRNA.csv"}.
+#' @param CenterTrg if FALSE, use the estimated feature weight intercept
+#' from the \code{EstimatedIntercepts.rds} file. If TRUE, don't use the
+#' estimated feature weight intercept.
+#' @param LrnSimple if TRUE, calculates the squared weight values \code{WSq}.
+#' If FALSE, imports values from a .csv file. By default is set to "TRUE".
+#' \eqn{E[W^2]} using the weight values \code{W} \eqn{E[W]}.
+#' If FALSE, load squared weight values from a file. By default, it's set
+#' to TRUE.
 #'
 #'
 #' @export
@@ -1070,8 +1089,8 @@ initLearningModel <- function(viewsLrn, likelihoodsLrn, Fctrzn, EstInts, InputMo
 
     Fctrzn@expectations[["Tau"]] <- Tau_init(viewsLrn, Fctrzn, InputModel)
     Fctrzn@expectations[["TauLn"]] <- sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn, LrnFctrnDir)
-    Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn, EstInts)
-    Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, LrnFctrnDir)
+    Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn, LrnFctrnDir)
+    Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, EstInts)
 
     return(Fctrzn)
 }
