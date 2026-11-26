@@ -562,7 +562,8 @@ TCGATargetDataPrefiltering <- function(view, brcds_SS, SS, YTrgFull, Fctrzn) {
     YTrgSS <- YTrgSS[FtrsKeep, ]
 
     ## harmonize features between Trg SS and Lrn data
-    features_metadata <- Fctrzn@features_metadata
+    #features_metadata <- Fctrzn@features_metadata
+    features_metadata <- MOFA2::features_metadata(object = Fctrzn)
     FtrsLrn <- features_metadata$feature[features_metadata$view == view]
     FtrsCommon <- FtrsLrn[is.element(FtrsLrn, rownames(YTrgSS))]
     FtrsKeep <- is.element(rownames(YTrgSS), FtrsCommon)
@@ -826,7 +827,7 @@ TargetDataPrefiltering <- function(view, YTrg_list, Fctrzn, smpls) {
     ## print(paste0("YTrg dimensions after prefiltering: ", dim(YTrg)))
 
     ## harmonize features between Trg and Lrn data
-    features_metadata <- Fctrzn@features_metadata
+    features_metadata <- MOFA2::features_metadata(object = Fctrzn)
     FtrsLrn <- features_metadata$feature[features_metadata$view == view]
     FtrsCommon <- FtrsLrn[is.element(FtrsLrn, rownames(YTrg))]
     FtrsKeep <- is.element(rownames(YTrg), FtrsCommon)
@@ -882,7 +883,7 @@ Tau_init <- function(viewsLrn, Fctrzn, InputModel) {
     for (i in seq_len(length(viewsLrn))) {
         view <- viewsLrn[i]
         rownames(Tau[[view]]$group0) <-
-            rownames(Fctrzn@expectations[["W"]][[view]])
+            rownames(MOFA2::get_weights(Fctrzn, view)[[view]])
     }
 
     # Return a named list of Tau matrix
@@ -943,7 +944,7 @@ TauLn_calculation <- function(view,
             TauLn <- as.vector(utils::read.csv(file.path(
                 LrnFctrnDir, paste0("TauLn_", view, ".csv")
             ), header = FALSE)$V1)
-            names(TauLn) <- rownames(Fctrzn@expectations[["W"]][[view]])
+            names(TauLn) <- rownames(MOFA2::get_weights(Fctrzn, view)[[view]])
         }
     } else {
         TauLn <- numeric()
@@ -995,15 +996,18 @@ TauLn_calculation <- function(view,
 #' @keywords internal
 #' @noRd
 WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
+    ## Retrieve W from MOFA object
+    W <- MOFA2::get_weights(Fctrzn, view)[[view]]
+    ##
     if (LrnSimple) {
-        WSq <- (Fctrzn@expectations[["W"]][[view]])^2
+        WSq <- W^2
     } else {
         WSq <-
             utils::read.csv(file.path(LrnFctrnDir, paste0("WSq_", view, ".csv")),
                      header = FALSE)
         WSq <-
-            as.matrix(WSq)[, seq_len(dim(Fctrzn@expectations[["W"]][[view]])[2])]
-        rownames(WSq) <- rownames(Fctrzn@expectations[["W"]][[view]])
+            as.matrix(WSq)[, seq_len(dim(W)[2])]
+        rownames(WSq) <- rownames(W)
     }
     return(WSq)
 }
@@ -1047,7 +1051,7 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
 #' @noRd
 W0_calculation <- function(view, CenterTrg, Fctrzn, EstInts = NULL) {
     if (CenterTrg) {
-        W0 <- Fctrzn@expectations[["W"]][[view]][, 1] * 0
+        W0 <- MOFA2::get_weights(Fctrzn, view)[[view]][, 1] * 0
     } else {
         if(is.null(EstInts)){
             stop("EstInts must be provided when CenterTrg = FALSE")
@@ -1148,11 +1152,11 @@ intercepts_calculation <- function(expdat_meta,
     fit_start_time <- Sys.time()
 
     ## Extract data from factorization model object
-    views <- Fctrzn@data_options$views
+    views <- MOFA2::views_names(Fctrzn)
     names(views) <- views
-    likelihoods <- Fctrzn@model_options$likelihoods
-    M <- Fctrzn@dimensions$M
-    D <- Fctrzn@dimensions$D
+    likelihoods <- MOFA2::get_default_model_options(Fctrzn)$likelihoods
+    M <- MOFA2::get_dimensions(Fctrzn)$M
+    D <- MOFA2::get_dimensions(Fctrzn)$D
 
     # loop through the views and estimate the intercept
     # for gaussian data its just the mean

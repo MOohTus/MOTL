@@ -811,7 +811,7 @@ transferLearning_function <- function(TL_param,
             if(verbose){message("Init Z")}
             # initialise with means of learning set Z
             ZMu <- matrix(
-                data = as.vector(colMeans(Fctrzn@expectations$Z$group0)),
+                data = as.vector(colMeans(MOFA2::get_expectations(Fctrzn, "Z")[[1]])),
                 nrow = dim(ZVar)[1], ncol = dim(ZVar)[2],
                 byrow = TRUE
             )
