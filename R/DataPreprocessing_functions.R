@@ -1202,7 +1202,10 @@ intercepts_calculation <- function(expdat_meta,
         colnames(YTmp) <-
             expdat_meta[[which(names(expdat_meta) == paste0("ftrs_", view))]]
 
-        expectations <- Fctrzn@expectations
+        ##expectations <- Fctrzn@expectations
+        expectations$Z <- MOFA2::get_expectations(Fctrzn, "Z")
+        expectations$W <- MOFA2::get_expectations(Fctrzn, "W")
+
         ZWTmp <- expectations$Z$group0 %*%
             t(expectations$W[[which(names(expectations$W) == view)]])
 
