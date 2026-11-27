@@ -379,13 +379,13 @@ TargetDataPreparation <- function(views,
 #' TLparameter <-
 #'     initTransferLearningParamaters(YTrg = YTrg,
 #'                                     views = views,
-#'                                     Fctrzn = Fctrzn,
+#'                                     learning_data = learning_data,
 #'                                     likelihoods = likelihoods)
 #'
 #' @export
 initTransferLearningParamaters <- function(YTrg,
                                            views,
-                                           Fctrzn,
+                                           learning_data,
                                            likelihoods,
                                            verbose = FALSE) {
     names(views) <- views
@@ -395,41 +395,41 @@ initTransferLearningParamaters <- function(YTrg,
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX ZERO
     if(verbose){message("Factorized learning set weight intercepts")}
-    Fctrzn_Lrn_W0 <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
-        Fctrzn_Lrn_W0 <- Fctrzn@expectations[["W0"]][[view]]
+    Fctrzn_Lrn_W0 <- lapply(views, function(view, learning_data, YTrgFtrs) {
+        Fctrzn_Lrn_W0 <- learning_data$W0[[view]]
         FtrsKeep <- is.element(names(Fctrzn_Lrn_W0), YTrgFtrs[[view]])
         Fctrzn_Lrn_W0 <- Fctrzn_Lrn_W0[FtrsKeep]
         Fctrzn_Lrn_W0 <-
             Fctrzn_Lrn_W0[match(YTrgFtrs[[view]], names(Fctrzn_Lrn_W0))]
         return(Fctrzn_Lrn_W0)
-    }, Fctrzn, YTrgFtrs)
+    }, learning_data, YTrgFtrs)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX
     if(verbose){message("Factorized learning set weights")}
-    Fctrzn_Lrn_W <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
-        Fctrzn_Lrn_W <- Fctrzn@expectations[["W"]][[view]]
+    Fctrzn_Lrn_W <- lapply(views, function(view, learning_data, YTrgFtrs) {
+        Fctrzn_Lrn_W <- learning_data$W[[view]]
         FtrsKeep <- is.element(rownames(Fctrzn_Lrn_W), YTrgFtrs[[view]])
         Fctrzn_Lrn_W <- Fctrzn_Lrn_W[FtrsKeep, ]
         Fctrzn_Lrn_W <-
             Fctrzn_Lrn_W[match(YTrgFtrs[[view]], rownames(Fctrzn_Lrn_W)), ]
         return(Fctrzn_Lrn_W)
-    }, Fctrzn, YTrgFtrs)
+    }, learning_data, YTrgFtrs)
 
     ## FACTORIZED LEARNING WEIGHTS MATRIX SQUARED
     if(verbose){message("Factorized learning set squared weights")}
-    Fctrzn_Lrn_WSq <- lapply(views, function(view, Fctrzn, YTrgFtrs) {
-        Fctrzn_Lrn_WSq <- Fctrzn@expectations[["WSq"]][[view]]
+    Fctrzn_Lrn_WSq <- lapply(views, function(view, learning_data, YTrgFtrs) {
+        Fctrzn_Lrn_WSq <- learning_data$WSq[[view]]
         FtrsKeep <- is.element(rownames(Fctrzn_Lrn_WSq), YTrgFtrs[[view]])
         Fctrzn_Lrn_WSq <- Fctrzn_Lrn_WSq[FtrsKeep, ]
         Fctrzn_Lrn_WSq <-
             Fctrzn_Lrn_WSq[match(YTrgFtrs[[view]], rownames(Fctrzn_Lrn_WSq)), ]
         return(Fctrzn_Lrn_WSq)
-    }, Fctrzn, YTrgFtrs)
+    }, learning_data, YTrgFtrs)
 
     ## TAU PARAMETER
     if(verbose){message("Tau")}
-    Tau <- lapply(views, function(view, Fctrzn, YTrg, YTrgFtrs) {
-        Tau <- Fctrzn@expectations[["Tau"]][[view]]$group0
+    Tau <- lapply(views, function(view, learning_data, YTrg, YTrgFtrs) {
+        Tau <- learning_data$Tau[[view]]$group0
         FtrsKeep <- is.element(rownames(Tau), YTrgFtrs[[view]])
         Tau <- Tau[FtrsKeep, ]
         Tau <- Tau[match(YTrgFtrs[[view]], rownames(Tau)), ]
@@ -441,17 +441,17 @@ initTransferLearningParamaters <- function(YTrg,
         )
         rownames(Tau) <- rownames(YTrg[[view]])
         return(Tau)
-    }, Fctrzn, YTrg, YTrgFtrs)
+    }, learning_data, YTrg, YTrgFtrs)
 
     ## LOG TAU PARAMETER
     if(verbose){message("LOG Tau")}
     TauLn <- lapply(views, function(view,
                                     likelihoods,
-                                    Fctrzn,
+                                    learning_data,
                                     YTrg,
                                     YTrgFtrs) {
         if (likelihoods[view] == "gaussian") {
-            TauLn <- Fctrzn@expectations[["TauLn"]][[view]]
+            TauLn <- learning_data$TauLn[[view]]
             FtrsKeep <- is.element(names(TauLn), YTrgFtrs[[view]])
             TauLn <- TauLn[FtrsKeep]
             TauLn <- TauLn[match(YTrgFtrs[[view]], names(TauLn))]
@@ -466,7 +466,7 @@ initTransferLearningParamaters <- function(YTrg,
             TauLn <- numeric()
         }
         return(TauLn)
-    }, likelihoods, Fctrzn, YTrg, YTrgFtrs)
+    }, likelihoods, learning_data, YTrg, YTrgFtrs)
 
     ## Transpose matrices where necessary - to make them samples x features
     YTrg <- lapply(YTrg, t)
@@ -479,6 +479,7 @@ initTransferLearningParamaters <- function(YTrg,
         "Fctrzn_Lrn_W0" = Fctrzn_Lrn_W0,
         "Fctrzn_Lrn_W" = Fctrzn_Lrn_W,
         "Fctrzn_Lrn_WSq" = Fctrzn_Lrn_WSq,
+        "Fctrzn_Lrn_Z" = learning_data$Z,
         "Tau" = Tau,
         "TauLn" = TauLn
     )
@@ -936,10 +937,11 @@ TauLn_calculation <- function(view,
                               likelihoodsLrn,
                               Fctrzn,
                               LrnFctrnDir,
+                              Tau,
                               LrnSimple = TRUE) {
     if (likelihoodsLrn[view] == "gaussian") {
         if (LrnSimple) {
-            TauLn <- log(Fctrzn@expectations[["Tau"]][[view]]$group0[, 1])
+            TauLn <- log(Tau[[view]]$group0[, 1])
         } else {
             TauLn <- as.vector(utils::read.csv(file.path(
                 LrnFctrnDir, paste0("TauLn_", view, ".csv")
@@ -997,7 +999,7 @@ TauLn_calculation <- function(view,
 #' @noRd
 WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
     ## Retrieve W from MOFA object
-    W <- MOFA2::get_weights(Fctrzn, view)[[view]]
+    W <- MOFA2::get_expectations(Fctrzn, "W")[[view]]
     ##
     if (LrnSimple) {
         WSq <- W^2
@@ -1051,7 +1053,7 @@ WSq_calculation <- function(view, Fctrzn, LrnFctrnDir, LrnSimple = TRUE) {
 #' @noRd
 W0_calculation <- function(view, CenterTrg, Fctrzn, EstInts = NULL) {
     if (CenterTrg) {
-        W0 <- MOFA2::get_weights(Fctrzn, view)[[view]][, 1] * 0
+        W0 <- MOFA2::get_expectations(Fctrzn, "W")[[view]][, 1] * 0
     } else {
         if(is.null(EstInts)){
             stop("EstInts must be provided when CenterTrg = FALSE")
@@ -1089,14 +1091,34 @@ W0_calculation <- function(view, CenterTrg, Fctrzn, EstInts = NULL) {
 #'
 #'
 #' @export
-initLearningModel <- function(viewsLrn, likelihoodsLrn, Fctrzn, EstInts, InputModel, LrnFctrnDir, CenterTrg, LrnSimple){
+initLearningModel <- function(Fctrzn, EstInts, InputModel, LrnFctrnDir, CenterTrg, LrnSimple = TRUE){
 
-    Fctrzn@expectations[["Tau"]] <- Tau_init(viewsLrn, Fctrzn, InputModel)
-    Fctrzn@expectations[["TauLn"]] <- sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn, LrnFctrnDir)
-    Fctrzn@expectations[["WSq"]] <- sapply(viewsLrn, WSq_calculation, Fctrzn, LrnFctrnDir)
-    Fctrzn@expectations[["W0"]] <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, EstInts)
+    ## Retrieve information from the learning dataset factorization object
+    viewsLrn <- MOFA2::views_names(Fctrzn)
+    likelihoodsLrn <- MOFA2::get_default_model_options(Fctrzn)$likelihoods
 
-    return(Fctrzn)
+    ## Initialisation
+    Tau <- Tau_init(viewsLrn, Fctrzn, InputModel)
+    TauLn <- sapply(viewsLrn, TauLn_calculation, likelihoodsLrn, Fctrzn, LrnFctrnDir, Tau)
+    WSq <- sapply(viewsLrn, WSq_calculation, Fctrzn, LrnFctrnDir)
+    W0 <- sapply(viewsLrn, W0_calculation, CenterTrg, Fctrzn, EstInts)
+
+    ## Init learning_data list
+    learning_data <- list(
+        "Fctrzn" = Fctrzn,
+        "Tau" = Tau,
+        "TauLn" = TauLn,
+        "WSq" = WSq,
+        "W0" = W0,
+        "Z" = MOFA2::get_expectations(Fctrzn, "Z"),
+        "W"= MOFA2::get_expectations(Fctrzn, "W"),
+        "CenterTrg" = CenterTrg,
+        "LrnSimple" = LrnSimple,
+        "viewsLrn" = viewsLrn,
+        "likelihoodsLrn" = likelihoodsLrn)
+
+    ## Return
+    return(learning_data)
 }
 
 

@@ -7,7 +7,7 @@
 initTransferLearningParamaters(
   YTrg,
   views,
-  Fctrzn,
+  learning_data,
   likelihoods,
   verbose = FALSE
 )
@@ -19,14 +19,14 @@ the defined views.}
 \item{views}{a vector of target dataset view names (e.g.
 \code{c("mRNA", "miRNA")})}
 
-\item{Fctrzn}{the learning dataset factorization model object
-(from \code{MOFA})}
-
 \item{likelihoods}{a named list of data types. The list can contain
 \code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
 type. Names are the view names.}
 
 \item{verbose}{}
+
+\item{Fctrzn}{the learning dataset factorization model object
+(from \code{MOFA})}
 }
 \value{
 a list of initialized parameters for transfer learning
@@ -75,7 +75,7 @@ YTrg <- Trg$YTrg_prep
 TLparameter <-
     initTransferLearningParamaters(YTrg = YTrg,
                                     views = views,
-                                    Fctrzn = Fctrzn,
+                                    learning_data = learning_data,
                                     likelihoods = likelihoods)
 
 }

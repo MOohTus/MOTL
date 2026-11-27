@@ -706,7 +706,7 @@ VarExplFun <- function(views, YGauss, ZMu_0, Fctrzn_Lrn_W0, ZMu, Fctrzn_Lrn_W) {
 transferLearning_function <- function(TL_param,
                                       views,
                                       likelihoods,
-                                      Fctrzn,
+                                      learning_data,
                                       minFactors = 6,
                                       CenterTrg = FALSE,
                                       MinIterations = 2,
@@ -811,7 +811,7 @@ transferLearning_function <- function(TL_param,
             if(verbose){message("Init Z")}
             # initialise with means of learning set Z
             ZMu <- matrix(
-                data = as.vector(colMeans(MOFA2::get_expectations(Fctrzn, "Z")[[1]])),
+                data = as.vector(colMeans(learning_data$Z[[1]])),
                 nrow = dim(ZVar)[1], ncol = dim(ZVar)[2],
                 byrow = TRUE
             )

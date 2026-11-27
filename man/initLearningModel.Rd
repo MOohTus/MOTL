@@ -5,24 +5,15 @@
 \title{Initialization of the learning model}
 \usage{
 initLearningModel(
-  viewsLrn,
-  likelihoodsLrn,
   Fctrzn,
   EstInts,
   InputModel,
   LrnFctrnDir,
   CenterTrg,
-  LrnSimple
+  LrnSimple = TRUE
 )
 }
 \arguments{
-\item{viewsLrn}{the list of learning data views. For TCGA learning data
-it will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).}
-
-\item{likelihoodsLrn}{a named list of data types. The list can contain
-\code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
-type. Names are the view names.}
-
 \item{Fctrzn}{the learning dataset factorization from \code{MOFA2}.}
 
 \item{EstInts}{estimated intercept matrix}
@@ -42,6 +33,13 @@ If FALSE, imports values from a .csv file. By default is set to "TRUE".
 \eqn{E[W^2]} using the weight values \code{W} \eqn{E[W]}.
 If FALSE, load squared weight values from a file. By default, it's set
 to TRUE.}
+
+\item{viewsLrn}{the list of learning data views. For TCGA learning data
+it will be \code{c("mRNA", "miRNA", "DNAme", "SNV")}).}
+
+\item{likelihoodsLrn}{a named list of data types. The list can contain
+\code{gaussian}, \code{poisson} or \code{bernoulli} depending of the data
+type. Names are the view names.}
 }
 \description{
 Initialization of the learning model

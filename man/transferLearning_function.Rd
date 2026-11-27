@@ -8,7 +8,7 @@ transferLearning_function(
   TL_param,
   views,
   likelihoods,
-  Fctrzn,
+  learning_data,
   minFactors = 6,
   CenterTrg = FALSE,
   MinIterations = 2,
@@ -38,9 +38,6 @@ the same names used for inside the learning dataset.}
 \item{likelihoods}{a named vector of the target dataset types. It can
 contain \code{gaussian}, \code{poisson} or \code{bernoulli} depending of
 the data type. Names are the view names.}
-
-\item{Fctrzn}{the learning factorization model object (from \code{MOFA}).
-Creating using the \code{MOFA_functions.py} python script.}
 
 \item{minFactors}{the minimum number of factors to retain. Default 6.}
 
@@ -91,6 +88,9 @@ Generated using \code{\link{Sys.time}} function. By default is NULL.}
 
 \item{outputDir}{output directory name where to save results. By default
 results are saved in the current directory.}
+
+\item{Fctrzn}{the learning factorization model object (from \code{MOFA}).
+Creating using the \code{MOFA_functions.py} python script.}
 }
 \value{
 a named list of results. It contains
