@@ -8,7 +8,6 @@ transferLearning_function(
   TL_param,
   views,
   likelihoods,
-  learning_data,
   minFactors = 6,
   CenterTrg = FALSE,
   MinIterations = 2,
